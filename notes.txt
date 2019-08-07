@@ -1,3 +1,38 @@
+pile = {
+	owner: {},
+	cards: [
+		{
+			flipped: true,
+			identity: {value: 0, rank: 0, suit: 'string'}
+		}
+	]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 [Host Upgrade Request] token=player_1token&business=hosting&maxSeats=5
 Server seats player 1 at the newly created table.
 Server - You have been seated. Here is the table.

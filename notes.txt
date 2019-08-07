@@ -2,8 +2,8 @@ pile = {
 	owner: {},
 	cards: [
 		{
-			flipped: true,
-			identity: {value: 0, rank: 0, suit: 'string'}
+			isFlipped: true,
+			identity: {value: 0, rank: 0, suit: 0}
 		}
 	]
 }

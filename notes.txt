@@ -2,14 +2,36 @@ pile = {
 	owner: {}, //only for reference
 	cards: [
 		{
-			isFlipped: true,
+			isFaceUp: true,
 			identity: {value: 0, rank: 0, suit: 0}
 		}
 	]
 }
 
 
+round = {
+	piles: [
+		{ //discard pile
+			owner: undefined,
+			cards: [{}]
+		}
+	],
+	hands: Map([
+		[
+			{} /*player reference*/,
+			[{value: 0, rank: 0, suit: 0}]
+		]
+	])
+}
 
+
+event: 'cardMove'
+from: {type: 'hand', index: 0},
+to: {type: 'pile', index: 0, isFaceUp: true}
+
+event: 'cardMove'
+from: {type: 'deck'},
+to: {type: 'hand'}
 
 
 

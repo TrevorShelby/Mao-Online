@@ -7,7 +7,7 @@ const WebSocket = require('ws')
 
 const safeJsonParse = require('../../utility/safeJsonParse.js')
 const getConditionalListener = require('../../utility/conditionalListener.js')
-const Player = require('../../player.js')
+const Recipient = require('../../recipient.js')
 
 
 
@@ -76,7 +76,7 @@ const players = []
 const onConnection = onConnection_({
 	connections,
 	callback: (conn) => {
-		const player = new Player(conn, getPlayerListeners(conn))
+		const player = new Recipient(conn, getPlayerListeners(conn))
 		players.push(player)
 	}
 })

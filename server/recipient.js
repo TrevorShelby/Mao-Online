@@ -1,4 +1,4 @@
-class Player {
+class Recipient {
 	constructor(conn, listeners) {
 		this.conn = conn
 		this.listeners = listeners == undefined ? {} : listeners
@@ -35,4 +35,4 @@ class Player {
 }
 
 
-module.exports = Player
+module.exports = Recipient

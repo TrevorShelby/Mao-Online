@@ -48,14 +48,14 @@ function onConnection_({connections, serverDoesLogging=true, callback=()=>{}}) {
 
 const greetings = ['hello', 'hey', 'howdy']
 function isGreeting(message) {
-	return message.event == 'greeting'
+	return message.type == 'greeting'
 	&& typeof message.greetingIndex == 'number'
 	&& message.greetingIndex >= 0 && message.greetingIndex < greetings.length
 }
 function getGreetingListener(conn) {
 	function onGreeting(message) {
 		const returnGreetingMessage = {
-			event: 'greetingRecieved',
+			type: 'greetingRecieved',
 			greeting: greetings[message.greetingIndex]
 		}
 		conn.send(JSON.stringify(returnGreetingMessage))

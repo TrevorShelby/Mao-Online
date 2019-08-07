@@ -47,4 +47,8 @@ function createClient({port, name='client', clientDoesLog=true}) {
 
 
 
-//add client(s) here
+const client = createClient({port:1258})
+
+client.on('message', (messageStr) => {
+	client.send('hey!')
+})

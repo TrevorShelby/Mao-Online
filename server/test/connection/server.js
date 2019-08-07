@@ -47,7 +47,9 @@ function onConnection_({connections, serverDoesLogging=true, callback=()=>{}}) {
 const connections = []
 const onConnection = onConnection_({
 	connections,
-	callback: //add custom connection event function here
+	callback: (conn) => {
+		conn.send('hello!')
+	}
 })
 
 const server = http.createServer()

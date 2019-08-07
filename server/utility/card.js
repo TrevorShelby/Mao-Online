@@ -11,6 +11,7 @@ function getSuit(value) {
 
 
 
+//TODO: Consider renaming card to cardIdentity or something similiar to avoid naming conflicts.
 function getCard_(getRank, getSuit) {
 	function getCard(value) {
 		return {

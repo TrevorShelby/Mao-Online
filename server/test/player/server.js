@@ -6,6 +6,7 @@ const http = require('http')
 const WebSocket = require('ws')
 
 const safeJsonParse = require('../../utility/safeJsonParse.js')
+const getConditionalListener = require('../../utility/conditionalListener.js')
 const Player = require('../../player.js')
 
 
@@ -46,21 +47,20 @@ function onConnection_({connections, serverDoesLogging=true, callback=()=>{}}) {
 
 
 const greetings = ['hello', 'hey', 'howdy']
+function isGreeting(message) {
+	return message.event == 'greeting'
+	&& typeof message.greetingIndex == 'number'
+	&& message.greetingIndex >= 0 && message.greetingIndex < greetings.length
+}
 function getGreetingListener(conn) {
-	function greetingListener(messageStr) {
-		const message = safeJsonParse(messageStr)
-		if(
-			message == undefined || message.event != 'greeting'
-			|| typeof message.greetingIndex != 'number'
-			|| message.greetingIndex < 0 || message.greetingIndex > greetings.length
-		) { return }
+	function onGreeting(message) {
 		const returnGreetingMessage = {
 			event: 'greetingRecieved',
 			greeting: greetings[message.greetingIndex]
 		}
 		conn.send(JSON.stringify(returnGreetingMessage))
 	}
-	return greetingListener
+	return getConditionalListener(isGreeting, onGreeting)
 }
 
 function getPlayerListeners(conn) {

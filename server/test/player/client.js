@@ -49,6 +49,6 @@ function createClient({port, name='client', clientDoesLog=true}) {
 
 const client = createClient({port:1258})
 client.on('open', () => {
-	const greetingMessage = {event: 'greeting', greetingIndex: 2}
+	const greetingMessage = {event: 'greeting', greetingIndex: 1}
 	client.send(JSON.stringify(greetingMessage))
 })

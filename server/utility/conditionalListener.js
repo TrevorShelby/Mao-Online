@@ -9,3 +9,6 @@ function getConditionalListener(predicate, callback) {
 	}
 	return conditionalListener
 }
+
+
+module.exports = getConditionalListener

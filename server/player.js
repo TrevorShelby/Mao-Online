@@ -1,11 +1,12 @@
 class Player {
-	constructor(conn, playerListeners) {
+	constructor(conn, listeners) {
 		this.conn = conn
-		this.playerListeners = playerListeners
+		this.listeners = listeners == undefined ? {} : listeners
 
 		const messageListeners = conn.listeners('message')
-		for(listenerKey in this.playerListeners) {
-			const playerListener = this.playerListeners[listenerKey]
+		let listenerKey
+		for(listenerKey in this.listeners) {
+			const playerListener = this.listeners[listenerKey]
 			if(!messageListeners.includes(playerListener)) {
 				this.conn.on('message', playerListener)
 			}
@@ -14,16 +15,20 @@ class Player {
 
 
 	addListener(eventName, playerListener) {
+		if(this.listeners[eventName] != undefined) {
+			throw Error(eventName + ' already has a listener.')
+		}
+
 		this.conn.on('message', playerListener)
-		this.playerListeners[eventName] = playerListener
+		this.listeners[eventName] = playerListener
 	}
 
 
 	removeListener(eventName) {
-		const playerListener = this.playerListeners[eventName]
+		const playerListener = this.listeners[eventName]
 		if(playerListener == undefined) {return}
 
-		delete this.playerListeners[eventName]
+		delete this.listeners[eventName]
 		this.conn.off('message', playerListener)
 		return playerListener
 	}

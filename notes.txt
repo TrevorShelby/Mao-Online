@@ -1,5 +1,5 @@
 pile = {
-	owner: {},
+	owner: {}, //only for reference
 	cards: [
 		{
 			isFlipped: true,

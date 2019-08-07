@@ -1,0 +1,156 @@
+[Host Upgrade Request] token=player_1token&business=hosting&maxSeats=5
+Server seats player 1 at the newly created table.
+Server - You have been seated. Here is the table.
+{
+	status: 'seated',
+	table: {
+		players: [
+			{
+				name: 'player 1',
+				seat: 0
+			}
+		],
+		host: 'player 1',
+		maxSeats: 5,
+		mode: 'lobby'
+	}
+}
+[Lobby]
+
+
+[Join Upgrade Request] token=player_2token&business=joining&tableID=0
+Server seats player 2 at table 0.
+Server - You have been seated. Here is the table.
+...
+[Lobby]
+
+
+
+[Lobby]
+Player 1 - I say, 'hello everyone!'
+{
+	event: 'chatMessage',
+	message: 'hello everyone!'
+}
+Server - Everyone! Player 1 says, 'hello everyone!'
+{
+	event: 'chatMessage',
+	author: 'Player 1',
+	message: 'hello everyone!'
+}
+[Lobby]
+
+
+
+
+
+Players are seated connections.
+
+
+Table
+{
+ 	players: [
+ 		{
+ 			conn: WebSocket,
+ 			name: String,
+ 			seat: Integer
+ 		}
+ 	],
+ 	host: { //should already be in players
+ 		conn: WebSocket,
+ 		name: String,
+ 		seat: Integer
+ 	},
+ 	allowMidgameJoining: Boolean,
+ 	maxSeats: Integer,
+ 	mode: String
+}
+
+
+
+Lobby classes have that state applied to them (before constructor application)
+Lobby
+{
+	Event: 'chatMessage',
+	Event: 'hostSignalsStart',
+	Event: 'playerRequestsTable',
+
+	table: Table
+}
+
+
+
+
+As EventEmitter:
+-Adds a layer of abstraction between connection events and connection message sending (that layer being lobby events)
+-The lobby event for players joining is a bit weird though, since it requires a call to the lobby's method (which tells us that players joining is an event that is somehow different from the other lobby events)
+	-Players joining is different because it isn't connecting connection events with connection messages sending. It's connecting connection seating (which is an abstraction layer between the websocket http upgrade request and players joining (?) ) with connection message sending.
+
+
+
+
+table (again, but different)
+{
+	playerInfo: [
+		{
+			player: Player,
+			name: string,
+			seat: integer
+		}
+	],
+	host: playerInfo.Element, 	//not official term. also keep in mind that JSON serialization
+	maxSeats: integer,			//doesn't keep referentiality
+	mode: string
+}
+
+
+
+
+
+
+
+
+
+IMPORTANT:
+SHOULD MAO BE CARD-COUNTABLE?
+SHOULD THE GAME HAVE A FINITE DECK THAT GETS RESHUFFLED FROM THE DISCARD, OR, IN DEFENSE AGAINST CARD-COUNTING CLIENTS, SHOULD THE GAME HAVE AN INFINITE DECK?
+ 
+
+
+play is the standard mode of Mao, where players are able to play cards, draw cards, and move cards around.
+Play
+Players can add cards into a pile with or without a written action.
+Players can take cards from a pile with or without a written action.
+Players can draw cards from the top of the deck with or without a written action.
+Players can 'pass' by drawing the card on the top of the deck.
+Players can choose any player (including themselves) to accuse. If they have chosen another player, the game goes from play to accusation. If the player has chosen themselves, they are automatically penalized.
+Players can create a card group on the table (maybe with special permissions).
+Players can delete a card group that they have created.
+
+
+accusation is a bipartisan mode between the carder and the cardee (A.K.A. the accusing player and the accused player).
+Accusation
+The accused player can accept penalization, moving the game from accusation to play.
+The accusing player can cancel their accusation without acknowledgement of fault, moving the game from accusation to retribution.
+The accusing player can cancel their accusation with acknowledgement of fault, which penalizes the accusing player and moves the game from accusation to play.
+
+
+retribution is a mode caused by the accusing player cancelling their accusation without acknowledgement of fault. during retribution, the accused player decides whether or not the accusing player should be penalized.
+Retribution
+The accused player can penalize the accusing player, moving the game from retribution to play.
+The accused player can forgive the accusing player, moving the game from retribution to play.
+
+
+rule-writing is a mode caused by a player not having any cards left in their hand and then not being carded for (maybe) three seconds after. during rule-writing, this player (who is called the winning player or maybe even Mao) chooses to create or remove a rule (although they cannot learn a rule through the process of removing it).
+Rule-Writing
+The winning player can write a new rule, moving the game from rule-writing to a new round of play.
+The winning player can remove an old rule from a past round, moving the game from rule-writing to a new round of play.
+
+
+
+
+
+
+
+
+

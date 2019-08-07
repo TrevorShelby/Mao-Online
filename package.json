@@ -1,0 +1,20 @@
+{
+  "name": "mao-online",
+  "version": "1.0.0",
+  "description": "A server that can run games of Mao.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Trevor",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "http": "0.0.0",
+    "path": "^0.12.7",
+    "url": "^0.11.0",
+    "uuid": "^3.3.2",
+    "websocket": "^1.0.29",
+    "ws": "^7.1.0"
+  }
+}

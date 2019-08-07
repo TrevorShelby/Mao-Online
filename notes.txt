@@ -25,16 +25,27 @@ round = {
 }
 
 
-event: 'cardMove'
+CLIENT
+event: 'cardMove',
+id: 0,
 from: {type: 'hand', index: 0},
 to: {type: 'pile', index: 0, isFaceUp: true}
 
-event: 'cardMove'
+SERVER
+event: 'ack',
+id: 0
+
+
+CLIENT
+event: 'cardMove',
+id: 1
 from: {type: 'deck'},
 to: {type: 'hand'}
 
-
-
+SERVER
+event: 'ack',
+id: 1,
+cardIdentity: {value: 0, rank: 0, suit: 0}
 
 
 

@@ -18,7 +18,8 @@ function printRound(round) {
 			const spokenIdentity = getSpokenCard(identity)
 			spokenCards.push({isFaceUp, spokenIdentity})
 		})
-		console.log(pile.owner)
+		if(pile.owner != undefined) { console.log(pile.owner) }
+		else { console.log('discard') }
 		console.log(spokenCards)
 		console.log()
 	})

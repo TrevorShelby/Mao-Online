@@ -72,7 +72,7 @@ function isCardMove(message) {
 
 //TODO: Consider adding some behavior object for notifying the client of mistakes in their message.
 function getCardMoveListener(round, conn) {
-	function cardMoveListener(message) {
+	function onCardMove(message) {
 		let movedCardIdentity
 		if(message.from.type == 'hand') {
 			if(message.to.type == 'hand') { return }
@@ -118,18 +118,23 @@ function getCardMoveListener(round, conn) {
 		}
 		else if(message.to.type == 'pile') {
 			if(
-				typeof message.from.pileIndex != 'number'
-				|| typeof message.from.isFaceUp != 'boolean'
+				typeof message.to.pileIndex != 'number'
+				|| typeof message.to.isFaceUp != 'boolean'
 			) { return }
-			const pile = round.piles[message.from.pileIndex]
+			const pile = round.piles[message.to.pileIndex]
 			if(pile == undefined) { return }
-			pile.
+			pile.cards.push({
+				isFaceUp: message.to.isFaceUp,
+				identity: movedCardIdentity
+			})
 		}
+		//this isn't correct, but it's the consequence of the unfinished IMPORTANT!!! todo.
+		else if(message.to.type == 'deck') { return }
 		else { return }
 
 		printRound(round)
 	}
-	return getConditionalListener(isCardMove, cardMoveListener)
+	return getConditionalListener(isCardMove, onCardMove)
 }
 
 

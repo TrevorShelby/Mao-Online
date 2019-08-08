@@ -69,6 +69,8 @@ function isCardMove(message) {
 }
 
 
+
+//TODO: Consider adding some behavior object for notifying the client of mistakes in their message.
 function getCardMoveListener(round, conn) {
 	function cardMoveListener(message) {
 		let movedCardIdentity
@@ -115,7 +117,13 @@ function getCardMoveListener(round, conn) {
 			hand.push(movedCardIdentity)
 		}
 		else if(message.to.type == 'pile') {
-			if(typeof message.from.pileIndex != 'number') { return }
+			if(
+				typeof message.from.pileIndex != 'number'
+				|| typeof message.from.isFaceUp != 'boolean'
+			) { return }
+			const pile = round.piles[message.from.pileIndex]
+			if(pile == undefined) { return }
+			pile.
 		}
 		else { return }
 

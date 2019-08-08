@@ -9,6 +9,7 @@ const safeJsonParse = require('../../utility/safeJsonParse.js')
 const { draw, getNewRound }  = require('../../utility/round.js')
 const Recipient = require('../../recipient.js')
 const { getSpokenCard, printRound } = require('./printUtil.js')
+const getConditionalListener = require('../../utility/conditionalListener.js')
 
 
 
@@ -60,16 +61,23 @@ wsServer.on('connection', onConnection)
 
 
 
+function isCardMove(message) {
+	return (
+		message.event == 'cardMove'
+		&& message.from != undefined && message.to != undefined
+	)
+}
+
+
 function getCardMoveListener(round, conn) {
-	function cardMoveListener(messageStr) {
-		const message = safeJsonParse(messageStr)
-		if(message == undefined || message.event != 'cardMove') { return }
-		let cardIdentity
+	function cardMoveListener(message) {
+		let movedCardIdentity
 		if(message.from.type == 'hand') {
+			if(message.to.type == 'hand') { return }
 			if(typeof message.from.cardIndex != 'number') { return }
 			const hand = round.hands.get(conn)
 			if(message.from.cardIndex >= 0 && message.from.cardIndex < hand.length) {
-				cardIdentity = hand.splice(message.from.cardIndex, 1)[0]
+				movedCardIdentity = hand.splice(message.from.cardIndex, 1)[0]
 			}
 			//TODO: Maybe send a message back to connection if cardIndex is off.
 			else { return }
@@ -79,23 +87,41 @@ function getCardMoveListener(round, conn) {
 				typeof message.from.cardIndex != 'number'
 				|| typeof message.from.pileIndex != 'number'
 			) { return }
+			if(
+				message.to.type == 'pile' && message.to.pileIndex == message.from.pileIndex
+			) { return }
 			const pile = round.piles[message.from.pileIndex]
 			if(pile == undefined) { return }
 			if(message.from.cardIndex >= 0 && message.from.cardIndex < pile.cards.length) {
-				cardIdentity = pile.cards.splice(message.from.cardIndex, 1)[0].identity
+				movedCardIdentity = pile.cards.splice(message.from.cardIndex, 1)[0].identity
 			}
 			//TODO: Maybe send a message back to connection if cardIndex is off.
 			else { return }
 		}
 		else if(message.from.type == 'deck') {
-			cardIdentity = draw()
+			//TODO: Maybe remove, as this limitation restricts card-burning, and functionality to
+			//view moved cards, even after being put away, might be added.
+			if(message.to.type == 'deck') { return }
+			movedCardIdentity = draw()
+		}
+		else { return }
+		console.log(getSpokenCard(movedCardIdentity))
+
+		//IMPORTANT!!!
+		//TODO: Make sure that faulty 'to' object won't get rid of the card being moved like the
+		//code currently does. May require adding logic to predicate.
+		if(message.to.type == 'hand') {
+			const hand = round.hands.get(conn)
+			hand.push(movedCardIdentity)
+		}
+		else if(message.to.type == 'pile') {
+			if(typeof message.from.pileIndex != 'number') { return }
 		}
 		else { return }
 
-		console.log(getSpokenCard(cardIdentity))
 		printRound(round)
 	}
-	return cardMoveListener
+	return getConditionalListener(isCardMove, cardMoveListener)
 }
 
 

@@ -55,6 +55,6 @@ for(let i = 0; i < 5; i++) {
 
 setTimeout(()=>{
 	clients[4].send(JSON.stringify({
-		event: 'cardMove', from: {type: 'hand'}
+		event: 'cardMove', from: {type: 'pile', pileIndex: 0, cardIndex: 0}
 	}))
 }, 200)

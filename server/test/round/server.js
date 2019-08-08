@@ -8,6 +8,7 @@ const WebSocket = require('ws')
 const safeJsonParse = require('../../utility/safeJsonParse.js')
 const { draw, getNewRound }  = require('../../utility/round.js')
 const Recipient = require('../../recipient.js')
+const { getSpokenCard, printRound } = require('./printUtil.js')
 
 
 
@@ -65,11 +66,12 @@ function getCardMoveListener(round, conn) {
 		if(message == undefined || message.event != 'cardMove') { return }
 		let cardIdentity
 		if(message.from.type == 'hand') {
-			if(typeof message.from.cardIndex != 'number') {return}
+			if(typeof message.from.cardIndex != 'number') { return }
 			const hand = round.hands.get(conn)
-			if(message.from.cardIndex > 0 && message.from.cardIndex < hand.length) {
-				cardIndentity = hand.splice(message.from.cardIndex, 1)
+			if(message.from.cardIndex >= 0 && message.from.cardIndex < hand.length) {
+				cardIdentity = hand.splice(message.from.cardIndex, 1)[0]
 			}
+			//TODO: Maybe send a message back to connection if cardIndex is off.
 			else { return }
 		}
 		else if(message.from.type == 'pile') {
@@ -79,9 +81,10 @@ function getCardMoveListener(round, conn) {
 			) { return }
 			const pile = round.piles[message.from.pileIndex]
 			if(pile == undefined) { return }
-			if(message.from.cardIndex > 0 && message.from.cardIndex < round.length) {
-				cardIdentity = pile.cards.splice(message.from.cardIndex, 1).indentity
+			if(message.from.cardIndex >= 0 && message.from.cardIndex < pile.cards.length) {
+				cardIdentity = pile.cards.splice(message.from.cardIndex, 1)[0].identity
 			}
+			//TODO: Maybe send a message back to connection if cardIndex is off.
 			else { return }
 		}
 		else if(message.from.type == 'deck') {
@@ -89,7 +92,8 @@ function getCardMoveListener(round, conn) {
 		}
 		else { return }
 
-		console.log(cardIdentity)
+		console.log(getSpokenCard(cardIdentity))
+		printRound(round)
 	}
 	return cardMoveListener
 }
@@ -105,6 +109,7 @@ function getPlayListeners(round, conn) {
 
 setTimeout(() => {
 	const round = getNewRound(connections)
+	printRound(round)
 
 	connections.forEach( (conn) => {
 		const player = new Recipient(conn, getPlayListeners(round, conn))

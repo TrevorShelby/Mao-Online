@@ -27,28 +27,58 @@ round = {
 
 CLIENT
 event: 'cardMove',
-id: 0,
 from: {type: 'hand', index: 0},
 to: {type: 'pile', index: 0, isFaceUp: true}
 
-SERVER
-event: 'ack',
-id: 0
-
 
 CLIENT
-event: 'cardMove',
-id: 1
+event: 'cardMove'
 from: {type: 'deck'},
 to: {type: 'hand'}
 
-SERVER
-event: 'ack',
-id: 1,
-cardIdentity: {value: 0, rank: 0, suit: 0}
 
 
 
+
+
+should clients be required to be up-to-date on previous events? 
+
+
+
+CLIENT AT SEAT 0
+event: 'cardMove',
+order: 0, //if answer yes
+data: {
+	from: {type: 'deck'},
+	to: {type: 'hand'}
+}
+
+//client at seat 0 still needs to know card, and all clients need to acknowledge message(?)
+SERVER (to all)
+event: 'cardMoved',
+order: 0,
+data: {
+	from: {type: 'deck'}
+	to: {type: 'hand', handSeat: 0}
+}
+
+
+
+better idea: have the server send out each event with its order. the client can keep track of the order of events by themselves. Then, whenever the client receives an event, they can check if there's a gap between the last event and the one they just recieved. If there is, they can make a request to the server for the event corresponding to the missing order number.
+
+CLIENT AT SEAT 0
+action: 'moveCard',
+from: {type: 'deck'},
+to: {type: 'hand'}
+
+SERVER (to all)
+event: 'cardMoved',
+order: 0,
+data: {
+	from: {type: 'deck'},
+	to: {type: 'hand'},
+	by: 0 //earlier client's seat number
+}
 
 
 

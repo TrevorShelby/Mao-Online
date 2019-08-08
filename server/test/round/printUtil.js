@@ -1,12 +1,9 @@
-const rankNames = [
-	'ace', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'jack', 'queen',
-	'king'
-]
-const suitNames = ['diamonds', 'clubs', 'hearts', 'spades']
+const rankNames = ['A','2','3','4','5','6','7','8','9','T','J','Q','K']
+const suitNames = ['♦', '♣', '♥', '♠']
 function getSpokenCard(card) {
 	const rankName = rankNames[card.rank]
 	const suitName = suitNames[card.suit]
-	return rankName + ' of ' + suitName
+	return rankName + suitName
 }
 
 
@@ -16,7 +13,7 @@ function printRound(round) {
 		const spokenCards = []
 		pile.cards.forEach( ({isFaceUp, identity}) => {
 			const spokenIdentity = getSpokenCard(identity)
-			spokenCards.push({isFaceUp, spokenIdentity})
+			spokenCards.push({isFaceUp, identity: spokenIdentity})
 		})
 		if(pile.owner != undefined) { console.log(pile.owner) }
 		else { console.log('discard') }
@@ -30,7 +27,7 @@ function printRound(round) {
 		hand.forEach( (cardIdentity) => {
 			spokenHand.push(getSpokenCard(cardIdentity))
 		})
-		console.log([playerNum, spokenHand])
+		console.log(playerNum + ': ' + spokenHand.join('  '))
 		playerNum++
 	})
 	console.log('\n')

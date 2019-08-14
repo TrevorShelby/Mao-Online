@@ -64,16 +64,35 @@ data: {
 
 
 
-better idea: have the server send out each event with its order. the client can keep track of the order of events by themselves. Then, whenever the client receives an event, they can check if there's a gap between the last event and the one they just recieved. If there is, they can make a request to the server for the event corresponding to the missing order number.
+better idea: have the server send out each event with its order. the client can keep track of the order of events by themselves. then, whenever the client receives an event, they can check if there's a gap between the last event and the one they just recieved. if there is, they can make a request to the server for the event corresponding to the missing order number.
 
-CLIENT AT SEAT 0
+SEAT 0
 action: 'moveCard',
+ackUUID: string,
 from: {type: 'deck'},
 to: {type: 'hand'}
 
-SERVER (to all)
-event: 'cardMoved',
+//there needs to be something that tells the client which message of their's is being acknowledged.
+//actually, maybe not. it seems WebSocket messages can't come out of order.
+//https://stackoverflow.com/a/11809503 ,  https://stackoverflow.com/a/9283222
+//but what happens if the acknowledgement message isn't received?
+//also, do acknowledgements need an order? it might not otherwise be possible for the client to associate their action to the corresponding event. could it be possible for a different event to be sent after acknowledgement for an action but before its corresponding event?
+
+//the order number has to be client dependent.
+//what happens if this message drops? is it up to client to request missing event (as like 'better idea' section suggests)
+SERVER (to SEAT 0)
+event: 'ack',
+ackUUID: string,
 order: 0,
+data: {
+	wasSuccess: true, //necessary(?)
+	cardIdentity: {value: 0, rank: 0, suit: 0},
+	cardIndex: 7
+}
+
+SERVER (to all other seats)
+event: 'cardMoved',
+order: 0, //dependent on each seat. might not be 0 for, say, seat 2.
 data: {
 	from: {type: 'deck'},
 	to: {type: 'hand'},
@@ -252,3 +271,96 @@ The winning player can remove an old rule from a past round, moving the game fro
 
 
 
+
+
+
+!!!CARD MOVING!!!
+This dialogue is always between seat 0 and server. The server is never talking to someone else in these examples. This also means that some of these messages (the ones the server sends without corresponding seat 0 action) wouldn't have client ack-uuid attached to them.
+
+
+SEAT 0 Draws Card
+-----------------
+SEAT 0
+from: {type: 'deck'},
+to: {type: 'hand'}
+
+SERVER
+cardIdentity: {value: 0, rank: 0, suit: 0},
+cardIndex: 7 //probably not necessary
+
+
+SEAT 1 Draws Card
+-----------------
+SERVER
+from: {type: 'deck'},
+to: {type: 'hand'},
+by: 1
+
+
+SEAT 0 Plays Card (Actionless)
+------------------------------
+SEAT 0
+from: {type: 'hand', cardIndex: 6},
+to: {type: 'pile', pileIndex: 0, cardIndex: 1, isFaceUp: true},
+
+SERVER
+(message sent, but this field is undefined)
+
+
+SEAT 1 Plays Card (Actionless)
+------------------------------
+SERVER
+cardIdentity: {value: 0, rank: 0, suit: 0},
+from: {type: 'hand'},
+to: {type: 'pile', pileIndex: 0, cardIndex: 1, isFaceUp: true},
+by: 1
+
+
+SEAT 0 Plays Card (With Action)
+-------------------------------
+SEAT 0
+from: {type: 'hand', cardIndex: 6},
+to: {type: 'pile', pileIndex: 0, cardIndex: 1, isFaceUp: true},
+action: 'I say "ace of spades"'
+
+SERVER
+(message sent, but this field is undefined)
+
+
+SEAT 1 Plays Card (With Action)
+-------------------------------
+SERVER
+cardIdentity: {value: 39, rank: 0, suit: 3},
+action: 'I say "ace of spades"'
+from: {type: 'hand'},
+to: {type: 'pile', pileIndex: 0, cardIndex: 1, isFaceUp: true},
+by: 1
+
+
+SEAT 0 Takes Unflipped Card From Discard (Actionless)
+-----------------------------------------------------
+SEAT 0
+from: {type: 'pile', pileIndex: 0, cardIndex: 0},
+to: {type: 'hand'}
+
+SERVER
+cardIndex: 7
+
+
+SEAT 0 Takes Flipped Card From Discard (Actionless)
+---------------------------------------------------
+SEAT 0
+from: {type: 'pile', pileIndex: 0, cardIndex: 1},
+to: {type: 'hand'}
+
+SERVER
+cardIdentity: {value: 0, rank: 0, suit: 0},
+cardIndex: 7
+
+
+Seat 1 Takes Card From Discard (Actionless)
+-------------------------------------------
+SERVER
+from: {type: 'pile', pileIndex: 0, cardIndex: 0},
+to: {type: 'hand'},
+by: 1

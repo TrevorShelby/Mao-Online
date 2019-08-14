@@ -47,16 +47,9 @@ function createClient({port, name='client', clientDoesLog=true}) {
 
 
 
-const clients = []
-const options = {port: 1258}
-for(let i = 0; i < 5; i++) {
-	clients.push(createClient(options))
-}
+const client = createClient({port: 1258})
 
-setTimeout(()=>{
-	clients[0].send(JSON.stringify({
-		event: 'cardMove',
-		from: {type: 'pile', pileIndex: 0, cardIndex: 0},
-		to: {}
-	}))
-}, 200)
+client.on('open', () => {
+	client.send(JSON.stringify({event: 'ping', ackUUID: 'hello'}))
+	client.send(JSON.stringify({event: 'ping', ackUUID: 'hey'}))
+})

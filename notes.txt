@@ -68,7 +68,7 @@ better idea: have the server send out each event with its order. the client can 
 
 SEAT 0
 action: 'moveCard',
-ackUUID: string,
+ackUID: 0,
 from: {type: 'deck'},
 to: {type: 'hand'}
 
@@ -82,7 +82,7 @@ to: {type: 'hand'}
 //what happens if this message drops? is it up to client to request missing event (as like 'better idea' section suggests)
 SERVER (to SEAT 0)
 event: 'ack',
-ackUUID: string,
+ackUID: 0,
 order: 0,
 data: {
 	wasSuccess: true, //necessary(?)
@@ -278,8 +278,8 @@ The winning player can remove an old rule from a past round, moving the game fro
 This dialogue is always between seat 0 and server. The server is never talking to someone else in these examples. This also means that some of these messages (the ones the server sends without corresponding seat 0 action) wouldn't have client ack-uid attached to them.
 
 
-SEAT 0 Draws Card
------------------
+SEAT 0 Draws Card (Actionless)
+------------------------------
 SEAT 0
 from: {type: 'deck'},
 to: {type: 'hand'}
@@ -289,8 +289,8 @@ cardIdentity: {value: 0, rank: 0, suit: 0},
 cardIndex: 7 //probably not necessary
 
 
-SEAT 1 Draws Card
------------------
+SEAT 1 Draws Card (Actionless)
+------------------------------
 SERVER
 from: {type: 'deck'},
 to: {type: 'hand'},
@@ -387,3 +387,95 @@ Game and chat ordering should be independent from one another.
 
 
 Right now (August 14), I need to create card moving action listeners that keep track of order and forward event notifications to all other seats.
+
+
+
+layers
+
+onMessage
+	onAction
+	onStateReq
+
+
+
+onMessage
+{
+	type: 'action',
+	ackUID: 0,
+	data: {
+		type: 'moveCard',
+		data: {
+			from: {type: 'deck'},
+			to: {type: 'hand'}
+		}
+	}
+}
+
+
+onAction
+{
+	type: 'moveCard',
+	data: {
+		from: {type: 'deck'},
+		to: {type: 'hand'}
+	}
+}
+
+won't continue if type 
+
+
+
+
+
+
+
+
+
+chat
+
+moving cards between hands, pile, and decks with an optional said action during play (e.g. "I say 'two of spades'")
+
+accusing a different player during play
+
+accepting an accusation and taking a penalty (as accused)
+
+cancelling an accusation and taking a penalty (as accuser)
+
+rule-writing after round
+
+in-game round loop (new round > play ... > accusation > play ... > end round > rule writing > new round)
+
+
+
+
+1-1: For each x there is a y, and for each y there is an x.
+1-n: For each x there are some y's, and for each y there is an x.
+
+Tables and rounds are 1-1s
+Tables and player indexes are 1-ns
+Tables and players are 1-ns
+Players of a specific table and player indexes of the same table are 1-1s
+Player indexes of a specific table and hands of the round of the same table are 1-1s
+Action pools and 'table'-'player index' pairs are 1-1s
+Player listeners and players are 1-1s
+Player listeners and action pools are 1-1s
+
+
+this is to help execute on actions. for now they will be maps, as that's all that's necessary, however, each relationship given can be modeled with a bi-map as well.
+pretty sure actions in action pools know their round and playerIndex.
+
+
+rounds = <tableIndex, round>
+getRound(tableIndex) -> round
+
+playerIndexes = <round, playerIndex[]>
+getPlayerIndexes(round) -> playerIndex
+
+actionPools = <round, <playerIndex, actionPool>>
+getActionPool(round, playerIndex) -> actionPool
+
+playerConnections = <round, <playerIndex, playerConnection>>
+getPlayerConnection(round, playerIndex) -> playerConnection
+
+playerListeners = <round, <playerIndex, playerListener>>
+getPlayerListener(round, playerIndex) -> playerListener

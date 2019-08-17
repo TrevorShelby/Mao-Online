@@ -275,7 +275,7 @@ The winning player can remove an old rule from a past round, moving the game fro
 
 
 !!!CARD MOVING!!!
-This dialogue is always between seat 0 and server. The server is never talking to someone else in these examples. This also means that some of these messages (the ones the server sends without corresponding seat 0 action) wouldn't have client ack-uuid attached to them.
+This dialogue is always between seat 0 and server. The server is never talking to someone else in these examples. This also means that some of these messages (the ones the server sends without corresponding seat 0 action) wouldn't have client ack-uid attached to them.
 
 
 SEAT 0 Draws Card
@@ -364,3 +364,26 @@ SERVER
 from: {type: 'pile', pileIndex: 0, cardIndex: 0},
 to: {type: 'hand'},
 by: 1
+
+
+
+
+Types of Server Messages
+
+Acknowledgement - Requires ack-uid and order
+Event Notification - Requires order
+State Response - Requires ack-uid
+
+
+Types of Client Messages (always requires ack-uid. nature of the client message.)
+
+Action
+State Request
+
+
+Game and chat ordering should be independent from one another.
+
+
+
+
+Right now (August 14), I need to create card moving action listeners that keep track of order and forward event notifications to all other seats.

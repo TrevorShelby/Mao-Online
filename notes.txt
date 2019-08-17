@@ -471,11 +471,11 @@ getRound(tableIndex) -> round
 playerIndexes = <round, playerIndex[]>
 getPlayerIndexes(round) -> playerIndex
 
-actionPools = <round, <playerIndex, actionPool>>
+actionPools = <(round, playerIndex), actionPool>
 getActionPool(round, playerIndex) -> actionPool
 
-playerConnections = <round, <playerIndex, playerConnection>>
+playerConnections = <(round, playerIndex), playerConnection>
 getPlayerConnection(round, playerIndex) -> playerConnection
 
-playerListeners = <round, <playerIndex, playerListener>>
+playerListeners = <(round, playerIndex), playerListener>
 getPlayerListener(round, playerIndex) -> playerListener

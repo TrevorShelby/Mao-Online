@@ -1,11 +1,13 @@
-const onMessage_ = require('./playerListener.js')
-const round = require('./round.js')
-const getPlayingCard = require('./playingCard.js')
+const EventEmitter = require('events')
+const WebSocket = require('ws')
+
+const createNewTable = require('./newTable.js')
 const getSpokenCard = require('./spokenCard.js')
+const safeJsonParse = require('./safeJsonParse.js')
 
 
 
-function printRound() {
+function printRound(round) {
 	const spokenHands = []
 	round.hands.forEach( (hand) => {
 		const spokenHand = []
@@ -24,6 +26,7 @@ function printRound() {
 		})
 	})
 
+	console.log()
 	console.log('hands:')
 	console.log(spokenHands)
 	console.log()
@@ -33,11 +36,41 @@ function printRound() {
 
 
 
-//Adds intial card to discard
-const cardValue = Math.floor(Math.random() * 52)
-round.piles[0].cards.push(getPlayingCard(cardValue))
+const wsServer = new WebSocket.Server({port: 1258})
 
-//JSON of action that draws a card from the deck into the player's hand
+wsServer.on('connection', (conn, req) => {
+	const playerIndex = parseInt(req.url[req.url.length - 1])
+	conn.on('message', (messageStr) => {
+		const message = safeJsonParse(messageStr)
+		if(message.ackUID != 7) { return }
+		console.log()
+		console.log(playerIndex)
+		console.log(message)
+	})
+})
+
+
+const players = [
+	new WebSocket('ws://127.0.0.1:1258?p=1'),
+	new WebSocket('ws://127.0.0.1:1258?p=2'),
+	new WebSocket('ws://127.0.0.1:1258?p=3')
+]
+const round = createNewTable(0, players)
+
+
+const playerAckUIDCount = new Map()
+//TODO: Fix. This is a lazy work-around for the actual way to do it (using relationships).
+players.forEach( (_, playerIndex) => {
+	playerAckUIDCount.set(playerIndex, 0)
+})
+
+function getAckUID(playerIndex) {
+	const ackUID = playerAckUIDCount.get(playerIndex)
+	playerAckUIDCount.set(playerIndex, ackUID + 1)
+	return ackUID
+}
+
+
 const drawAction = {
 	name: 'moveCard',
 	data: {
@@ -45,54 +78,37 @@ const drawAction = {
 		to: {source: 'hand'}
 	}
 }
-
-//Draws 7 cards for each 4 players
-const playerListeners = []
-for(let handNum = 0; handNum < 4; handNum++) {
-	const onMessage = onMessage_(handNum)
-	playerListeners.push(onMessage)
-	const hand = []
-	round.hands.push(hand)
-	for(let cardNum = 0; cardNum < 7; cardNum++) {
-		onMessage(JSON.stringify({
-			type: 'action',
-			ackUID: cardNum,
-			data: drawAction
-		}))
+function getPlayAction(cardIndex) {
+	const topCardIndex = round.piles[0].cards.length
+	return {
+		name: 'moveCard',
+		data: {
+			from: {source: 'hand', cardIndex},
+			to: {source: 'pile', pileIndex: 0, cardIndex: topCardIndex}
+		}
 	}
 }
 
-printRound()
-console.log()
-
-
-//JSON of action that plays a card from the player's hand into the dekc
-const playAction = {
-	name: 'moveCard',
-	data: {
-		from: {source: 'hand', cardIndex: 6},
-		to: {source: 'pile', pileIndex: 0, cardIndex: 0},
-
-	}
+function doAction(playerIndex, action) {
+	const player = players[playerIndex]
+	const ackUID = getAckUID(playerIndex)
+	player.emit('message', JSON.stringify({
+		type: 'action',
+		ackUID,
+		data: action
+	}))
 }
-playerListeners[0](JSON.stringify({
-	type: 'action',
-	ackUID: 7,
-	data: playAction
-}))
-printRound()
 
 
-const takeAction = {
-	name: 'moveCard',
-	data: {
-		from: {source: 'pile', pileIndex: 0, cardIndex: 1},
-		to: {source: 'hand'}
+
+setTimeout( () => {
+	for(let playerIndex = 0; playerIndex < 3; playerIndex++) {
+		for(let cardNum = 0; cardNum < 7; cardNum++) {
+			doAction(playerIndex, drawAction)
+		}
 	}
-}
-playerListeners[3](JSON.stringify({
-	type: 'action',
-	ackUID: 7,
-	data: takeAction
-}))
-printRound()
+	printRound(round)
+
+	doAction(0, getPlayAction(6))
+	printRound(round)
+}, 100)

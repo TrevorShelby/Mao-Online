@@ -46,7 +46,10 @@ function createNewTable(tableIndex, players) {
 			const message = safeJsonParse(messageStr)
 			if(typeof message != 'object') { return }
 
-			if(message.type == 'action' && typeof message.data == 'object') {
+			if(
+				message.type == 'action' && typeof message.data == 'object'
+				&& typeof message.data.data == 'object'
+			) {
 				const { name, data } = message.data
 				for(actionName in actionPool) {
 					if(name == actionName) {

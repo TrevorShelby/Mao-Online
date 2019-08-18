@@ -1,5 +1,5 @@
 const getPlayingCard = require('../playingCard.js')
-const sendMessage_ = require('../sendMessage.js')
+const { sendAck_, sendEvent_ } = require('../sendMessage.js')
 const { playerIndexes } = require('../relationships.js')
 
 
@@ -7,21 +7,9 @@ const { playerIndexes } = require('../relationships.js')
 //TODO: Fix. A valid from object and an invalid to object will end with the function removing the
 //card from the round without placing it anywhere. What should happen instead is nothing.
 function moveCard_(round, playerIndex) {
-	const sendAck = (ackUID, data) => {
-		const message = {type: 'ack', ackUID, data}
-		return sendMessage_(round, playerIndex)(message)
-	}
-	const sendEvent = (data) => {
-		const message = {type: 'event', name: 'cardMoved', data}
-		playerIndexes.get(round).forEach( (otherPlayerIndex) => {
-			if(playerIndex == otherPlayerIndex) { return }
-			//this output of sendMessage_ shouldn't be stored outside of sendEvent for optimiz-
-			//-ation, due to the possibility that it could become outdated by the time it needs to
-			//be used.
-			sendMessage_(round, otherPlayerIndex)(message)
-		})
-	}
-	function moveCard(ackUID, {from, to, action}) {
+	const sendAck = sendAck_(round, playerIndex)
+	const sendEvent = sendEvent(round, playerIndex)
+	function moveCard(ackUID, {from, to, action}={}) {
 		if(typeof from != 'object' || typeof to != 'object') { return }
 		if(from.source == 'hand' && to.source == 'hand') { return }
 		if(

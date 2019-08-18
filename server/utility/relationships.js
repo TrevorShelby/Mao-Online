@@ -13,9 +13,13 @@ const playerConnections = new Map()
 //rounds and player indexes to message histories
 const messageHistories = new Map()
 
+//rounds to chatlogs
+const chatLogs = new Map()
+
 
 module.exports.rounds = rounds
 module.exports.playerIndexes = playerIndexes
 module.exports.actionPools = actionPools
 module.exports.playerConnections = playerConnections
 module.exports.messageHistories = messageHistories
+module.exports.chatLogs = chatLogs

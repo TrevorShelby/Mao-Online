@@ -1,6 +1,7 @@
 const WebSocket = require('ws')
 
-const createNewTable = require('../../utility/newTable.js')
+const { createNewGame, createPlayerActionPools } = require('../../utility/newGame.js')
+const playerActionPools = require('../../utility/playerActionPools.js')
 const getSpokenCard = require('../../utility/spokenCard.js')
 const safeJsonParse = require('../../utility/safeJsonParse.js')
 
@@ -26,6 +27,7 @@ function printRound(round) {
 	})
 
 	console.log()
+	console.log()
 	console.log('hands:')
 	console.log(spokenHands)
 	console.log()
@@ -38,10 +40,10 @@ function printRound(round) {
 const wsServer = new WebSocket.Server({port: 1258})
 
 wsServer.on('connection', (conn, req) => {
-	const playerIndex = parseInt(req.url[req.url.length - 1])
+	const playerID = parseInt(req.url[req.url.length - 1])
 	conn.on('message', (messageStr) => {
 		const message = safeJsonParse(messageStr)
-		const isRepeatEvent = message.ackUID == undefined && playerIndex != 2
+		const isRepeatEvent = message.ackUID == undefined && playerID != 2
 		const isAssumed = message.order < 21
 		if(
 			isRepeatEvent || isAssumed
@@ -51,29 +53,30 @@ wsServer.on('connection', (conn, req) => {
 			message.data.card = getSpokenCard(message.data.card)
 		}
 		console.log()
-		console.log('seat ' + playerIndex)
+		console.log('seat ' + playerID)
 		console.log(message)
 	})
 })
 
 
+const tableID = 0
 const players = [
 	new WebSocket('ws://127.0.0.1:1258?p=0'),
 	new WebSocket('ws://127.0.0.1:1258?p=1'),
 	new WebSocket('ws://127.0.0.1:1258?p=2')
 ]
-const round = createNewTable(0, players)
+const game = createNewGame(tableID, players)
+createPlayerActionPools(tableID)
 
 
 const playerAckUIDCount = new Map()
-//TODO: Fix. This is a lazy work-around for the actual way to do it (using relationships).
-players.forEach( (_, playerIndex) => {
-	playerAckUIDCount.set(playerIndex, 0)
+game.round.seating.forEach( (playerID, seat) => {
+	if(playerID != undefined) {playerAckUIDCount.set(seat, 0)}
 })
 
-function getAckUID(playerIndex) {
-	const ackUID = playerAckUIDCount.get(playerIndex)
-	playerAckUIDCount.set(playerIndex, ackUID + 1)
+function getAckUID(seat) {
+	const ackUID = playerAckUIDCount.get(seat)
+	playerAckUIDCount.set(seat, ackUID + 1)
 	return ackUID
 }
 
@@ -86,7 +89,7 @@ const drawAction = {
 	}
 }
 function getPlayAction(cardIndex) {
-	const topCardIndex = round.piles[0].cards.length
+	const topCardIndex = game.round.piles[0].cards.length
 	return {
 		name: 'moveCard',
 		data: {
@@ -95,18 +98,21 @@ function getPlayAction(cardIndex) {
 		}
 	}
 }
-const topCardIndex = round.piles[0].cards.length
-takeTopCardAction = {
-	name: 'moveCard',
-	data: {
-		from: {source: 'pile', pileIndex: 0, cardIndex: topCardIndex},
-		to: {source: 'hand'}
+function getTakeAction() {
+	const topCardIndex = game.round.piles[0].cards.length - 1
+	return {
+		name: 'moveCard',
+		data: {
+			from: {source: 'pile', pileIndex: 0, cardIndex: topCardIndex},
+			to: {source: 'hand'}
+		}
 	}
 }
 
-function doAction(playerIndex, action) {
-	const player = players[playerIndex]
-	const ackUID = getAckUID(playerIndex)
+
+function doAction(seat, action) {
+	const player = players[seat]
+	const ackUID = getAckUID(seat)
 	player.emit('message', JSON.stringify({
 		type: 'action',
 		ackUID,
@@ -117,19 +123,20 @@ function doAction(playerIndex, action) {
 
 
 setTimeout( () => {
-	for(let playerIndex = 0; playerIndex < 3; playerIndex++) {
+
+	for(let seat = 0; seat < 3; seat++) {
 		for(let cardNum = 0; cardNum < 7; cardNum++) {
-			doAction(playerIndex, drawAction)
+			doAction(seat, drawAction)
 		}
 	}
-	printRound(round)
+	printRound(game.round)
 
 	doAction(0, getPlayAction(6))
-	printRound(round)
+	printRound(game.round)
 
-	doAction(1, takeTopCardAction)
-	printRound(round)
+	doAction(1, getTakeAction())
+	printRound(game.round)
 
 	doAction(1, drawAction)
-	printRound(round)
+	printRound(game.round)
 }, 100)

@@ -556,20 +556,19 @@ should accusation need a reason? on the one hand, it's useful historically; if a
 
 games: <tableID*, game>
 game: {
+	playerConnections,
 	round,
 	chatLog,
-	seating,
-	connections,
 	messageHistories
 }
 
-round: {
-	hands,
-	piles
-}
+playerConnections: <playerID*, WebSocket>
+
+round: { hands, piles, seating }
 hands: <seat*, card[]>
 piles: pile[]
-pile: { owner: seat* (or playerID*?), cards: card[] }
+pile: { owner: seat*, cards: card[] }
+seating: <playerID*, seat*> (modeled as array, with playerIDs as elements, and seats as indexes)
 
 chatLog: chat[]
 chat: {
@@ -578,15 +577,14 @@ chat: {
 	timestamp: number
 }
 
-seating: <playerID*, seat*>
-
-connections: <playerID*, WebSocket>
-
 messageHistories: <playerID*, messageHistory>
 messageHistory: messages[]
 
 
-activeActionPools: actionPool[]
-actionPools: actionPool[]
-actionPool: <actionName*, action>
+actionPools: <playerID*, playerActionPools>
+playerActionPools: {
+	total: actionPool,
+	active: actionPool
+}
+actionPool: <actionName*, action> (modeled as an object, as actionName is represented by string)
 action: Function(ackUID*, data)

@@ -1,15 +1,17 @@
 const WebSocket = require('ws')
 
-const createNewTable = require('../../utility/newTable.js')
+const { createNewGame, createPlayerActionPools } = require('../../utility/newGame.js')
 const safeJsonParse = require('../../utility/safeJsonParse.js')
-const { chatLogs } = require('../../utility/relationships.js')
+const games = require('../../utility/games.js')
 
 
 
-function printChatLog(chatLog) {
+function printChatLog({chatLog, round: {seating}}) {
 	console.log()
 	chatLog.forEach( (chat) => {
-		console.log('seat ' +  chat.by + ': ' + chat.quote)
+		const speakingSeat = seating.indexOf(chat.by)
+		const datetime = new Date(chat.timestamp)
+		console.log(' seat ' +  speakingSeat + ': ' + chat.quote)
 	})
 }
 
@@ -17,26 +19,27 @@ function printChatLog(chatLog) {
 const wsServer = new WebSocket.Server({port: 1258})
 
 wsServer.on('connection', (conn, req) => {
-	const playerIndex = parseInt(req.url[req.url.length - 1])
+	const seat = parseInt(req.url[req.url.length - 1])
 	conn.on('message', (messageStr) => {
 		const message = safeJsonParse(messageStr)
-		const isRepeatEvent = message.ackUID == undefined && playerIndex != 2
+		const isRepeatEvent = message.ackUID == undefined && seat != 2
 		if(isRepeatEvent) { return }
 
 		console.log()
-		console.log('seat ' + playerIndex)
+		console.log('seat ' + seat)
 		console.log(message)
 	})
 })
 
 
+const tableID = 0
 const players = [
 	new WebSocket('ws://127.0.0.1:1258?p=0'),
 	new WebSocket('ws://127.0.0.1:1258?p=1'),
 	new WebSocket('ws://127.0.0.1:1258?p=2')
 ]
-const round = createNewTable(0, players)
-const chatLog = chatLogs.get(round)
+createNewGame(tableID, players)
+const game = createPlayerActionPools(tableID)
 
 
 const playerAckUIDCount = new Map()
@@ -72,5 +75,5 @@ setTimeout( () => {
 	doAction(0, getTalkAction('hey everyone!'))
 	doAction(1, getTalkAction('hello, how is it going?'))
 	doAction(0, getTalkAction('it\'s going pretty good, thank you.'))
-	printChatLog(chatLog)
+	printChatLog(game)
 }, 100)

@@ -5,9 +5,9 @@ const { sendAck_, sendEvent_ } = require('../sendMessage.js')
 
 //TODO: Fix. A valid from object and an invalid to object will end with the function removing the
 //card from the round without placing it anywhere. What should happen instead is nothing.
-function moveCard_(round, playerIndex) {
-	const sendAck = sendAck_(round, playerIndex)
-	const sendEvent = sendEvent_(round, playerIndex)
+function moveCard_(game, playerID) {
+	const sendAck = sendAck_(game, playerID)
+	const sendEvent = sendEvent_(game, playerID)
 	function moveCard(ackUID, {from, to, action}={}) {
 		if(typeof from != 'object' || typeof to != 'object') { return }
 		if(from.source == 'hand' && to.source == 'hand') { return }
@@ -16,6 +16,8 @@ function moveCard_(round, playerIndex) {
 			&& from.pileIndex == to.pileIndex && from.cardIndex == to.cardIndex
 		) { return }
 		if(from.source == 'deck' && to.source == 'deck') { return }
+		const round = game.round
+		const seat = round.seating.indexOf(playerID)
 
 		//getCard is assigned instead of card, so that if an invalid 'to' object is supplied, the
 		//card won't already be taken from its place. In other words, if card was assigned instead,
@@ -24,15 +26,15 @@ function moveCard_(round, playerIndex) {
 		//of this action that gets forwarded to them.
 		let getCard, eventFrom
 		if(from.source == 'hand') {
-			const hand = round.hands[playerIndex]
+			const hand = round.hands[seat]
 			if(!isValidIndex(from.cardIndex, hand)) { return }
 			getCard = () => {return hand.splice(from.cardIndex, 1)[0]}
-			eventFrom = {source: 'hand', length: hand.length}
+			eventFrom = {source: 'hand', length: hand.length - 1}
 		}
 		else if(from.source == 'pile') {
 			if(!isValidIndex(from.pileIndex, round.piles)) { return }
 			const pile = round.piles[from.pileIndex]
-			if(!isValidIndex(from.cardIndex, pile)) { return }
+			if(!isValidIndex(from.cardIndex, pile.cards)) { return }
 			getCard = () => {return pile.cards.splice(from.cardIndex, 1)[0]}
 			eventFrom = from
 		}
@@ -47,7 +49,7 @@ function moveCard_(round, playerIndex) {
 		else { return }
 
 		if(to.source == 'hand') {
-			const hand = round.hands[playerIndex]
+			const hand = round.hands[seat]
 			const card = getCard()
 			const cardIndex = hand.push(card) - 1
 
@@ -55,7 +57,7 @@ function moveCard_(round, playerIndex) {
 			const data = {
 				from: from, //from-source can't be hand if to-source is. no eventFrom necessary.
 				to: {source: 'hand', length: hand.length},
-				by: playerIndex
+				by: seat
 			}
 			if(from.source != 'deck') { data.card = card }
 			sendEvent('cardMoved', data)
@@ -76,7 +78,7 @@ function moveCard_(round, playerIndex) {
 				card,
 				from: eventFrom,
 				to,
-				by: playerIndex
+				by: seat
 			})
 		}
 		else if(to.source == 'deck') {
@@ -85,12 +87,14 @@ function moveCard_(round, playerIndex) {
 			sendEvent('cardMoved', {
 				from: eventFrom,
 				to,
-				by: playerIndex
+				by: seat
 			})
 		}
 		//TODO: Might require removing or changing
 		else { return }
 	}
+
+
 	return moveCard
 }
 
@@ -102,4 +106,4 @@ function isValidIndex(index, array) {
 }
 
 
-module.exports= moveCard_
+module.exports = moveCard_

@@ -123,7 +123,6 @@ function doAction(seat, action) {
 
 
 setTimeout( () => {
-
 	for(let seat = 0; seat < 3; seat++) {
 		for(let cardNum = 0; cardNum < 7; cardNum++) {
 			doAction(seat, drawAction)

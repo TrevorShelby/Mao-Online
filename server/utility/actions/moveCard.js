@@ -8,7 +8,7 @@ const { sendAck_, sendEvent_ } = require('../sendMessage.js')
 function moveCard_(game, playerID) {
 	const sendAck = sendAck_(game, playerID)
 	const sendEvent = sendEvent_(game, playerID)
-	function moveCard(ackUID, {from, to, action}={}) {
+	function moveCard(ackUID, {from, to}={}) {
 		if(typeof from != 'object' || typeof to != 'object') { return }
 		if(from.source == 'hand' && to.source == 'hand') { return }
 		if(

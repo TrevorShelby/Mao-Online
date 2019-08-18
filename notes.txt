@@ -293,7 +293,7 @@ SEAT 1 Draws Card (Actionless)
 ------------------------------
 SERVER
 from: {type: 'deck'},
-to: {type: 'hand'},
+to: {type: 'hand', length: 8},
 by: 1
 
 
@@ -362,7 +362,7 @@ Seat 1 Takes Card From Discard (Actionless)
 -------------------------------------------
 SERVER
 from: {type: 'pile', pileIndex: 0, cardIndex: 0},
-to: {type: 'hand'},
+to: {type: 'hand', length: 7},
 by: 1
 
 
@@ -479,3 +479,59 @@ getPlayerConnection(round, playerIndex) -> playerConnection
 
 playerListeners = <(round, playerIndex), playerListener>
 getPlayerListener(round, playerIndex) -> playerListener
+
+
+
+Y = card is shown to other players during moving
+N = card is not shown to other players during moving
+X = not a possible move combination
+
+					  to
+		      hand | pile | deck
+		hand    X  |   Y  |  N
+from	pile    Y  |   Y  |  Y
+		deck    N  |   Y  |  X
+
+
+//'by' property omitted for brevity
+moveCard event format
+
+hand-pile: {
+	from: {source, length},
+	to: {source, pileIndex, cardIndex},
+	card: {value, rank, suit}
+}
+
+hand-deck: {
+	from: {source, length},
+	to: {source}
+}
+
+pile-hand: {
+	from: {source, pileIndex, cardIndex},
+	to: {source, length},
+	card
+}
+
+pile-pile: {
+	from: {source, pileIndex, cardIndex},
+	to: {source, pileIndex, cardIndex},
+	card
+}
+
+pile-deck: {
+	from: {source, pileIndex, cardIndex},
+	to: {source},
+	card
+}
+
+deck-hand: {
+	from: {source},
+	to: {source, length}
+}
+
+deck-pile: {
+	from: {source},
+	to: {source, pileIndex, cardIndex},
+	card
+}

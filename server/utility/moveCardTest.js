@@ -4,6 +4,7 @@ const WebSocket = require('ws')
 const createNewTable = require('./newTable.js')
 const getSpokenCard = require('./spokenCard.js')
 const safeJsonParse = require('./safeJsonParse.js')
+const { messageHistories } = require('./relationships.js')
 
 
 
@@ -42,18 +43,26 @@ wsServer.on('connection', (conn, req) => {
 	const playerIndex = parseInt(req.url[req.url.length - 1])
 	conn.on('message', (messageStr) => {
 		const message = safeJsonParse(messageStr)
-		if(message.ackUID != 7) { return }
+		const isRepeatEvent = message.ackUID == undefined && playerIndex != 2
+		const isAssumed = message.order < 21
+		if(
+			isRepeatEvent || isAssumed
+		) { return }
+
+		if(message.data.card != undefined) {
+			message.data.card = getSpokenCard(message.data.card)
+		}
 		console.log()
-		console.log(playerIndex)
+		console.log('seat ' + playerIndex)
 		console.log(message)
 	})
 })
 
 
 const players = [
+	new WebSocket('ws://127.0.0.1:1258?p=0'),
 	new WebSocket('ws://127.0.0.1:1258?p=1'),
-	new WebSocket('ws://127.0.0.1:1258?p=2'),
-	new WebSocket('ws://127.0.0.1:1258?p=3')
+	new WebSocket('ws://127.0.0.1:1258?p=2')
 ]
 const round = createNewTable(0, players)
 
@@ -88,6 +97,14 @@ function getPlayAction(cardIndex) {
 		}
 	}
 }
+const topCardIndex = round.piles[0].cards.length
+takeTopCardAction = {
+	name: 'moveCard',
+	data: {
+		from: {source: 'pile', pileIndex: 0, cardIndex: topCardIndex},
+		to: {source: 'hand'}
+	}
+}
 
 function doAction(playerIndex, action) {
 	const player = players[playerIndex]
@@ -110,5 +127,11 @@ setTimeout( () => {
 	printRound(round)
 
 	doAction(0, getPlayAction(6))
+	printRound(round)
+
+	doAction(1, takeTopCardAction)
+	printRound(round)
+
+	doAction(1, drawAction)
 	printRound(round)
 }, 100)

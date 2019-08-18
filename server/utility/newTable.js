@@ -1,7 +1,7 @@
 const { 
 	rounds, playerIndexes, actionPools, playerConnections, messageHistories
 } = require('./relationships.js')
-const { moveCard_ } = require('./actions.js')
+const moveCard_ = require('./actions/moveCard.js')
 const safeJsonParse = require('./safeJsonParse.js')
 const getPlayingCard = require('./playingCard.js')
 
@@ -9,9 +9,9 @@ const getPlayingCard = require('./playingCard.js')
 
 function createNewTable(tableIndex, players) {
 	const hands = []
-	const playerIndexes = []
+	const roundPlayerIndexes = []
 	for(let playerIndex = 0; playerIndex < players.length; playerIndex++) {
-		playerIndexes.push(playerIndex)
+		roundPlayerIndexes.push(playerIndex)
 		hands.push([])
 	}
 	const topCard = getPlayingCard(Math.floor(Math.random() * 52))
@@ -20,6 +20,8 @@ function createNewTable(tableIndex, players) {
 
 	rounds.set(tableIndex, round)
 
+
+	playerIndexes.set(round, roundPlayerIndexes)
 
 	const roundMessageHistories = new Map()
 	messageHistories.set(round, roundMessageHistories)
@@ -30,7 +32,7 @@ function createNewTable(tableIndex, players) {
 	const roundPlayerConnections = new Map()
 	playerConnections.set(round, roundPlayerConnections)
 
-	playerIndexes.forEach( (playerIndex) => {
+	roundPlayerIndexes.forEach( (playerIndex) => {
 		roundMessageHistories.set(playerIndex, [])
 
 		const actionPool = {
@@ -44,7 +46,7 @@ function createNewTable(tableIndex, players) {
 			const message = safeJsonParse(messageStr)
 			if(typeof message != 'object') { return }
 
-			if(message.type == 'action') {
+			if(message.type == 'action' && typeof message.data == 'object') {
 				const { name, data } = message.data
 				for(actionName in actionPool) {
 					if(name == actionName) {

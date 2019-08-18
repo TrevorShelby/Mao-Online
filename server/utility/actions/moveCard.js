@@ -1,6 +1,5 @@
 const getPlayingCard = require('../playingCard.js')
 const { sendAck_, sendEvent_ } = require('../sendMessage.js')
-const { playerIndexes } = require('../relationships.js')
 
 
 
@@ -8,7 +7,7 @@ const { playerIndexes } = require('../relationships.js')
 //card from the round without placing it anywhere. What should happen instead is nothing.
 function moveCard_(round, playerIndex) {
 	const sendAck = sendAck_(round, playerIndex)
-	const sendEvent = sendEvent(round, playerIndex)
+	const sendEvent = sendEvent_(round, playerIndex)
 	function moveCard(ackUID, {from, to, action}={}) {
 		if(typeof from != 'object' || typeof to != 'object') { return }
 		if(from.source == 'hand' && to.source == 'hand') { return }
@@ -59,7 +58,7 @@ function moveCard_(round, playerIndex) {
 				by: playerIndex
 			}
 			if(from.source != 'deck') { data.card = card }
-			sendEvent(data)
+			sendEvent('cardMoved', data)
 		}
 		else if(to.source == 'pile') {
 			if(!isValidIndex(to.pileIndex, round.piles)) { return }
@@ -73,7 +72,7 @@ function moveCard_(round, playerIndex) {
 			const card = getCard()
 			pile.cards.splice(to.cardIndex, 0, card)
 			sendAck(ackUID, { card })
-			sendEvent({
+			sendEvent('cardMoved', {
 				card,
 				from: eventFrom,
 				to,
@@ -83,7 +82,7 @@ function moveCard_(round, playerIndex) {
 		else if(to.source == 'deck') {
 			const card = getCard()
 			sendAck(ackUID, { card })
-			sendEvent({
+			sendEvent('cardMoved', {
 				from: eventFrom,
 				to,
 				by: playerIndex

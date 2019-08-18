@@ -1,4 +1,4 @@
-const { playerConnections, messageHistories } = require('./relationships.js')
+const { playerConnections, messageHistories, playerIndexes } = require('./relationships.js')
 
 
 function sendMessage_(round, playerIndex) {
@@ -17,16 +17,18 @@ function sendMessage_(round, playerIndex) {
 
 
 function sendAck_(round, playerIndex) {
-	function sendAck(ackUID, data) {
-		const message = {type: 'ack', ackUID, data}
+	function sendAck(ackUID, data=undefined) {
+		const message = {type: 'ack', ackUID}
+		if(data != undefined) { message.data = data }
 		sendMessage_(round, playerIndex)(message)
 	}
 	return sendAck
 }
 
 function sendEvent_(round, playerIndex) {
-	function sendEvent(data) {
-		const message = {type: 'event', name: 'cardMoved', data}
+	function sendEvent(name, data=undefined) {
+		const message = {type: 'event', name}
+		if(data != undefined) { message.data = data }
 		playerIndexes.get(round).forEach( (otherPlayerIndex) => {
 			if(playerIndex == otherPlayerIndex) { return }
 			//this output of sendMessage_ shouldn't be stored outside of sendEvent for optimiz-

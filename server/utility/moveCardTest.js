@@ -1,10 +1,8 @@
-const EventEmitter = require('events')
 const WebSocket = require('ws')
 
 const createNewTable = require('./newTable.js')
 const getSpokenCard = require('./spokenCard.js')
 const safeJsonParse = require('./safeJsonParse.js')
-const { messageHistories } = require('./relationships.js')
 
 
 

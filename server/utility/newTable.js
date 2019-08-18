@@ -1,7 +1,8 @@
 const { 
-	rounds, playerIndexes, actionPools, playerConnections, messageHistories
+	rounds, playerIndexes, actionPools, playerConnections, messageHistories, chatLogs
 } = require('./relationships.js')
 const moveCard_ = require('./actions/moveCard.js')
+const talk_ = require('./actions/talk.js')
 const safeJsonParse = require('./safeJsonParse.js')
 const getPlayingCard = require('./playingCard.js')
 
@@ -21,6 +22,8 @@ function createNewTable(tableIndex, players) {
 	rounds.set(tableIndex, round)
 
 
+	chatLogs.set(round, [])
+
 	playerIndexes.set(round, roundPlayerIndexes)
 
 	const roundMessageHistories = new Map()
@@ -36,7 +39,8 @@ function createNewTable(tableIndex, players) {
 		roundMessageHistories.set(playerIndex, [])
 
 		const actionPool = {
-			'moveCard': moveCard_(round, playerIndex)
+			'moveCard': moveCard_(round, playerIndex),
+			'talk': talk_(round, playerIndex)
 		}
 		roundActionPools.set(playerIndex, actionPool)
 
@@ -46,10 +50,7 @@ function createNewTable(tableIndex, players) {
 			const message = safeJsonParse(messageStr)
 			if(typeof message != 'object') { return }
 
-			if(
-				message.type == 'action' && typeof message.data == 'object'
-				&& typeof message.data.data == 'object'
-			) {
+			if(message.type == 'action' && typeof message.data == 'object') {
 				const { name, data } = message.data
 				for(actionName in actionPool) {
 					if(name == actionName) {

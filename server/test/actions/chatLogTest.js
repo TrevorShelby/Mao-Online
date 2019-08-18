@@ -1,8 +1,8 @@
 const WebSocket = require('ws')
 
-const createNewTable = require('./newTable.js')
-const safeJsonParse = require('./safeJsonParse.js')
-const { chatLogs } = require('./relationships.js')
+const createNewTable = require('../../utility/newTable.js')
+const safeJsonParse = require('../../utility/safeJsonParse.js')
+const { chatLogs } = require('../../utility/relationships.js')
 
 
 

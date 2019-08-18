@@ -535,3 +535,12 @@ deck-pile: {
 	to: {source, pileIndex, cardIndex},
 	card
 }
+
+
+
+
+accusation: {
+	accuser: playerIndex,
+	accused: playerIndex,
+	start: Date
+}

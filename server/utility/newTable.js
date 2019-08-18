@@ -19,7 +19,7 @@ function createNewTable(tableIndex, players) {
 	const piles = [{owner: undefined, cards:[topCard]}]
 	const round = {hands, piles}
 
-	rounds.set(tableIndex, round)
+	rounds.set(tableIndex, round, accusation: undefined)
 
 
 	chatLogs.set(round, [])

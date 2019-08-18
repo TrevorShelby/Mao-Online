@@ -13,6 +13,11 @@ const playerIDs = new Map()
 //rounds to sets of player indexes
 const playerIndexes = new Map()
 
+//TODO: Implement this as actionPools and make actionPools into all actions a player has, whether
+//they are able to currently take them or not.
+//rounds and plaer indexes to action pools
+const activeActionPools = new Map()
+
 //rounds and player indexes to action pools
 const actionPools = new Map()
 

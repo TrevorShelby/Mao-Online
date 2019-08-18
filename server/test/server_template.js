@@ -2,7 +2,6 @@
 //This template is for testing purposes only. More specific design should be given to any
 //material that could see production.
 
-const http = require('http')
 const WebSocket = require('ws')
 
 const safeJsonParse = require('../../utility/safeJsonParse.js')
@@ -50,9 +49,7 @@ const onConnection = onConnection_({
 	callback: //add custom connection event function here
 })
 
-const server = http.createServer()
-
-const wsServer = new WebSocket.Server({server})
+const wsServer = new WebSocket.Server({port: 1258})
 wsServer.on('connection', onConnection)
 
 

@@ -544,3 +544,49 @@ accusation: {
 	accused: playerIndex,
 	start: Date
 }
+
+
+
+should accusation need a reason? on the one hand, it's useful historically; if a player is looking back on game events, they can rediscover the reasons behind an accusation. it also helps keeps things clear between players by not allowing space for assumptions as to the reason: everyone is directly made aware of the accuser's reasoning. on the other hand, it makes things slower in the cases where the accused KNOWS why they're being accused, but still has to wait for the accuser to fill out their form before they can accept.
+
+
+
+
+
+
+games: <tableID*, game>
+game: {
+	round,
+	chatLog,
+	seating,
+	connections,
+	messageHistories
+}
+
+round: {
+	hands,
+	piles
+}
+hands: <seat*, card[]>
+piles: pile[]
+pile: { owner: seat* (or playerID*?), cards: card[] }
+
+chatLog: chat[]
+chat: {
+	quote: string,
+	by: playerID*,
+	timestamp: number
+}
+
+seating: <playerID*, seat*>
+
+connections: <playerID*, WebSocket>
+
+messageHistories: <playerID*, messageHistory>
+messageHistory: messages[]
+
+
+activeActionPools: actionPool[]
+actionPools: actionPool[]
+actionPool: <actionName*, action>
+action: Function(ackUID*, data)

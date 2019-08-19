@@ -11,7 +11,7 @@ function printChatLog({chatLog, round: {seating}}) {
 	chatLog.forEach( (chat) => {
 		const speakingSeat = seating.indexOf(chat.by)
 		const datetime = new Date(chat.timestamp)
-		console.log(' seat ' +  speakingSeat + ': ' + chat.quote)
+		console.log('seat ' +  speakingSeat + ': ' + chat.quote)
 	})
 }
 
@@ -38,8 +38,8 @@ const players = [
 	new WebSocket('ws://127.0.0.1:1258?p=1'),
 	new WebSocket('ws://127.0.0.1:1258?p=2')
 ]
-createNewGame(tableID, players)
-const game = createPlayerActionPools(tableID)
+const game = createNewGame(tableID, players)
+createPlayerActionPools(tableID)
 
 
 const playerAckUIDCount = new Map()
@@ -56,7 +56,7 @@ function getAckUID(playerIndex) {
 
 
 function getTalkAction(quote) {
-	return { name: 'talk', data: quote }
+	return { name: 'talk', args: quote }
 }
 
 function doAction(playerIndex, action) {

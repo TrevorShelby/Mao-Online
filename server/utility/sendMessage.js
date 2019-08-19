@@ -1,5 +1,7 @@
-const { playerConnections, messageHistories, playerIndexes } = require('./relationships.js')
-
+//BIG TODO: Get rid of acknowledgements. Acknowledgements were created because of the realization
+//clients responsible for an action usually get different data that the clients that aren't. This
+//might not always be the case however, making acknowledgements an arbitrary split. Everything
+//should be done through events.
 
 
 function sendMessage_(game, playerID) {
@@ -33,9 +35,8 @@ function sendEvent_(game, playerID) {
 
 		game.playerConnections.forEach( (conn, otherPlayerID) => {
 			if(otherPlayerID == playerID) { return }
-			//this output of depr_sendMessage_ shouldn't be stored outside of sendEvent for optimiz-
-			//-ation, due to the possibility that it could become outdated by the time it needs to
-			//be used.
+			//this output of sendMessage_ shouldn't be stored outside of sendEvent for optimization
+			//due to the possibility that it could become outdated by the time it needs to be used.
 			sendMessage_(game, otherPlayerID)(message)
 		})
 	}

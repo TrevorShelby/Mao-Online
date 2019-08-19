@@ -74,11 +74,11 @@ function onMessage_(activeActionPool) {
 		if(typeof message != 'object') { return }
 
 		if(message.type == 'action' && typeof message.data == 'object') {
-			const { name, data } = message.data
+			const { name, args } = message.data
 			for(actionName in activeActionPool) {
-				const action = activeActionPool[actionName]
+				const action = actionName == name ? activeActionPool[actionName] : undefined
 				if(action != undefined) {
-					action(message.ackUID, data)
+					action(message.ackUID, args)
 					break
 				}
 			}

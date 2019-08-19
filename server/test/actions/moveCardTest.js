@@ -83,7 +83,7 @@ function getAckUID(seat) {
 
 const drawAction = {
 	name: 'moveCard',
-	data: {
+	args: {
 		from: {source: 'deck'},
 		to: {source: 'hand'}
 	}
@@ -92,7 +92,7 @@ function getPlayAction(cardIndex) {
 	const topCardIndex = game.round.piles[0].cards.length
 	return {
 		name: 'moveCard',
-		data: {
+		args: {
 			from: {source: 'hand', cardIndex},
 			to: {source: 'pile', pileIndex: 0, cardIndex: topCardIndex}
 		}
@@ -102,7 +102,7 @@ function getTakeAction() {
 	const topCardIndex = game.round.piles[0].cards.length - 1
 	return {
 		name: 'moveCard',
-		data: {
+		args: {
 			from: {source: 'pile', pileIndex: 0, cardIndex: topCardIndex},
 			to: {source: 'hand'}
 		}

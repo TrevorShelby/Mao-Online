@@ -84,11 +84,9 @@ function moveCard_(game, playerID) {
 		else if(to.source == 'deck') {
 			const card = getCard()
 			sendAck(ackUID, { card })
-			sendEvent('cardMoved', {
-				from: eventFrom,
-				to,
-				by: seat
-			})
+			const cardMovedEvent = { from: eventFrom, to, by: seat }
+			if(from.source != 'hand') { cardMovedEvent.card = card }
+			sendEvent('cardMoved', cardMovedEvent)
 		}
 		//TODO: Might require removing or changing
 		else { return }

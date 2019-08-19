@@ -2,49 +2,31 @@ const WebSocket = require('ws')
 
 const { createNewGame, createPlayerActionPools } = require('../../utility/newGame.js')
 const safeJsonParse = require('../../utility/safeJsonParse.js')
-const games = require('../../utility/games.js')
-const playerActionPools = require('../../utility/playerActionPools')
 
 
-
+let game
+let seatedActionPools
+const players = []
 const wsServer = new WebSocket.Server({port: 1258})
-
 wsServer.on('connection', (conn, req) => {
-	const seat = parseInt(req.url[req.url.length - 1])
-	conn.on('message', (messageStr) => {
-		const message = safeJsonParse(messageStr)
-		const isRepeatEvent = seat != 0
-		if(isRepeatEvent) { return }
-
-		console.log()
-		console.log('seat ' + seat)
-		console.log(message)
-	})
+	players.push(conn)
+	if(players.length == 3) {
+		const tableID = 0
+		game = createNewGame(tableID, players)
+		seatedActionPools = createPlayerActionPools(tableID)
+	}
 })
-
-
-const tableID = 0
-const players = [
-	new WebSocket('ws://127.0.0.1:1258?p=0'),
-	new WebSocket('ws://127.0.0.1:1258?p=1'),
-	new WebSocket('ws://127.0.0.1:1258?p=2')
-]
-const game = createNewGame(tableID, players)
-createPlayerActionPools(tableID)
 
 
 
 function printAvailableActions() {
-	const playerIDs = game.round.seating
-	const seatedActionPools = playerIDs.map( (playerID) => {
-		return playerActionPools.get(playerID).active
-	})
 	console.log()
-	seatedActionPools.forEach( (actionPool) => {
-		console.log(actionPool)
+	console.log()
+	seatedActionPools.forEach( (actionPool, seat) => {
+		console.log('seat ' + seat)
+		console.log(actionPool.active)
 	})
 }
-
 
 
 function getAccuseAction(accusedSeat) {
@@ -61,10 +43,25 @@ function doAction(playerIndex, action) {
 
 
 
-setTimeout( () => {
-	printAvailableActions()
-	doAction(0, getAccuseAction(1))
-	printAvailableActions()
-	doAction(1, {name: 'acceptAccusation'})
-	printAvailableActions()
-}, 100)
+const clients = [
+	new WebSocket('ws://127.0.0.1:1258'),
+	new WebSocket('ws://127.0.0.1:1258'),
+	new WebSocket('ws://127.0.0.1:1258')
+]
+clients[2].onopen = () => {
+	clients[2].onmessage = (messageStr) => {
+		const message = safeJsonParse(messageStr)
+		const messageData = safeJsonParse(message.data)
+		console.log()
+		console.log('seat 2')
+		console.log(messageData)
+	}
+
+	setTimeout( () => {
+		printAvailableActions()
+		doAction(0, getAccuseAction(1))
+		printAvailableActions()
+		doAction(0, {name: 'cancelAccusation'})
+		printAvailableActions()
+	}, 100)
+}

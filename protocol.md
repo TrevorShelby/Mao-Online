@@ -229,6 +229,10 @@ The contents of `from` and `to` are dependent of their original sources. `by` de
 
 ###`talk` Action
 ```JSON
-"whatever was said."
+{
+	"quote": "whatever was said",
+	"by": "85670230-e0cb-4538-b50c-874759e98fd1",
+	"timestamp": 1566229882915
+}
 ```
-(Note: This event data is not an object, just a string)
+`quote` describes what was said. `by` is a version 4 uuid for the talking client, but will likely be changed to a different form of identification later. `timestamp` is the time when the quote was stored on the server and forwarded.

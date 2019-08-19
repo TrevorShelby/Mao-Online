@@ -21,7 +21,7 @@ function acceptAccusation_(game, seatedActionPools, accusedSeat) {
 		})
 
 		game.round.accusation = undefined
-		sendEvent_(game, game.round.seating)('playerAcceptedAccusation')
+		sendEvent_(game, game.round.seating)('accusationAccepted')
 	}
 	return acceptAccusation
 }

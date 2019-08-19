@@ -21,7 +21,7 @@ function cancelAccusation_(game, seatedActionPools, accuserSeat) {
 		})
 
 		game.round.accusation = undefined
-		sendEvent_(game, game.round.seating)('playerCancelledAccusation')
+		sendEvent_(game, game.round.seating)('accusationCancelled')
 	}
 	return cancelAccusation
 }

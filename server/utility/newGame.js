@@ -28,7 +28,9 @@ function createNewGame(tableID, connections) {
 	for(let i = 0; i < seating.length; i++) { hands.push([]) }
 	const topCard = getPlayingCard(Math.floor(Math.random() * 52))
 	const piles = [{owner: undefined, cards: [topCard]}]
-	const round = { hands, piles, seating }
+	const accusation = undefined
+	const round = { hands, piles, seating, accusation }
+
 	const chatLog = []
 
 	const messageHistories = new Map()

@@ -7,11 +7,14 @@ const { sendEvent_ } = require('../sendMessage.js')
 //card from the round without placing it anywhere. What should happen instead is nothing.
 function moveCard_(game, playerID) {
 	const notifyMover = (data) => { sendEvent_(game, [playerID])('cardMoved', data) }
-	//using game.round.seating instead of game.playerConnections, since moveCard affects the round.
-	const otherPlayerIDs = game.round.seating.filter( (otherPlayerID) => {
-		return playerID != otherPlayerID
-	})
-	const notifyOthers = (data) => { sendEvent_(game, otherPlayerIDs)('cardMoved', data) }
+	const notifyOthers = (data) => { 
+		//using game.round.seating instead of game.playerConnections, since moveCard affects the
+		//round.
+		const otherPlayerIDs = game.round.seating.filter( (otherPlayerID) => {
+			return playerID != otherPlayerID
+		})
+		sendEvent_(game, otherPlayerIDs)('cardMoved', data)
+	}
 
 	function moveCard({from, to}={}) {
 		if(typeof from != 'object' || typeof to != 'object') { return }

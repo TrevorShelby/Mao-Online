@@ -4,6 +4,8 @@
 //should be done through events.
 
 
+
+//TODO: could use renaming, messages don't imply order: only events do (for now).
 function sendMessage_(game, playerID) {
 	function sendMessage(message) {
 		const conn = game.playerConnections.get(playerID)

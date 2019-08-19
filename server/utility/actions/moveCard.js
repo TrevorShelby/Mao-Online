@@ -1,15 +1,19 @@
 const getPlayingCard = require('../playingCard.js')
-const { /*sendAck_,*/ sendEvent_ } = require('../sendMessage.js')
+const { sendEvent_ } = require('../sendMessage.js')
 
 
 
 //TODO: Fix. A valid from object and an invalid to object will end with the function removing the
 //card from the round without placing it anywhere. What should happen instead is nothing.
 function moveCard_(game, playerID) {
-	//TODO: Remove sendAck
-	const sendAck = /*sendAck_(game, playerID)*/ () => {}
-	const sendEvent = sendEvent_(game, playerID)
-	function moveCard(ackUID, {from, to}={}) {
+	const notifyMover = (data) => { sendEvent_(game, [playerID])('cardMoved', data) }
+	//using game.round.seating instead of game.playerConnections, since moveCard affects the round.
+	const otherPlayerIDs = game.round.seating.filter( (otherPlayerID) => {
+		return playerID != otherPlayerID
+	})
+	const notifyOthers = (data) => { sendEvent_(game, otherPlayerIDs)('cardMoved', data) }
+
+	function moveCard({from, to}={}) {
 		if(typeof from != 'object' || typeof to != 'object') { return }
 		if(from.source == 'hand' && to.source == 'hand') { return }
 		if(
@@ -54,14 +58,17 @@ function moveCard_(game, playerID) {
 			const card = getCard()
 			const cardIndex = hand.push(card) - 1
 
-			sendAck(ackUID, { card, cardIndex })
+			notifyMover({ 
+				card, cardIndex,
+				from, to, by: seat 
+			})
 			const data = {
-				from: from, //from-source can't be hand if to-source is. no eventFrom necessary.
+				from, //from-source can't be hand if to-source is. no eventFrom necessary.
 				to: {source: 'hand', length: hand.length},
 				by: seat
 			}
 			if(from.source != 'deck') { data.card = card }
-			sendEvent('cardMoved', data)
+			notifyOthers(data)
 		}
 		else if(to.source == 'pile') {
 			if(!isValidIndex(to.pileIndex, round.piles)) { return }
@@ -74,20 +81,19 @@ function moveCard_(game, playerID) {
 			) { return }
 			const card = getCard()
 			pile.cards.splice(to.cardIndex, 0, card)
-			sendAck(ackUID, { card })
-			sendEvent('cardMoved', {
-				card,
-				from: eventFrom,
-				to,
-				by: seat
-			})
+			const data = { card, from: eventFrom, to, by: seat }
+			notifyMover(data)
+			notifyOthers(data)
 		}
 		else if(to.source == 'deck') {
 			const card = getCard()
-			sendAck(ackUID, { card })
+			notifyMover({
+				card,
+				from: eventFrom, to, by: seat
+			})
 			const cardMovedEvent = { from: eventFrom, to, by: seat }
 			if(from.source != 'hand') { cardMovedEvent.card = card }
-			sendEvent('cardMoved', cardMovedEvent)
+			notifyOthers(cardMovedEvent)
 		}
 		//TODO: Might require removing or changing
 		else { return }

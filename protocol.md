@@ -189,9 +189,9 @@ Whenever clients need to be notified through a state change, they will receive a
 }
 ```
 
-##Event Data For Different Actions
+##Event Data For Different Events
 
-###`cardMoved` Actions
+###`cardMoved` Event
 ```JSON
 {
 	"card": { "value": 0, "rank": 0, "suit": 0},
@@ -227,7 +227,7 @@ The contents of `from` and `to` are dependent of their original sources. `by` de
 }
 ```
 
-###`talk` Action
+###`talk` Event
 ```JSON
 {
 	"quote": "whatever was said",

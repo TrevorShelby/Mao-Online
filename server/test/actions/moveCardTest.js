@@ -1,9 +1,22 @@
 const WebSocket = require('ws')
 
 const { createNewGame, createPlayerActionPools } = require('../../utility/newGame.js')
-const playerActionPools = require('../../utility/playerActionPools.js')
 const getSpokenCard = require('../../utility/spokenCard.js')
 const safeJsonParse = require('../../utility/safeJsonParse.js')
+
+
+
+let game
+const players = []
+const wsServer = new WebSocket.Server({port: 1258})
+wsServer.on('connection', (conn, req) => {
+	players.push(conn)
+	if(players.length == 3) {
+		const tableID = 0
+		game = createNewGame(tableID, players)
+		createPlayerActionPools(tableID)
+	}
+})
 
 
 
@@ -27,46 +40,12 @@ function printRound(round) {
 	})
 
 	console.log()
-	console.log()
 	console.log('hands:')
 	console.log(spokenHands)
 	console.log()
 	console.log('piles:')
 	console.log(spokenPiles)
 }
-
-
-
-const wsServer = new WebSocket.Server({port: 1258})
-
-wsServer.on('connection', (conn, req) => {
-	const playerID = parseInt(req.url[req.url.length - 1])
-	conn.on('message', (messageStr) => {
-		const message = safeJsonParse(messageStr)
-		const isRepeatEvent = playerID != 2
-		const isAssumed = message.order < 21
-		if(
-			isRepeatEvent || isAssumed
-		) { return }
-
-		if(message.data.card != undefined) {
-			message.data.card = getSpokenCard(message.data.card)
-		}
-		console.log()
-		console.log('seat ' + playerID)
-		console.log(message)
-	})
-})
-
-
-const tableID = 0
-const players = [
-	new WebSocket('ws://127.0.0.1:1258?p=0'),
-	new WebSocket('ws://127.0.0.1:1258?p=1'),
-	new WebSocket('ws://127.0.0.1:1258?p=2')
-]
-const game = createNewGame(tableID, players)
-createPlayerActionPools(tableID)
 
 
 const drawAction = {
@@ -97,7 +76,6 @@ function getTakeAction() {
 	}
 }
 
-
 function doAction(seat, action) {
 	const player = players[seat]
 	player.emit('message', JSON.stringify({
@@ -107,21 +85,37 @@ function doAction(seat, action) {
 }
 
 
-
-setTimeout( () => {
-	for(let seat = 0; seat < 3; seat++) {
-		for(let cardNum = 0; cardNum < 7; cardNum++) {
-			doAction(seat, drawAction)
+const clients = [
+	new WebSocket('ws://127.0.0.1:1258?p=0'),
+	new WebSocket('ws://127.0.0.1:1258?p=1'),
+	new WebSocket('ws://127.0.0.1:1258?p=2')
+]
+clients[2].onopen = () => {
+	clients[2].onmessage = (messageStr) => {
+		const message = safeJsonParse(messageStr)
+		const messageData = safeJsonParse(message.data)
+		if(messageData.order >= 21) {
+			console.log()
+			console.log('seat 2')
+			console.log(messageData)
 		}
 	}
-	printRound(game.round)
 
-	doAction(0, getPlayAction(6))
-	printRound(game.round)
+	setTimeout( () => {
+		for(let seat = 0; seat < 3; seat++) {
+			for(let cardNum = 0; cardNum < 7; cardNum++) {
+				doAction(seat, drawAction)
+			}
+		}
+		printRound(game.round)
 
-	doAction(1, getTakeAction())
-	printRound(game.round)
+		doAction(0, getPlayAction(6))
+		printRound(game.round)
 
-	doAction(1, drawAction)
-	printRound(game.round)
-}, 100)
+		doAction(1, getTakeAction())
+		printRound(game.round)
+
+		doAction(1, drawAction)
+		printRound(game.round)
+	}, 100)
+}

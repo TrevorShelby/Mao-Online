@@ -564,11 +564,16 @@ game: {
 
 playerConnections: <playerID*, WebSocket>
 
-round: { hands, piles, seating }
+round: { hands, piles, seating, accusation }
 hands: <seat*, card[]>
 piles: pile[]
 pile: { owner: seat*, cards: card[] }
 seating: <playerID*, seat*> (modeled as array, with playerIDs as elements, and seats as indexes)
+accusation: {
+	accused: seat*,
+	accuser: seat*,
+	start: number (timestamp)
+}
 
 chatLog: chat[]
 chat: {

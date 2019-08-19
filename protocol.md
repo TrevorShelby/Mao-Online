@@ -1,5 +1,7 @@
 >The Mao API is a protocol of rules. The API documentation begins now.
 
+OUTDATED!!!
+
 This protocol requires messages to be formatted as JSON objects serialized into strings on both the client-side and server-side.
 
 #The Game

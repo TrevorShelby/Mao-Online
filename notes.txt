@@ -559,12 +559,13 @@ game: {
 	playerConnections,
 	round,
 	chatLog,
-	messageHistories
+	rules,
+	messageHistories,
 }
 
 playerConnections: <playerID*, WebSocket>
 
-round: { hands, piles, seating, accusation }
+round: { hands, piles, seating, mode*: string, accusation }
 hands: <seat*, card[]>
 piles: pile[]
 pile: { owner: seat*, cards: card[] }
@@ -581,6 +582,9 @@ chat: {
 	by: playerID*,
 	timestamp: number
 }
+
+//index of a rule in roundRules corresponds to the round it was written after.
+rules: { starterRules: string[], roundRules: string[] }
 
 messageHistories: <playerID*, messageHistory>
 messageHistory: messages[]

@@ -15,6 +15,7 @@ const getPlayingCard = require('./playingCard.js')
 const games = new Map()
 const playerActionPools = new Map()
 
+//Sets up a game and seats connections into a round in play with some round 0 rules.
 function createNewGame(tableID, connections) {
 	const playerConnections = new Map()
 	//seating relates playerIDs to seats. The index of seating is the seat, and the element is the
@@ -26,15 +27,26 @@ function createNewGame(tableID, connections) {
 		seating.push(playerID)
 	})
 
-	//DO NOT USE FILL! It makes each player's hand the same.
+	//DO NOT CHANGE TO USE FILL! It makes each player's hand the same.
 	const hands = []
 	for(let i = 0; i < seating.length; i++) { hands.push([]) }
 	const topCard = getPlayingCard(Math.floor(Math.random() * 52))
 	const piles = [{owner: undefined, cards: [topCard]}]
+	const mode = 'play'
 	const accusation = undefined
-	const round = { hands, piles, seating, accusation }
+	const round = { hands, piles, seating, mode, accusation }
 
 	const chatLog = []
+
+	const rules = {
+		starterRules: [
+			'When a spades card is played, the person who played it has to say the card\'s suit '
+				+ 'and rank.',
+			'When an ace card is played, the order of player reverses.',
+			'When a jack card is played, a player can name the next suit that has to be played.'
+		],
+		roundRules: []
+	}
 
 	const messageHistories = new Map()
 	seating.forEach( (playerID) => {
@@ -45,6 +57,7 @@ function createNewGame(tableID, connections) {
 		playerConnections,
 		round,
 		chatLog,
+		rules,
 		messageHistories
 	}
 	games.set(tableID, game)

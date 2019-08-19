@@ -18,9 +18,9 @@ and the `suit` property indexes from this list:
 A card object for the four of hearts would look like this:
 ```JSON
 {
-	value: 29,
-	rank: 3,
-	suit: 2
+	"value": 29,
+	"rank": 3,
+	"suit": 2
 }
 ```
 
@@ -33,9 +33,9 @@ A client in a game of Mao sends messages in order to perform actions. For the cl
 
 ```JSON
 {
-	type: "action",
-	ackUID: 0,
-	data: {
+	"type": "action",
+	"ackUID": 0,
+	"data": {
 		...
 	}
 }
@@ -48,8 +48,8 @@ The `ackUID` property should be a numeric identifier that is unique from any oth
 The `data` property is used to describe the action that the client is taking.
 ```JSON
 {
-	name: "actionName",
-	args: {
+	"name": "actionName",
+	"args": {
 		...
 	}
 }
@@ -61,12 +61,12 @@ If the `data` property is present, it will have a `name` property with a string 
 ##The `moveCard` Action
 ```JSON
 {
-	name: "moveCard",
-	args: {
-		from: {
+	"name": "moveCard",
+	"args": {
+		"from": {
 			...
 		},
-		to: {
+		"to": {
 			...
 		}
 	}
@@ -78,8 +78,8 @@ The `moveCard` action allows the client to move a card from one place to another
 ####From the Client's Hand
 ```JSON
 {
-	source: "hand",
-	cardIndex: 0	
+	"source": "hand",
+	"cardIndex": 0	
 }
 ```
 The `cardIndex` specifies the exact card in the client's hand that is being moved. If the cardIndex is 0, the first card in the client's hand is moved.
@@ -87,9 +87,9 @@ The `cardIndex` specifies the exact card in the client's hand that is being move
 ####From a Pile
 ```JSON
 {
-	source: "pile",
-	pileIndex: 0,
-	cardIndex: 0
+	"source": "pile",
+	"pileIndex": 0,
+	"cardIndex": 0
 }
 ```
 The `pileIndex` specifies the exact pile that the card is in. Like the previous `from` object, the `cardIndex` property describes which card in the given pile is being moved.
@@ -97,7 +97,7 @@ The `pileIndex` specifies the exact pile that the card is in. Like the previous 
 ####From the Deck
 ```JSON
 {
-	source: "deck"
+	"source": "deck"
 }
 ```
 
@@ -105,7 +105,7 @@ The `pileIndex` specifies the exact pile that the card is in. Like the previous 
 ####To the Client's Hand
 ```JSON
 {
-	source: "hand",
+	"source": "hand",
 }
 ```
 (Note: if a `moveCard` action uses both a hand-`from` and -`to` object, the message will not be acknowledged.)
@@ -113,9 +113,9 @@ The `pileIndex` specifies the exact pile that the card is in. Like the previous 
 ####To a Pile
 ```JSON
 {
-	source: "pile",
-	pileIndex: 0,
-	cardIndex: 0
+	"source": "pile",
+	"pileIndex": 0,
+	"cardIndex": 0
 }
 ```
 Works similarly to pile-`from` objects. The `cardIndex` property has to be an available index within the pile, or has to be the index after the last one available (which will put the card at the top of the pile).
@@ -123,7 +123,7 @@ Works similarly to pile-`from` objects. The `cardIndex` property has to be an av
 ####To the Deck
 ```JSON
 {
-	source: "deck"
+	"source": "deck"
 }
 ```
 Since the deck is infinite, a deck-`to` object will get rid of the card being moved.
@@ -133,8 +133,8 @@ Since the deck is infinite, a deck-`to` object will get rid of the card being mo
 ##The `talk` Action
 ```JSON
 {
-	name: "talk",
-	args: "whatever you want to say"
+	"name": "talk",
+	"args": "whatever you want to say"
 }
 ```
 The `talk` action sends a chat message.
@@ -145,10 +145,10 @@ The `talk` action sends a chat message.
 When the server gets a valid message from a client, it will send back an acknowledgement of that message. Acknowledgements look like this:
 ```JSON
 {
-	type: "ack",
-	ackUID: 0,
-	order: 0,
-	data: {
+	"type": "ack",
+	"ackUID": 0,
+	"order": 0,
+	"data": {
 		...
 	}
 }
@@ -162,8 +162,8 @@ If an action is left out, it is safe to assume that there will not be any `data`
 ###`moveCard` Actions with a Hand-`to` Object
 ```JSON
 {
-	card: { value: 0, rank: 0, suit: 0},
-	cardIndex: 0
+	"card": { "value": 0, "rank": 0, "suit": 0},
+	"cardIndex": 0
 }
 ```
 `card` describes the card being placed into the client's hand, and `cardIndex` describes the index that the card has been appended to. Placing a card in your hand while holding seven cards would give an acknowledgement with a `cardIndex` of 7.
@@ -171,7 +171,7 @@ If an action is left out, it is safe to assume that there will not be any `data`
 ###`moveCard` Actions with a Pile- or Deck-`to` Object
 ```JSON
 {
-	card: { value: 0, rank: 0, suit: 0 }
+	"card": { "value": 0, "rank": 0, "suit": 0 }
 }
 ```
 
@@ -180,10 +180,10 @@ If an action is left out, it is safe to assume that there will not be any `data`
 Whenever clients need to be notified through a state change, they will receive a message from the server. The client responsible for the state change (if there is one) gets sent an acknowledgement. All other players get sent an event notification, which looks like this:
 ```JSON
 {
-	type: "event",
-	name: "eventName",
-	order: 0,
-	data: {
+	"type": "event",
+	"name": "eventName",
+	"order": 0,
+	"data": {
 		...
 	}
 }
@@ -194,10 +194,10 @@ Whenever clients need to be notified through a state change, they will receive a
 ###`cardMoved` Actions
 ```JSON
 {
-	card: { value: 0, rank: 0, suit: 0},
-	from: { ... },
-	to: { ... },
-	by: 0
+	"card": { "value": 0, "rank": 0, "suit": 0},
+	"from": { ... },
+	"to": { ... },
+	"by": 0
 }
 ```
 The contents of `from` and `to` are dependent of their original sources. `by` describes the seat which took the action. `card` appears only if the card was moved from a pile.
@@ -205,8 +205,8 @@ The contents of `from` and `to` are dependent of their original sources. `by` de
 ####Hand-`from` and -`to` Objects
 ```JSON
 {
-	source: "hand",
-	length: 0
+	"source": "hand",
+	"length": 0
 }
 ```
 `length` describes how many cards are left in the hand of the client who moved the card.
@@ -214,15 +214,21 @@ The contents of `from` and `to` are dependent of their original sources. `by` de
 ####Pile-`from` and -`to` Objects
 ```JSON
 {
-	source: "pile",
-	pileIndex: 0,
-	cardIndex: 0
+	"source": "pile",
+	"pileIndex": 0,
+	"cardIndex": 0
 }
 ```
 
 ####Deck-`from` and -`to` Objects
 ```JSON
 {
-	source: "deck"
+	"source": "deck"
 }
 ```
+
+###`talk` Action
+```JSON
+"whatever was said."
+```
+(Note: This event data is not an object, just a string)

@@ -13,7 +13,7 @@ function talk_(game, playerID) {
 		const chatData = {quote, by: playerID, timestamp: Date.now()}
 		game.chatLog.push(chatData)
 
-		sendEvent(game, playerIDs)('playerTalked', chatData)
+		sendEvent_(game, playerIDs)('playerTalked', chatData)
 	}
 	return talk
 }

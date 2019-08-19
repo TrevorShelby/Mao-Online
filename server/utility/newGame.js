@@ -78,7 +78,7 @@ function onMessage_(activeActionPool) {
 			for(actionName in activeActionPool) {
 				const action = actionName == name ? activeActionPool[actionName] : undefined
 				if(action != undefined) {
-					action(message.ackUID, args)
+					action(args)
 					break
 				}
 			}

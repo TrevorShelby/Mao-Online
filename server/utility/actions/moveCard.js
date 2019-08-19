@@ -1,12 +1,13 @@
 const getPlayingCard = require('../playingCard.js')
-const { sendAck_, sendEvent_ } = require('../sendMessage.js')
+const { /*sendAck_,*/ sendEvent_ } = require('../sendMessage.js')
 
 
 
 //TODO: Fix. A valid from object and an invalid to object will end with the function removing the
 //card from the round without placing it anywhere. What should happen instead is nothing.
 function moveCard_(game, playerID) {
-	const sendAck = sendAck_(game, playerID)
+	//TODO: Remove sendAck
+	const sendAck = /*sendAck_(game, playerID)*/ () => {}
 	const sendEvent = sendEvent_(game, playerID)
 	function moveCard(ackUID, {from, to}={}) {
 		if(typeof from != 'object' || typeof to != 'object') { return }

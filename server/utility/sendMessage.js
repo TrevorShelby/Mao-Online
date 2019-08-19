@@ -27,7 +27,7 @@ function sendEvent_(game, playerIDs) {
 			sendMessage_(game, playerID)(message)
 		})
 	}
-	return sendAck
+	return sendEvent
 }
 
 

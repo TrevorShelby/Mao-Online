@@ -43,7 +43,7 @@ wsServer.on('connection', (conn, req) => {
 	const playerID = parseInt(req.url[req.url.length - 1])
 	conn.on('message', (messageStr) => {
 		const message = safeJsonParse(messageStr)
-		const isRepeatEvent = message.ackUID == undefined && playerID != 2
+		const isRepeatEvent = playerID != 2
 		const isAssumed = message.order < 21
 		if(
 			isRepeatEvent || isAssumed
@@ -67,18 +67,6 @@ const players = [
 ]
 const game = createNewGame(tableID, players)
 createPlayerActionPools(tableID)
-
-
-const playerAckUIDCount = new Map()
-game.round.seating.forEach( (playerID, seat) => {
-	if(playerID != undefined) {playerAckUIDCount.set(seat, 0)}
-})
-
-function getAckUID(seat) {
-	const ackUID = playerAckUIDCount.get(seat)
-	playerAckUIDCount.set(seat, ackUID + 1)
-	return ackUID
-}
 
 
 const drawAction = {
@@ -112,10 +100,8 @@ function getTakeAction() {
 
 function doAction(seat, action) {
 	const player = players[seat]
-	const ackUID = getAckUID(seat)
 	player.emit('message', JSON.stringify({
 		type: 'action',
-		ackUID,
 		data: action
 	}))
 }

@@ -22,7 +22,7 @@ wsServer.on('connection', (conn, req) => {
 	const seat = parseInt(req.url[req.url.length - 1])
 	conn.on('message', (messageStr) => {
 		const message = safeJsonParse(messageStr)
-		const isRepeatEvent = message.ackUID == undefined && seat != 2
+		const isRepeatEvent = seat != 0
 		if(isRepeatEvent) { return }
 
 		console.log()
@@ -64,7 +64,6 @@ function doAction(playerIndex, action) {
 	const ackUID = getAckUID(playerIndex)
 	player.emit('message', JSON.stringify({
 		type: 'action',
-		ackUID,
 		data: action
 	}))
 }

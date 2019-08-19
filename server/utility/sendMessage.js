@@ -4,6 +4,8 @@
 //should be done through events.
 
 
+
+//TODO: could use renaming, messages don't imply order: only events do (for now).
 function sendMessage_(game, playerID) {
 	function sendMessage(message) {
 		const conn = game.playerConnections.get(playerID)
@@ -19,32 +21,17 @@ function sendMessage_(game, playerID) {
 }
 
 
-function sendAck_(game, playerID) {
-	function sendAck(ackUID, data=undefined) {
-		const message = {type: 'ack', ackUID}
-		if(data != undefined) { message.data = data }
-		sendMessage_(game, playerID)(message)
-	}
-	return sendAck
-}
-
-function sendEvent_(game, playerID) {
+function sendEvent_(game, playerIDs) {
 	function sendEvent(name, data=undefined) {
 		const message = {type: 'event', name}
 		if(data != undefined) { message.data = data }
-
-		game.playerConnections.forEach( (conn, otherPlayerID) => {
-			if(otherPlayerID == playerID) { return }
-			//this output of sendMessage_ shouldn't be stored outside of sendEvent for optimization
-			//due to the possibility that it could become outdated by the time it needs to be used.
-			sendMessage_(game, otherPlayerID)(message)
+		playerIDs.forEach( (playerID) => {
+			sendMessage_(game, playerID)(message)
 		})
 	}
 	return sendEvent
 }
 
 
-
 module.exports.sendMessage_ = sendMessage_
-module.exports.sendAck_ = sendAck_
 module.exports.sendEvent_ = sendEvent_

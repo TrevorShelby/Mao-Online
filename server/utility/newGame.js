@@ -3,17 +3,19 @@ const uuidv4 = require('uuid/v4')
 const talk_ = require('./actions/talk.js')
 const moveCard_ = require('./actions/moveCard.js')
 const accuse_ = require('./actions/accuse.js')
+const accuseWinner_ = require('./actions/accuseWinner.js')
 const acceptAccusation_ = require('./actions/acceptAccusation.js')
 const cancelAccusation_ = require('./actions/cancelAccusation.js')
 const writeRule_ = require('./actions/writeRule.js')
 
 const safeJsonParse = require('./safeJsonParse.js')
 const getPlayingCard = require('./playingCard.js')
+const getNewRound = require('./newRound.js')
 const endRound_ = require('./endRound.js')
 
 
 
-//This code is not to be used in production. Only to help with discovery and testing.
+//This module is not to be used in production. Only to help with discovery and testing.
 const games = new Map()
 const playerActionPools = new Map()
 
@@ -29,22 +31,7 @@ function createNewGame(tableID, connections) {
 		seating.push(playerID)
 	})
 
-	//DO NOT CHANGE TO USE FILL! It makes each player's hand the same.
-	const hands = []
-	for(let seat = 0; seat < seating.length; seat++) {
-		const hand = []
-		for(let cardNum = 0; cardNum < 7; cardNum++) {
-			const cardValue = Math.floor(Math.random() * 52)
-			hand.push(getPlayingCard(cardValue))
-		}
-		hands.push(hand)
-	}
-	const topCard = getPlayingCard(Math.floor(Math.random() * 52))
-	const piles = [{owner: undefined, cards: [topCard]}]
-	const round = { 
-		hands, piles, seating,
-		mode: 'play', accusation: undefined, winner: undefined
-	}
+	const round = getNewRound(seating)
 
 	const chatLog = []
 
@@ -86,6 +73,7 @@ function createNewGame(tableID, connections) {
 }
 
 
+
 //There is an assumption that everyone at the table is seated for the round. It doesn't need
 //fixing, since this is development code anyways, but I figure it should be noted so the same
 //assumption doesn't carry over to an actual implementation.
@@ -103,13 +91,16 @@ function createPlayerActionPools(tableID) {
 			activate(actionName) {this.active[actionName] = this.total[actionName]}
 		}
 		const seat = game.round.seating.indexOf(playerID)
+		playerActionPool.setAction('talk', talk_(game, playerID), true)
 		playerActionPool.setAction('moveCard', moveCard_(
 			game, playerID, endRound_(game, roundActionPools)
 		), true)
-		playerActionPool.setAction('talk', talk_(game, playerID), true)
 		playerActionPool.setAction('accuse', accuse_(
 			game, roundActionPools, seat
 		), true)
+		playerActionPool.setAction('accuseWinner', accuseWinner_(
+			game, playerActionPool.total.accuse
+		), false)
 		playerActionPool.setAction('acceptAccusation', acceptAccusation_(
 			game, roundActionPools, seat
 		), false)

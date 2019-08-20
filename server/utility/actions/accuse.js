@@ -13,28 +13,34 @@ function accuse_(game, seatedActionPools, accuserSeat) {
 	function accuse(accusedSeat=undefined) {
 		if(!(accusedSeat in game.round.seating)) { return }
 
-		seatedActionPools.forEach( (actionPool, poolOwnerSeat) => {
-			for(let actionName in actionPool.active) {
-				if(actionName != 'talk') { delete actionPool.active[actionName] }
-			}
-		})
-		seatedActionPools[accusedSeat].active.activate('acceptAccusation')
-		seatedActionPools[accuserSeat].active.activate('cancelAccusation')
-		game.round.accusation = {
-			accuser: accuserSeat,
-			accused: accusedSeat
+		if(game.round.mode == 'play') {
+			accuseDuringPlay(accusedSeat)
 		}
-		sendEvent_(game, game.round.seating)('playerAccused', game.round.accusation)
+		else if(game.round.mode == 'lastChance') {
+			if(accusedSeat == game.round.winner) {
+				//TODO: add stop timer or whatever and then accuse. use same event.
+			}
+			else { return }
+		}
+
+		function accuseDuringPlay(accusedSeat) {
+			seatedActionPools.forEach( (actionPool, poolOwnerSeat) => {
+				for(let actionName in actionPool.active) {
+					if(actionName != 'talk') { delete actionPool.active[actionName] }
+				}
+			})
+			seatedActionPools[accusedSeat].activate('acceptAccusation')
+			seatedActionPools[accuserSeat].activate('cancelAccusation')
+			game.round.accusation = {
+				accuser: accuserSeat,
+				accused: accusedSeat
+			}
+			sendEvent_(game, game.round.seating)('playerAccused', game.round.accusation)
+		}
 	}
+
+
 	return accuse
-}
-
-
-
-function isValidIndex(index, array) {
-	if(typeof index != 'number') { return false }
-	else if(index < 0 || index >= array.length) { return false }
-	else { return true }
 }
 
 

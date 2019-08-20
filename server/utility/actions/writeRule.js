@@ -1,5 +1,6 @@
 const { sendEvent_ } = require('../sendMessage.js')
 const getPlayingCard = require('../playingCard.js')
+const getNewRound = require('../newRound.js')
 
 
 
@@ -12,24 +13,7 @@ function writeRule_(game, seatedActionPools, authorID) {
 		game.rules.roundRules.push({ rule, author: authorID })
 		sendEvent_(game, [authorID])('ruleWrote', rule)
 
-		const hands = []
-		for(let seat = 0; seat < game.round.seating.length; seat++) {
-			const hand = []
-			for(let cardNum = 0; cardNum < 7; cardNum++) {
-				const cardValue = Math.floor(Math.random() * 52)
-				hand.push(getPlayingCard(cardValue))
-			}
-			hands.push(hand)
-		}
-		const topCard = getPlayingCard(Math.floor(Math.random() * 52))
-		const piles = [{owner: undefined, cards: [topCard]}]
-		const round = { 
-			hands, piles, seating: game.round.seating,
-			mode: 'play', accusation: undefined, winner: undefined
-		}
-		game.round = round
-
-
+		game.round = getNewRound(game.round.seating)
 		seatedActionPools.forEach( (actionPool, poolOwnerSeat) => {
 			for(let actionName in actionPool.active) {
 				if(!legalActionNamesDuringPlay.includes(actionName)) {
@@ -42,8 +26,6 @@ function writeRule_(game, seatedActionPools, authorID) {
 				}
 			})
 		})
-
-
 		sendEvent_(game, game.round.seating)('roundStarted')
 	}
 	return writeRule

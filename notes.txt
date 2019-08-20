@@ -554,6 +554,15 @@ should accusation need a reason? on the one hand, it's useful historically; if a
 
 
 
+should an action whose performability differ depending on the state be split into different actions or kept as one? action pool manipulation has been the top-level determiner of an action's performability in the past.
+
+accuse's performability never differs on state alone, though. during lastChance, accuse's performability is still partly determined by its arguments. this might not be a problem at all.
+
+an action that can't be performed because of the state vs an action that can't be performed because of the state and its arguments.
+
+
+
+
 games: <tableID*, game>
 game: {
 	playerConnections,
@@ -565,7 +574,7 @@ game: {
 
 playerConnections: <playerID*, WebSocket>
 
-round: { hands, piles, seating, mode*: string, accusation, winner: seat* }
+round: { hands, piles, seating, mode*, accusation, winner }
 hands: <seat*, card[]>
 piles: pile[]
 pile: { owner: seat*, cards: card[] }
@@ -575,6 +584,7 @@ accusation: {
 	accuser: seat*,
 	start: number (timestamp)
 }
+winner: seat*
 
 chatLog: chat[]
 chat: {

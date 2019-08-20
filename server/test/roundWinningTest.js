@@ -74,11 +74,11 @@ const clients = [
 	new WebSocket('ws://127.0.0.1:1258?p=2')
 ]
 clients[2].onopen = () => {
-	clients[2].onmessage = (messageStr) => {
+	clients[0].onmessage = (messageStr) => {
 		const message = safeJsonParse(messageStr)
 		const messageData = safeJsonParse(message.data)
 		console.log()
-		console.log('seat 2')
+		console.log('seat 0')
 		console.log(messageData)
 	}
 

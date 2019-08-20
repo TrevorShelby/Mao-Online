@@ -10,6 +10,7 @@ function writeRule_(game, seatedActionPools, authorID) {
 		if(typeof rule != 'string') { return }
 
 		game.rules.roundRules.push({ rule, author: authorID })
+		sendEvent_(game, [authorID])('ruleWrote', rule)
 
 		const hands = []
 		for(let seat = 0; seat < game.round.seating.length; seat++) {
@@ -43,7 +44,7 @@ function writeRule_(game, seatedActionPools, authorID) {
 		})
 
 
-		sendEvent_(game, game.round.seating)('roundStart')
+		sendEvent_(game, game.round.seating)('roundStarted')
 	}
 	return writeRule
 }

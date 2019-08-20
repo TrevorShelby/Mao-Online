@@ -24,11 +24,17 @@ A card object for the four of hearts would look like this:
 }
 ```
 
+
 ##Card Groups
 Cards can be in one of two card groups: hands or piles. Cards can also be retrieved or put into the deck, however, the deck itself is not card group, rather it is something that randomly generates cards (this is to prevent card-counting clients). A client can view cards that are in their own hand (each client gets one), as well as how many cards are in everyone else's hands. Clients may move cards to and from their own hand, but not anyone else's. The other type of card group, piles, have their cards visible to all clients. The first pile is always the discard pile, a pile which no player owns.
 
+
 ##Accusation
 During play, one player may accuse another (or even themselves) of breaking a rule. Play cannot continue until the accusation has been settled (players can still talk to each other though). In order for an accusation to be settled, one of two things must happen. Either the accused player accepts the accusation, or the accusing playing cancels the accusation.
+
+
+##Winning and Rule-Writing
+A player wins a round of Mao by playing the last card from their hand. Once this is done, the player creates a new rule in secret, and a new round begins.
 
 
 #Actions
@@ -58,16 +64,18 @@ If `data` is present, it will have a `name` property with a string as the value.
 
 
 ##The `talk` Action
+The `talk` action lets the client send a chat message.
 ```JSON
 {
 	"name": "talk",
 	"args": "whatever you want to say"
 }
 ```
-The `talk` action lets the client send a chat message.
+`args` is what the client says.
 
 
 ##The `moveCard` Action
+The `moveCard` action lets the client to move a card from one place to another. It is only available during play.
 ```JSON
 {
 	"name": "moveCard",
@@ -81,7 +89,7 @@ The `talk` action lets the client send a chat message.
 	}
 }
 ```
-The `moveCard` action lets the client to move a card from one place to another. It is only available during play. `from` describes the card being moved, and `to` describes where it is being moved to. Both objects will *always* have a `source` property that describes the type of area that the card is being moved from or to.
+`from` describes the card being moved, and `to` describes where it is being moved to. Both objects will *always* have a `source` property that describes the type of area that the card is being moved from or to.
 
 ###From the Client's Hand
 ```JSON
@@ -119,31 +127,31 @@ Since the deck is infinite, a deck-`to` object will get rid of the card being mo
 
 
 ##The `accuse` Action
-```JSON
-{
-	"name": "accuse",
-	"args": 0
-}
-```
 The `accuse` action lets the client accuse a player of breaking a rule. `args` is the seat of the player being accused.
 
 
 ##The `acceptAccusation` Action
+The `acceptAccusation` action lets an accused client accept the accusation towards them. This action does not need an `args` property.
 ```JSON
 {
 	"name": "acceptAccusation"
 }
 ```
-The `acceptAccusation` action lets an accused client accept the accusation towards them.
 
 
 ##The `cancelAccusation` Action
+The `cancelAccusation` action lets an accusing client cancel their accusation. This action does not need an `args` property.
+
+
+##The `writeRule` Action
+The `writeRule` action lets a client who has won a round write a rule.
 ```JSON
 {
-	"name": "cancelAccusation"
+	"name": "writeRule",
+	"args": "Put your rule here"
 }
 ```
-The `cancelAccusation` action lets an accusing client cancel their accusation.
+`args` is the rule that the client has written.
 
 
 
@@ -159,7 +167,18 @@ Whenever clients need to be notified through a state change, they will receive a
 	}
 }
 ```
-`name` holds the name of the event that has taken place. `order` enumerates this event among any others that the server has sent the client, where the first event has an `order` of 0, the second event has an `order` of 1, and so on. This lets the client make sure they are tracking state changes in the correct order. Finally, there is `data`, which further describes the event. The name for each event, as well as information about how their `data` object is structured (if they have one) is listed below.
+`name` holds the name of the event that has taken place. `order` enumerates this event among any others that the server has sent the client, where the first event has an `order` of 0, the second event has an `order` of 1, and so on. This lets the client make sure they are tracking state changes in the correct order. Finally, there is `data`, which further describes the event. The name for each event, as well as information about how their `data` property is structured (if they have one) is listed below.
+
+##The `talk` Event
+The `talk` event is caused by a player adding to the chat log.
+```JSON
+{
+	"quote": "whatever was said",
+	"by": "85670230-e0cb-4538-b50c-874759e98fd1",
+	"timestamp": 1566229882915
+}
+```
+`quote` describes that player has said. `by` is a version 4 uuid that describes the client who is talking. This will likely be changed to a different form of identification later. `timestamp` describes the time when the quote was added to the chatLog and forwarded.
 
 ##The `cardMoved` Event
 The `cardMoved` event is caused by a player moving a card from one place to another (which is done through the `moveCard` action).
@@ -212,20 +231,20 @@ The `playerAccused` event is caused by one player accusing another player or the
 
 
 ##The `accusationAccepted` Event
-The `accusationAccepted` event is caused by the accused player of an accusation accepting that accusation. This event does not need a `data` object.
+The `accusationAccepted` event is caused by the accused player of an accusation accepting that accusation. This event does not need a `data` property.
 
 
 ##The `accusationCancelled` Event
-The `accusationCancelled` event is casued by the accusing player of an accusation cancelling that accusation. This event does not need a `data` object.
+The `accusationCancelled` event is caused by the accusing player of an accusation cancelling that accusation. This event does not need a `data` property.
 
 
-##The `talk` Event
-The `talk` event is caused by a player adding to the chat log.
-```JSON
-{
-	"quote": "whatever was said",
-	"by": "85670230-e0cb-4538-b50c-874759e98fd1",
-	"timestamp": 1566229882915
-}
-```
-`quote` describes that player has said. `by` is a version 4 uuid that describes the client who is talking. This will likely be changed to a different form of identification later. `timestamp` describes the time when the quote was added to the chatLog and forwarded.
+##The `roundOver` Event
+The `roundOver` event happens when a player moves the last card from their hand and wins the round. This event does not need a `data` property.
+
+
+##The `roundStarted` Event
+The `roundStarted` event is caused by the start of a new round. This event does not need a `data` property.
+
+
+##The `ruleWritten` Event
+The `ruleWritten` event is caused by the client writing a rule. `data` is the rule that the client wrote.

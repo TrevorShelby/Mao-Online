@@ -1,8 +1,8 @@
 const WebSocket = require('ws')
 
-const { createNewGame, createPlayerActionPools } = require('../../utility/newGame.js')
-const getSpokenCard = require('../../utility/spokenCard.js')
-const safeJsonParse = require('../../utility/safeJsonParse.js')
+const { createNewGame, createPlayerActionPools } = require('../utility/newGame.js')
+const getSpokenCard = require('../utility/spokenCard.js')
+const safeJsonParse = require('../utility/safeJsonParse.js')
 
 
 
@@ -48,13 +48,6 @@ function printRound(round) {
 }
 
 
-const drawAction = {
-	name: 'moveCard',
-	args: {
-		from: {source: 'deck'},
-		to: {source: 'hand'}
-	}
-}
 function getPlayAction(cardIndex) {
 	const topCardIndex = game.round.piles[0].cards.length
 	return {
@@ -62,16 +55,6 @@ function getPlayAction(cardIndex) {
 		args: {
 			from: {source: 'hand', cardIndex},
 			to: {source: 'pile', pileIndex: 0, cardIndex: topCardIndex}
-		}
-	}
-}
-function getTakeAction() {
-	const topCardIndex = game.round.piles[0].cards.length - 1
-	return {
-		name: 'moveCard',
-		args: {
-			from: {source: 'pile', pileIndex: 0, cardIndex: topCardIndex},
-			to: {source: 'hand'}
 		}
 	}
 }
@@ -101,14 +84,15 @@ clients[2].onopen = () => {
 
 	setTimeout( () => {
 		printRound(game.round)
-
-		doAction(0, getPlayAction(6))
+		for(let cardIndex = 6; cardIndex >= 0; cardIndex--) {
+			doAction(0, getPlayAction(cardIndex))
+		}
 		printRound(game.round)
 
-		doAction(1, getTakeAction())
+		doAction(0, { 
+			name: 'writeRule', args: 'When someone plays a two card, it becomes their turn again.'
+		})
 		printRound(game.round)
-
-		doAction(1, drawAction)
-		printRound(game.round)
+		console.log(game.rules)
 	}, 100)
 }

@@ -565,7 +565,7 @@ game: {
 
 playerConnections: <playerID*, WebSocket>
 
-round: { hands, piles, seating, mode*: string, accusation }
+round: { hands, piles, seating, mode*: string, accusation, winner: seat* }
 hands: <seat*, card[]>
 piles: pile[]
 pile: { owner: seat*, cards: card[] }

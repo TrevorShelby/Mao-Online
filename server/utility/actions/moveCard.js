@@ -5,7 +5,7 @@ const { sendEvent_ } = require('../sendMessage.js')
 
 //TODO: Fix. A valid from object and an invalid to object will end with the function removing the
 //card from the round without placing it anywhere. What should happen instead is nothing.
-function moveCard_(game, playerID) {
+function moveCard_(game, playerID, endRound) {
 	const notifyMover = (data) => { sendEvent_(game, [playerID])('cardMoved', data) }
 	const notifyOthers = (data) => { 
 		//using game.round.seating instead of game.playerConnections, since moveCard affects the
@@ -24,8 +24,7 @@ function moveCard_(game, playerID) {
 			&& from.pileIndex == to.pileIndex && from.cardIndex == to.cardIndex
 		) { return }
 		if(from.source == 'deck' && to.source == 'deck') { return }
-		const round = game.round
-		const seat = round.seating.indexOf(playerID)
+		const seat = game.round.seating.indexOf(playerID)
 
 		//getCard is assigned instead of card, so that if an invalid 'to' object is supplied, the
 		//card won't already be taken from its place. In other words, if card was assigned instead,
@@ -34,15 +33,15 @@ function moveCard_(game, playerID) {
 		//of this action that gets forwarded to them.
 		let getCard, eventFrom
 		if(from.source == 'hand') {
-			const hand = round.hands[seat]
-			if(!isValidIndex(from.cardIndex, hand)) { return }
+			const hand = game.round.hands[seat]
+			if(!(from.cardIndex in hand)) { return }
 			getCard = () => {return hand.splice(from.cardIndex, 1)[0]}
 			eventFrom = {source: 'hand', length: hand.length - 1}
 		}
 		else if(from.source == 'pile') {
-			if(!isValidIndex(from.pileIndex, round.piles)) { return }
-			const pile = round.piles[from.pileIndex]
-			if(!isValidIndex(from.cardIndex, pile.cards)) { return }
+			if(!(from.pileIndex in game.round.piles)) { return }
+			const pile = game.round.piles[from.pileIndex]
+			if(!(from.cardIndex in pile.cards)) { return }
 			getCard = () => {return pile.cards.splice(from.cardIndex, 1)[0]}
 			eventFrom = from
 		}
@@ -57,7 +56,7 @@ function moveCard_(game, playerID) {
 		else { return }
 
 		if(to.source == 'hand') {
-			const hand = round.hands[seat]
+			const hand = game.round.hands[seat]
 			const card = getCard()
 			const cardIndex = hand.push(card) - 1
 
@@ -66,7 +65,7 @@ function moveCard_(game, playerID) {
 				from, to, by: seat 
 			})
 			const data = {
-				from, //from-source can't be hand if to-source is. no eventFrom necessary.
+				from, //can't be hand-from if to is a hand-to is. no eventFrom necessary.
 				to: {source: 'hand', length: hand.length},
 				by: seat
 			}
@@ -74,10 +73,9 @@ function moveCard_(game, playerID) {
 			notifyOthers(data)
 		}
 		else if(to.source == 'pile') {
-			if(!isValidIndex(to.pileIndex, round.piles)) { return }
-			const pile = round.piles[to.pileIndex]
-			//isValidIndex isn't called, since an index equal to the length of the pile is also
-			//allowed (i.e. appending).
+			if(!(to.pileIndex in game.round.piles)) { return }
+			const pile = game.round.piles[to.pileIndex]
+			//similar to `to.cardIndex in pile`, but checks to see if to.cardIndex is appending.
 			if(
 				typeof to.cardIndex != 'number'
 				|| (to.cardIndex < 0 || to.cardIndex > pile.length)
@@ -100,18 +98,14 @@ function moveCard_(game, playerID) {
 		}
 		//TODO: Might require removing or changing
 		else { return }
+
+		if(from.source == 'hand' && game.round.hands[seat].length == 0) { endRound(seat) }
 	}
 
 
 	return moveCard
 }
 
-
-function isValidIndex(index, array) {
-	if(typeof index != 'number') { return false }
-	else if(index < 0 || index >= array.length) { return false }
-	else { return true }
-}
 
 
 module.exports = moveCard_

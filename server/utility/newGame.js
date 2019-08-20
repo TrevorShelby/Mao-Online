@@ -80,36 +80,37 @@ function createNewGame(tableID, connections) {
 function createPlayerActionPools(tableID) {
 	const game = games.get(tableID)
 	const roundActionPools = []
+
 	game.playerConnections.forEach( (conn, playerID) => {
-		const playerActionPool = {
-			total: {},
-			active: {},
-			setAction(actionName, action, activate) {
-				this.total[actionName] = action
-				if(activate) {this.active[actionName] = action}
-			},
-			activate(actionName) {this.active[actionName] = this.total[actionName]}
-		}
+
+		const playerActionPool = new ActionPool()
+
 		const seat = game.round.seating.indexOf(playerID)
-		playerActionPool.setAction('talk', talk_(game, playerID), true)
-		playerActionPool.setAction('moveCard', moveCard_(
-			game, playerID, endRound_(game, roundActionPools)
-		), true)
-		playerActionPool.setAction('accuse', accuse_(
-			game, roundActionPools, seat
-		), true)
-		playerActionPool.setAction('accuseWinner', accuseWinner_(
-			game, playerActionPool.total.accuse
-		), false)
-		playerActionPool.setAction('acceptAccusation', acceptAccusation_(
-			game, roundActionPools, seat
-		), false)
-		playerActionPool.setAction('cancelAccusation', cancelAccusation_(
-			game, roundActionPools, seat
-		), false)
-		playerActionPool.setAction('writeRule', writeRule_(
-			game, roundActionPools, playerID
-		), false)
+		//TODO: Fix arguments, add tags.
+		playerActionPool.setAction(
+			'talk', talk_(game, playerID),
+			['always']
+		)
+		playerActionPool.setAction(
+			'moveCard', moveCard_(game, playerID, endRound_(game, roundActionPools)),
+			['play']
+		)
+		playerActionPool.setAction(
+			'accuse', accuse_(game, roundActionPools, seat),
+			['play', 'lastChance']
+		)
+		playerActionPool.setAction(
+			'acceptAccusation', acceptAccusation_(game, roundActionPools, seat),
+			['accusation']
+		)
+		playerActionPool.setAction(
+			'cancelAccusation', cancelAccusation_(game, roundActionPools, seat),
+			['accusation']
+		)
+		playerActionPool.setAction(
+			'writeRule', writeRule_(game, roundActionPools, playerID),
+			['betweenRounds']
+		)
 
 		conn.on('message', onMessage_(playerActionPool.active))
 		roundActionPools.push(playerActionPool)
@@ -118,6 +119,35 @@ function createPlayerActionPools(tableID) {
 
 	return roundActionPools
 }
+
+
+
+class ActionPool {
+	constructor() {
+		this.total = {}
+		this.active = {}
+		this.tag = {}
+	}
+
+	setAction(actionName, action, tags=[])  {
+		this.total[actionName] = action
+		tags.forEach( (tag) => {
+			if(!(tag in tags)) {this.tags[tag] = []}
+			this.tags[tag].push(actionName)
+		})
+	}
+
+	activate(actionName) {this.active[actionName] = this.total[actionName]}
+	activateByTag(tag) {
+		this.tags[tag].forEach( ActionPool.prototype.activate.bind(this) )
+	}
+
+	deactivate(actionName) {delete this.active[actionName]}
+	deactivateByTag(tag) {
+		this.tags[tag].forEach( ActionPool.prototype.deactivate.bind(this) )
+	}
+}
+
 
 
 function onMessage_(activeActions) {

@@ -48,14 +48,14 @@ A client in the game of Mao sends messages in order to perform actions. For the 
 	}
 }
 ```
-Certain actions require an `args` property, which the client provides with any extra information about the action.
+`name` describes wich action the client is taking. Certain actions also require an `args` property, which the client provides with any extra information about the action. Below is a section for each action, with their `name` as the title.
 
 ##The `talk` Action
 The `talk` action lets the client send a chat message. `args` is a string of what the client is saying.
 
 
 ##The `moveCard` Action
-The `moveCard` action lets the client to move a card from one place to another. It is only available during play. `args` looks like this:
+The `moveCard` action lets the client to move a card from one place to another. It is only available during play. `args` is an object that looks like this:
 ```JSON
 {
 	"from": {
@@ -66,25 +66,25 @@ The `moveCard` action lets the client to move a card from one place to another. 
 	}
 }
 ```
-`from` describes the card being moved, and `to` describes where it is being moved to. Both objects will *always* have a `source` property that describes the type of area that the card is being moved from or to.
+`from` describes where the card is being moved from, and `to` describes where it is being moved to. Both objects will *always* have a `source` property that describes the type of area that the card is being moved from or to. There is a section for each different variant for both types of objects below.
 
-###From the Client's Hand
+###Hand-`from` Objects
 ```JSON
 {
 	"source": "hand",
 	"cardIndex": 0	
 }
 ```
-The `cardIndex` describes the exact card in the client's hand that is being moved. If the cardIndex is 0, the first card in the client's hand is moved.
+`cardIndex` describes the exact card in the client's hand that is being moved. If the cardIndex is 0, the first card in the client's hand is moved.
 
-###To the Client's Hand
+###Hand-`to` Objects
 ```JSON
 {
 	"source": "hand",
 }
 ```
 
-###From and To a Pile
+###Pile-`from` and -`to` Objects
 ```JSON
 {
 	"source": "pile",
@@ -94,7 +94,7 @@ The `cardIndex` describes the exact card in the client's hand that is being move
 ```
 `pileIndex` describes the exact pile that the card is going from or to. For `from` objects, `cardIndex` describes which card is being moved from the pile. for `to` object, `cardIndex` describes which index of the pile's cards the card will be moved into. It should be noted that the `cardIndex` for a `to` object can be one index higher than the current last index of the pile's cards, which describes moving the card to the very top of the pile (or, more technically, appending the card to the pile's cards).
 
-###From and To the Deck
+###Deck-`from` and -`to` Objects
 ```JSON
 {
 	"source": "deck"
@@ -104,7 +104,7 @@ Since the deck is infinite, a deck-`to` object will get rid of the card being mo
 
 
 ##The `accuse` Action
-The `accuse` action lets the client accuse a player of breaking a rule. `args` is a number describing the seat of the player being accused.
+The `accuse` action lets the client accuse a player of breaking a rule. It is only available during play. `args` is a number describing the seat of the player being accused.
 
 
 ##The `acceptAccusation` Action
@@ -116,7 +116,7 @@ The `cancelAccusation` action lets an accusing client cancel their accusation. T
 
 
 ##The `writeRule` Action
-The `writeRule` action lets a client, who has won a round, write a rule. `args` is a string of the rule that the client has written.
+The `writeRule` action lets a client, who has just won a round, write a rule. It is only available between rounds. `args` is a string of the rule that the client has written.
 
 
 
@@ -204,7 +204,7 @@ The `accusationCancelled` event is caused by the accusing player of an accusatio
 
 
 ##The `roundOver` Event
-The `roundOver` event happens when a player moves the last card from their hand and wins the round. This event does not need a `data` property.
+The `roundOver` event happens when a player moves the last card from their hand and wins the round. `data` is the seat of the player who won the round.
 
 
 ##The `roundStarted` Event

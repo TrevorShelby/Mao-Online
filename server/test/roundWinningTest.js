@@ -45,25 +45,22 @@ function printRound(round) {
 	console.log()
 	console.log('piles:')
 	console.log(spokenPiles)
+	console.log('--------------------')
 }
 
 
-function getPlayAction(cardIndex) {
+function getPlayArgs(cardIndex) {
 	const topCardIndex = game.round.piles[0].cards.length
 	return {
-		name: 'moveCard',
-		args: {
-			from: {source: 'hand', cardIndex},
-			to: {source: 'pile', pileIndex: 0, cardIndex: topCardIndex}
-		}
+		from: {source: 'hand', cardIndex},
+		to: {source: 'pile', pileIndex: 0, cardIndex: topCardIndex}
 	}
 }
 
-function doAction(seat, action) {
-	const player = players[seat]
-	player.emit('message', JSON.stringify({
-		type: 'action',
-		data: action
+function doAction(clientIndex, name, args) {
+	const client = clients[clientIndex]
+	client.send(JSON.stringify({
+		type: 'action', name, args
 	}))
 }
 
@@ -73,7 +70,7 @@ const clients = [
 	new WebSocket('ws://127.0.0.1:1258?p=1'),
 	new WebSocket('ws://127.0.0.1:1258?p=2')
 ]
-clients[2].onopen = () => {
+clients[2].onopen = async () => {
 	clients[0].onmessage = (messageStr) => {
 		const message = safeJsonParse(messageStr)
 		const messageData = safeJsonParse(message.data)
@@ -82,17 +79,14 @@ clients[2].onopen = () => {
 		console.log(messageData)
 	}
 
-	setTimeout( () => {
-		printRound(game.round)
-		for(let cardIndex = 6; cardIndex >= 0; cardIndex--) {
-			doAction(0, getPlayAction(cardIndex))
-		}
-		printRound(game.round)
-
-		doAction(0, { 
-			name: 'writeRule', args: 'When someone plays a two card, it becomes their turn again.'
-		})
-		printRound(game.round)
-		console.log(game.rules)
-	}, 100)
+	printRound(game.round)
+	for(let cardIndex = 6; cardIndex >= 0; cardIndex--) {
+		doAction(0, 'moveCard', getPlayArgs(cardIndex))
+	}
+	await new Promise( (resolve) => {setTimeout(resolve, 100)} )
+	printRound(game.round)
+	doAction(0, 'writeRule', 'When someone plays a two card, it becomes their turn again.')
+	await new Promise( (resolve) => {setTimeout(resolve, 100)} )
+	printRound(game.round)
+	console.log(game.rules)
 }

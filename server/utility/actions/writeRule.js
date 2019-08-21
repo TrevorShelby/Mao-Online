@@ -19,18 +19,6 @@ function writeRule_(game, actionPools, authorID) {
 				(tags) => { return tags.includes('play') }
 			)
 		})
-		// seatedActionPools.forEach( (actionPool, poolOwnerSeat) => {
-		// 	for(let actionName in actionPool.active) {
-		// 		if(!legalActionNamesDuringPlay.includes(actionName)) {
-		// 			delete actionPool.active[actionName]
-		// 		}
-		// 	}
-		// 	legalActionNamesDuringPlay.forEach( (actionName) => {
-		// 		if(actionPool.active[actionName] == undefined) {
-		// 			actionPool.activate(actionName)
-		// 		}
-		// 	})
-		// })
 		sendEvent_(game, game.round.seating)('roundStarted')
 	}
 	return writeRule

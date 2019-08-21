@@ -1,6 +1,6 @@
 const WebSocket = require('ws')
 
-const { createNewGame, createPlayerActionPools } = require('../utility/newGame.js')
+const { createNewGame, createGameActionPools } = require('../utility/newGame.js')
 const getSpokenCard = require('../utility/spokenCard.js')
 const safeJsonParse = require('../utility/safeJsonParse.js')
 
@@ -14,7 +14,7 @@ wsServer.on('connection', (conn, req) => {
 	if(players.length == 3) {
 		const tableID = 0
 		game = createNewGame(tableID, players)
-		createPlayerActionPools(tableID)
+		createGameActionPools(game)
 	}
 })
 

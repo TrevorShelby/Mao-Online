@@ -1,6 +1,6 @@
 const WebSocket = require('ws')
 
-const { createNewGame, createPlayerActionPools } = require('../../utility/newGame.js')
+const { createNewGame, createGameActionPools } = require('../../utility/newGame.js')
 const safeJsonParse = require('../../utility/safeJsonParse.js')
 
 
@@ -13,7 +13,7 @@ wsServer.on('connection', (conn, req) => {
 	if(players.length == 3) {
 		const tableID = 0
 		game = createNewGame(tableID, players)
-		createPlayerActionPools(tableID)
+		createGameActionPools(game)
 	}
 })
 
@@ -23,7 +23,6 @@ function printChatLog({chatLog, round: {seating}}) {
 	console.log()
 	chatLog.forEach( (chat) => {
 		const speakingSeat = seating.indexOf(chat.by)
-		const datetime = new Date(chat.timestamp)
 		console.log('seat ' +  speakingSeat + ': ' + chat.quote)
 	})
 }
@@ -48,7 +47,7 @@ const clients = [
 	new WebSocket('ws://127.0.0.1:1258'),
 	new WebSocket('ws://127.0.0.1:1258')
 ]
-clients[2].onopen = () => {
+clients[2].onopen = async () => {
 	clients[2].onmessage = (messageStr) => {
 		const message = safeJsonParse(messageStr)
 		const messageData = safeJsonParse(message.data)
@@ -58,7 +57,9 @@ clients[2].onopen = () => {
 	}
 
 	doAction(0, getTalkAction('hey everyone!'))
+	await new Promise( (resolve) => {setTimeout(resolve, 500)})
 	doAction(1, getTalkAction('hello, how is it going?'))
+	await new Promise( (resolve) => {setTimeout(resolve, 500)})
 	doAction(0, getTalkAction('it\'s going pretty good, thank you.'))
 
 	setTimeout( () => {

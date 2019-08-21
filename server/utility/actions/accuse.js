@@ -5,9 +5,8 @@ const { sendEvent_ } = require('../sendMessage.js')
 //issue at the moment.
 
 
-//note: seatedActionPools is an array of action pools with each pool at the index of the seat it
-//belongs to.
-function accuse_(game, seatedActionPools, accuserSeat) {
+
+function accuse_(game, actionPools, accuserSeat) {
 	//TODO: Add logic for if target is accuser. (only once other accusation actions have been made)
 	//TODO: Add accusation timeout logic.
 	function accuse(accusedSeat=undefined) {
@@ -24,13 +23,13 @@ function accuse_(game, seatedActionPools, accuserSeat) {
 		}
 
 		function accuseDuringPlay(accusedSeat) {
-			seatedActionPools.forEach( (actionPool, poolOwnerSeat) => {
-				for(let actionName in actionPool.active) {
-					if(actionName != 'talk') { delete actionPool.active[actionName] }
-				}
+			actionPools.forEach( (actionPool) => {
+				actionPool.changeActivityByTags( 
+					(tags) => { return tags.includes('accusation') }
+				)
 			})
-			seatedActionPools[accusedSeat].activate('acceptAccusation')
-			seatedActionPools[accuserSeat].activate('cancelAccusation')
+			actionPools[accusedSeat].activate('acceptAccusation')
+			actionPools[accuserSeat].activate('cancelAccusation')
 			game.round.accusation = {
 				accuser: accuserSeat,
 				accused: accusedSeat

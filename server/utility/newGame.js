@@ -68,7 +68,6 @@ function createNewGame(tableID, connections) {
 		messageHistories
 	}
 	games.set(tableID, game)
-
 	return game
 }
 
@@ -77,47 +76,45 @@ function createNewGame(tableID, connections) {
 //There is an assumption that everyone at the table is seated for the round. It doesn't need
 //fixing, since this is development code anyways, but I figure it should be noted so the same
 //assumption doesn't carry over to an actual implementation.
-function createPlayerActionPools(tableID) {
-	const game = games.get(tableID)
-	const roundActionPools = []
+function createGameActionPools(game) {
+	const gameActionPools = []
 
 	game.playerConnections.forEach( (conn, playerID) => {
 
 		const playerActionPool = new ActionPool()
 
 		const seat = game.round.seating.indexOf(playerID)
-		//TODO: Fix arguments, add tags.
 		playerActionPool.setAction(
 			'talk', talk_(game, playerID),
-			['always']
+			['play', 'accusation', 'lastChance', 'betweenRounds']
 		)
 		playerActionPool.setAction(
-			'moveCard', moveCard_(game, playerID, endRound_(game, roundActionPools)),
+			'moveCard', moveCard_(game, playerID, endRound_(game, gameActionPools)),
 			['play']
 		)
 		playerActionPool.setAction(
-			'accuse', accuse_(game, roundActionPools, seat),
+			'accuse', accuse_(game, gameActionPools, seat),
 			['play', 'lastChance']
 		)
 		playerActionPool.setAction(
-			'acceptAccusation', acceptAccusation_(game, roundActionPools, seat),
-			['accusation']
+			'acceptAccusation', acceptAccusation_(game, gameActionPools, seat),
+			['accused']
 		)
 		playerActionPool.setAction(
-			'cancelAccusation', cancelAccusation_(game, roundActionPools, seat),
-			['accusation']
+			'cancelAccusation', cancelAccusation_(game, gameActionPools, seat),
+			['accuser']
 		)
 		playerActionPool.setAction(
-			'writeRule', writeRule_(game, roundActionPools, playerID),
+			'writeRule', writeRule_(game, gameActionPools, playerID),
 			['betweenRounds']
 		)
 
+		playerActionPool.activateByTag('play')
 		conn.on('message', onMessage_(playerActionPool.active))
-		roundActionPools.push(playerActionPool)
+		gameActionPools.push(playerActionPool)
 		playerActionPools.set(playerID, playerActionPool)
 	})
-
-	return roundActionPools
+	return gameActionPools
 }
 
 
@@ -126,25 +123,36 @@ class ActionPool {
 	constructor() {
 		this.total = {}
 		this.active = {}
-		this.tag = {}
+		this.actionTags = {}
 	}
 
 	setAction(actionName, action, tags=[])  {
 		this.total[actionName] = action
-		tags.forEach( (tag) => {
-			if(!(tag in tags)) {this.tags[tag] = []}
-			this.tags[tag].push(actionName)
-		})
+		this.actionTags[actionName] = tags
 	}
 
 	activate(actionName) {this.active[actionName] = this.total[actionName]}
 	activateByTag(tag) {
-		this.tags[tag].forEach( ActionPool.prototype.activate.bind(this) )
+		for(let actionName in this.total) {
+			if(this.actionTags[actionName].includes(tag)) { this.activate(actionName) }
+		}
 	}
+
 
 	deactivate(actionName) {delete this.active[actionName]}
 	deactivateByTag(tag) {
-		this.tags[tag].forEach( ActionPool.prototype.deactivate.bind(this) )
+		for(let actionName in this.total) {
+			if(this.actionTags[actionName].includes(tag)) { this.deactivate(actionName) }
+		}
+	}
+
+
+	changeActivityByTags(predicate) {
+		for(let actionName in this.actionTags) {
+			const activeFlag = predicate(this.actionTags[actionName])
+			if(activeFlag == true) { this.activate(actionName) }
+			else if(activeFlag == false) { this.deactivate(actionName) }
+		}
 	}
 }
 
@@ -173,4 +181,4 @@ function onMessage_(activeActions) {
 
 
 module.exports.createNewGame = createNewGame
-module.exports.createPlayerActionPools = createPlayerActionPools
+module.exports.createGameActionPools = createGameActionPools

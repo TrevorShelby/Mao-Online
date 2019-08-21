@@ -1,11 +1,12 @@
 const WebSocket = require('ws')
 
-const { createNewGame, createPlayerActionPools } = require('../../utility/newGame.js')
+const { createNewGame, createGameActionPools } = require('../../utility/newGame.js')
 const safeJsonParse = require('../../utility/safeJsonParse.js')
 
 
+//TODO: Find way to verify actionPools
 let game
-let seatedActionPools
+let actionPools
 const players = []
 const wsServer = new WebSocket.Server({port: 1258})
 wsServer.on('connection', (conn, req) => {
@@ -13,7 +14,7 @@ wsServer.on('connection', (conn, req) => {
 	if(players.length == 3) {
 		const tableID = 0
 		game = createNewGame(tableID, players)
-		seatedActionPools = createPlayerActionPools(tableID)
+		actionPools = createGameActionPools(game)
 	}
 })
 
@@ -22,7 +23,7 @@ wsServer.on('connection', (conn, req) => {
 function printAvailableActions() {
 	console.log()
 	console.log()
-	seatedActionPools.forEach( (actionPool, seat) => {
+	actionPools.forEach( (actionPool, seat) => {
 		console.log('seat ' + seat)
 		console.log(actionPool.active)
 	})
@@ -61,7 +62,7 @@ clients[2].onopen = () => {
 		printAvailableActions()
 		doAction(0, getAccuseAction(1))
 		printAvailableActions()
-		doAction(0, {name: 'cancelAccusation'})
+		doAction(1, {name: 'acceptAccusation'})
 		printAvailableActions()
 	}, 100)
 }

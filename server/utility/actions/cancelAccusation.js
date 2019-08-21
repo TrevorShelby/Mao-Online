@@ -2,10 +2,7 @@ const { sendEvent_ } = require('../sendMessage.js')
 
 
 
-const legalActionNamesDuringPlay = ['talk', 'moveCard', 'accuse']
-//note: seatedActionPools is an array of action pools with each pool at the index of the seat it
-//belongs to.
-function cancelAccusation_(game, seatedActionPools, accuserSeat) {
+function cancelAccusation_(game, actionPools, accuserSeat) {
 	function cancelAccusation() {
 		if(game.round.mode == 'play') {
 			cancelAccusationDuringPlay()
@@ -20,17 +17,10 @@ function cancelAccusation_(game, seatedActionPools, accuserSeat) {
 		}
 
 		function cancelAccusationDuringPlay() {
-			seatedActionPools.forEach( (actionPool, poolOwnerSeat) => {
-				for(let actionName in actionPool.active) {
-					if(!legalActionNamesDuringPlay.includes(actionName)) {
-						delete actionPool.active[actionName]
-					}
-				}
-				legalActionNamesDuringPlay.forEach( (actionName) => {
-					if(actionPool.active[actionName] == undefined) {
-						actionPool.activate(actionName)
-					}
-				})
+			actionPools.forEach( (actionPool) => {
+				actionPool.changeActivityByTags(
+					(tags) => { return tags.includes('play') }
+				)
 			})
 
 			game.round.accusation = undefined

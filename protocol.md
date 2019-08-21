@@ -127,7 +127,14 @@ Since the deck is infinite, a deck-`to` object will get rid of the card being mo
 
 
 ##The `accuse` Action
-The `accuse` action lets the client accuse a player of breaking a rule. `args` is the seat of the player being accused.
+The `accuse` action lets the client accuse a player of breaking a rule.
+```JSON
+{
+	"name": "accuse",
+	"args": 0
+}
+```
+`args` is the seat of the player being accused.
 
 
 ##The `acceptAccusation` Action
@@ -141,10 +148,15 @@ The `acceptAccusation` action lets an accused client accept the accusation towar
 
 ##The `cancelAccusation` Action
 The `cancelAccusation` action lets an accusing client cancel their accusation. This action does not need an `args` property.
+```JSON
+{
+	"name": "cancelAccusation"
+}
+```
 
 
 ##The `writeRule` Action
-The `writeRule` action lets a client who has won a round write a rule.
+The `writeRule` action lets a client, who has won a round, write a rule.
 ```JSON
 {
 	"name": "writeRule",
@@ -178,7 +190,7 @@ The `talk` event is caused by a player adding to the chat log.
 	"timestamp": 1566229882915
 }
 ```
-`quote` describes that player has said. `by` is a version 4 uuid that describes the client who is talking. This will likely be changed to a different form of identification later. `timestamp` describes the time when the quote was added to the chatLog and forwarded.
+`quote` describes that player has said. `by` is a version 4 uuid that describes the client who is talking. This will likely be changed to a different form of identification later. `timestamp` describes the time when the quote was added to the server's chat log and forwarded.
 
 ##The `cardMoved` Event
 The `cardMoved` event is caused by a player moving a card from one place to another (which is done through the `moveCard` action).

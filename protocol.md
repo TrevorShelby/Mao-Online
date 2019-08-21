@@ -39,53 +39,30 @@ A player wins a round of Mao by playing the last card from their hand. Once this
 
 #Actions
 A client in the game of Mao sends messages in order to perform actions. For the client to perform an action, they would have to send a message to the server that looks like this:
-
 ```JSON
 {
 	"type": "action",
-	"data": {
-		...
-	}
-}
-```
-
-##Action Data
-`data` is used to describe the action that the client is taking.
-```JSON
-{
 	"name": "actionName",
 	"args": {
 		...
 	}
 }
 ```
-
-If `data` is present, it will have a `name` property with a string as the value. There is a `name` value for each different action. For instance, the action to move a card uses 'moveCard' as the `name`. The `data` object might also have `args`, which the client provides with any extra information necessary to perform the given action.
-
+Certain actions require an `args` property, which the client provides with any extra information about the action.
 
 ##The `talk` Action
-The `talk` action lets the client send a chat message.
-```JSON
-{
-	"name": "talk",
-	"args": "whatever you want to say"
-}
-```
-`args` is what the client says.
+The `talk` action lets the client send a chat message. `args` is a string of what the client is saying.
 
 
 ##The `moveCard` Action
-The `moveCard` action lets the client to move a card from one place to another. It is only available during play.
+The `moveCard` action lets the client to move a card from one place to another. It is only available during play. `args` looks like this:
 ```JSON
 {
-	"name": "moveCard",
-	"args": {
-		"from": {
-			...
-		},
-		"to": {
-			...
-		}
+	"from": {
+		...
+	},
+	"to": {
+		...
 	}
 }
 ```
@@ -127,43 +104,19 @@ Since the deck is infinite, a deck-`to` object will get rid of the card being mo
 
 
 ##The `accuse` Action
-The `accuse` action lets the client accuse a player of breaking a rule.
-```JSON
-{
-	"name": "accuse",
-	"args": 0
-}
-```
-`args` is the seat of the player being accused.
+The `accuse` action lets the client accuse a player of breaking a rule. `args` is a number describing the seat of the player being accused.
 
 
 ##The `acceptAccusation` Action
 The `acceptAccusation` action lets an accused client accept the accusation towards them. This action does not need an `args` property.
-```JSON
-{
-	"name": "acceptAccusation"
-}
-```
 
 
 ##The `cancelAccusation` Action
 The `cancelAccusation` action lets an accusing client cancel their accusation. This action does not need an `args` property.
-```JSON
-{
-	"name": "cancelAccusation"
-}
-```
 
 
 ##The `writeRule` Action
-The `writeRule` action lets a client, who has won a round, write a rule.
-```JSON
-{
-	"name": "writeRule",
-	"args": "Put your rule here"
-}
-```
-`args` is the rule that the client has written.
+The `writeRule` action lets a client, who has won a round, write a rule. `args` is a string of the rule that the client has written.
 
 
 

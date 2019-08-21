@@ -563,6 +563,22 @@ an action that can't be performed because of the state vs an action that can't b
 
 
 
+
+function cancelAccusation() {
+	//once cancelled
+	game.round.lastChance.resumeTimer()
+}
+
+
+await new Promise( (resolve) => {
+	game.round.lastChance.resumeTimer = resolve
+})
+game.round.lastChance.resumeTimer = undefined
+
+
+
+
+
 games: <tableID*, game>
 game: {
 	playerConnections,

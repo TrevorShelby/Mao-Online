@@ -27,8 +27,6 @@ function cancelAccusation_(game, actionPools, accuserSeat) {
 			sendEvent_(game, game.round.seating)('accusationCancelled')
 		}
 	}
-
-
 	return cancelAccusation
 }
 

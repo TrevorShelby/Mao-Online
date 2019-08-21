@@ -2,10 +2,10 @@ const { sendEvent_ } = require('../sendMessage.js')
 
 
 
-function cancelAccusation_(game, actionPools, accuserSeat) {
-	function cancelAccusation() {
+function endAccusation_(eventName, game, actionPools, accuserSeat) {
+	function endAccusation() {
 		if(game.round.mode == 'play') {
-			cancelAccusationDuringPlay()
+			endAccusationDuringPlay()
 		}
 		//second condition should always be true if the game.round.mode is lastChance. (don't
 		//remove though)
@@ -16,7 +16,7 @@ function cancelAccusation_(game, actionPools, accuserSeat) {
 			//TODO: add resume timer or whatever and then cancel accusation. use same event.
 		}
 
-		function cancelAccusationDuringPlay() {
+		function endAccusationDuringPlay() {
 			actionPools.forEach( (actionPool) => {
 				actionPool.changeActivityByTags(
 					(tags) => { return tags.includes('play') }
@@ -24,12 +24,12 @@ function cancelAccusation_(game, actionPools, accuserSeat) {
 			})
 
 			game.round.accusation = undefined
-			sendEvent_(game, game.round.seating)('accusationCancelled')
+			sendEvent_(game, game.round.seating)(eventName)
 		}
 	}
-	return cancelAccusation
+	return endAccusation
 }
 
 
 
-module.exports = cancelAccusation_
+module.exports = endAccusation_

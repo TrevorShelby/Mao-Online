@@ -4,8 +4,7 @@ const talk_ = require('./actions/talk.js')
 const moveCard_ = require('./actions/moveCard.js')
 const accuse_ = require('./actions/accuse.js')
 const accuseWinner_ = require('./actions/accuseWinner.js')
-const acceptAccusation_ = require('./actions/acceptAccusation.js')
-const cancelAccusation_ = require('./actions/cancelAccusation.js')
+const endAccusation_ = require('./actions/endAccusation.js')
 const writeRule_ = require('./actions/writeRule.js')
 
 const safeJsonParse = require('./safeJsonParse.js')
@@ -97,11 +96,11 @@ function createGameActionPools(game) {
 			['play', 'lastChance']
 		)
 		playerActionPool.setAction(
-			'acceptAccusation', acceptAccusation_(game, gameActionPools, seat),
+			'acceptAccusation', endAccusation_('accusationAccepted', game, gameActionPools, seat),
 			['accused']
 		)
 		playerActionPool.setAction(
-			'cancelAccusation', cancelAccusation_(game, gameActionPools, seat),
+			'cancelAccusation', endAccusation_('accusationCancelled', game, gameActionPools, seat),
 			['accuser']
 		)
 		playerActionPool.setAction(

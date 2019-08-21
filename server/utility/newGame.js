@@ -163,12 +163,12 @@ function onMessage_(activeActions) {
 		const message = safeJsonParse(messageStr)
 		if(typeof message != 'object') { return }
 
-		if(message.type == 'action' && typeof message.data == 'object') {
-			const { name, args } = message.data
-			for(actionName in activeActions) {
-				const action = actionName == name ? activeActions[actionName] : undefined
+		if(message.type == 'action' && typeof message.name == 'string') {
+			for(activeActionName in activeActions) {
+				const action = activeActionName == message.name ? 
+					activeActions[activeActionName] : undefined
 				if(action != undefined) {
-					action(args)
+					action(message.args)
 					break
 				}
 			}

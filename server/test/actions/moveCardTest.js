@@ -45,42 +45,33 @@ function printRound(round) {
 	console.log()
 	console.log('piles:')
 	console.log(spokenPiles)
+	console.log('--------------------')
 }
 
 
-const drawAction = {
-	name: 'moveCard',
-	args: {
-		from: {source: 'deck'},
+const drawArgs = {
+	from: {source: 'deck'},
+	to: {source: 'hand'}
+}
+function getPlayArgs(cardIndex) {
+	const topCardIndex = game.round.piles[0].cards.length
+	return {
+		from: {source: 'hand', cardIndex},
+		to: {source: 'pile', pileIndex: 0, cardIndex: topCardIndex}
+	}
+}
+function getTakeArgs() {
+	const topCardIndex = game.round.piles[0].cards.length - 1
+	return {
+		from: {source: 'pile', pileIndex: 0, cardIndex: topCardIndex},
 		to: {source: 'hand'}
 	}
 }
-function getPlayAction(cardIndex) {
-	const topCardIndex = game.round.piles[0].cards.length
-	return {
-		name: 'moveCard',
-		args: {
-			from: {source: 'hand', cardIndex},
-			to: {source: 'pile', pileIndex: 0, cardIndex: topCardIndex}
-		}
-	}
-}
-function getTakeAction() {
-	const topCardIndex = game.round.piles[0].cards.length - 1
-	return {
-		name: 'moveCard',
-		args: {
-			from: {source: 'pile', pileIndex: 0, cardIndex: topCardIndex},
-			to: {source: 'hand'}
-		}
-	}
-}
 
-function doAction(seat, action) {
-	const player = players[seat]
-	player.emit('message', JSON.stringify({
-		type: 'action',
-		data: action
+function doAction(clientIndex, name, args) {
+	const client = clients[clientIndex]
+	client.send(JSON.stringify({
+		type: 'action', name, args
 	}))
 }
 
@@ -90,7 +81,7 @@ const clients = [
 	new WebSocket('ws://127.0.0.1:1258?p=1'),
 	new WebSocket('ws://127.0.0.1:1258?p=2')
 ]
-clients[2].onopen = () => {
+clients[2].onopen = async () => {
 	clients[2].onmessage = (messageStr) => {
 		const message = safeJsonParse(messageStr)
 		const messageData = safeJsonParse(message.data)
@@ -99,16 +90,15 @@ clients[2].onopen = () => {
 		console.log(messageData)
 	}
 
-	setTimeout( () => {
-		printRound(game.round)
 
-		doAction(0, getPlayAction(6))
-		printRound(game.round)
-
-		doAction(1, getTakeAction())
-		printRound(game.round)
-
-		doAction(1, drawAction)
-		printRound(game.round)
-	}, 100)
+	printRound(game.round)
+	doAction(0, 'moveCard', getPlayArgs(6))
+	await new Promise( (resolve) => {setTimeout(resolve, 100)})
+	printRound(game.round)
+	doAction(1, 'moveCard', getTakeArgs())
+	await new Promise( (resolve) => {setTimeout(resolve, 100)})
+	printRound(game.round)
+	doAction(1, 'moveCard', drawArgs)
+	await new Promise( (resolve) => {setTimeout(resolve, 100)})
+	printRound(game.round)
 }

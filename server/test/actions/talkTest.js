@@ -28,15 +28,10 @@ function printChatLog({chatLog, round: {seating}}) {
 }
 
 
-function getTalkAction(quote) {
-	return { name: 'talk', args: quote }
-}
-
-function doAction(clientIndex, action) {
+function doAction(clientIndex, name, args) {
 	const client = clients[clientIndex]
 	client.send(JSON.stringify({
-		type: 'action',
-		data: action
+		type: 'action', name, args
 	}))
 }
 
@@ -56,11 +51,11 @@ clients[2].onopen = async () => {
 		console.log(messageData)
 	}
 
-	doAction(0, getTalkAction('hey everyone!'))
+	doAction(0, 'talk', 'hey everyone!')
 	await new Promise( (resolve) => {setTimeout(resolve, 500)})
-	doAction(1, getTalkAction('hello, how is it going?'))
+	doAction(1, 'talk', 'hello, how is it going?')
 	await new Promise( (resolve) => {setTimeout(resolve, 500)})
-	doAction(0, getTalkAction('it\'s going pretty good, thank you.'))
+	doAction(0, 'talk', 'it\'s going pretty good, thank you.')
 
 	setTimeout( () => {
 		printChatLog(game)

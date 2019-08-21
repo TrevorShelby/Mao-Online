@@ -27,18 +27,14 @@ function printAvailableActions() {
 		console.log('seat ' + seat)
 		console.log(actionPool.active)
 	})
+	console.log('--------------------')
 }
 
 
-function getAccuseAction(accusedSeat) {
-	return { name: 'accuse', args: accusedSeat }
-}
-
-function doAction(playerIndex, action) {
-	const player = players[playerIndex]
-	player.emit('message', JSON.stringify({
-		type: 'action',
-		data: action
+function doAction(clientIndex, name, args) {
+	const client = clients[clientIndex]
+	client.send(JSON.stringify({
+		type: 'action', name, args
 	}))
 }
 
@@ -49,7 +45,7 @@ const clients = [
 	new WebSocket('ws://127.0.0.1:1258'),
 	new WebSocket('ws://127.0.0.1:1258')
 ]
-clients[2].onopen = () => {
+clients[2].onopen = async () => {
 	clients[2].onmessage = (messageStr) => {
 		const message = safeJsonParse(messageStr)
 		const messageData = safeJsonParse(message.data)
@@ -58,11 +54,11 @@ clients[2].onopen = () => {
 		console.log(messageData)
 	}
 
-	setTimeout( () => {
-		printAvailableActions()
-		doAction(0, getAccuseAction(1))
-		printAvailableActions()
-		doAction(1, {name: 'acceptAccusation'})
-		printAvailableActions()
-	}, 100)
+	printAvailableActions()
+	doAction(0, 'accuse', 1)
+	await new Promise( (resolve) => {setTimeout(resolve, 100)} )
+	printAvailableActions()
+	doAction(1, 'acceptAccusation')
+	await new Promise( (resolve) => {setTimeout(resolve, 100)} )
+	printAvailableActions()
 }

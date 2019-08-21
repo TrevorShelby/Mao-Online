@@ -58,7 +58,7 @@ clients[2].onopen = async () => {
 	doAction(0, 'accuse', 1)
 	await new Promise( (resolve) => {setTimeout(resolve, 100)} )
 	printAvailableActions()
-	doAction(1, 'acceptAccusation')
+	doAction(0, 'cancelAccusation')
 	await new Promise( (resolve) => {setTimeout(resolve, 100)} )
 	printAvailableActions()
 }

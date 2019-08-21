@@ -3,7 +3,8 @@ const uuidv4 = require('uuid/v4')
 const talk_ = require('./actions/talk.js')
 const moveCard_ = require('./actions/moveCard.js')
 const accuse_ = require('./actions/accuse.js')
-const endAccusation_ = require('./actions/endAccusation.js')
+const acceptAccusation_ = require('./actions/acceptAccusation.js')
+const cancelAccusation_ = require('./actions/cancelAccusation.js')
 const writeRule_ = require('./actions/writeRule.js')
 
 const safeJsonParse = require('./safeJsonParse.js')
@@ -95,11 +96,11 @@ function createGameActionPools(game) {
 			['play', 'lastChance']
 		)
 		playerActionPool.setAction(
-			'acceptAccusation', endAccusation_('accusationAccepted', game, gameActionPools, seat),
+			'acceptAccusation', acceptAccusation_(game, gameActionPools),
 			['accused']
 		)
 		playerActionPool.setAction(
-			'cancelAccusation', endAccusation_('accusationCancelled', game, gameActionPools, seat),
+			'cancelAccusation', cancelAccusation_(game, gameActionPools),
 			['accuser']
 		)
 		playerActionPool.setAction(

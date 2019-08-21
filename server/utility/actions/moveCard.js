@@ -5,7 +5,7 @@ const { sendEvent_ } = require('../sendMessage.js')
 
 //TODO: Fix. A valid from object and an invalid to object will end with the function removing the
 //card from the round without placing it anywhere. What should happen instead is nothing.
-function moveCard_(game, playerID, endRound) {
+function moveCard_(game, playerID, startLastChance) {
 	const notifyMover = (data) => { sendEvent_(game, [playerID])('cardMoved', data) }
 	const notifyOthers = (data) => { 
 		//using game.round.seating instead of game.playerConnections, since moveCard affects the
@@ -99,7 +99,7 @@ function moveCard_(game, playerID, endRound) {
 		//TODO: Might require removing or changing
 		else { return }
 
-		if(from.source == 'hand' && game.round.hands[seat].length == 0) { endRound(seat) }
+		if(from.source == 'hand' && game.round.hands[seat].length == 0) { startLastChance(seat) }
 	}
 
 

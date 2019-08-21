@@ -10,7 +10,7 @@ const writeRule_ = require('./actions/writeRule.js')
 const safeJsonParse = require('./safeJsonParse.js')
 const getPlayingCard = require('./playingCard.js')
 const getNewRound = require('./newRound.js')
-const endRound_ = require('./endRound.js')
+const startLastChance_ = require('./startLastChance.js')
 
 
 
@@ -88,7 +88,7 @@ function createGameActionPools(game) {
 			['play', 'accusation', 'lastChance', 'betweenRounds']
 		)
 		playerActionPool.setAction(
-			'moveCard', moveCard_(game, playerID, endRound_(game, gameActionPools)),
+			'moveCard', moveCard_(game, playerID, startLastChance_(game, gameActionPools)),
 			['play']
 		)
 		playerActionPool.setAction(
@@ -105,7 +105,7 @@ function createGameActionPools(game) {
 		)
 		playerActionPool.setAction(
 			'writeRule', writeRule_(game, gameActionPools, playerID),
-			['betweenRounds']
+			['ruleWriter']
 		)
 
 		playerActionPool.activateByTag('play')

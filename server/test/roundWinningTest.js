@@ -20,9 +20,9 @@ wsServer.on('connection', (conn, req) => {
 
 
 
-function printRound(round) {
+function printRound() {
 	const spokenHands = []
-	round.hands.forEach( (hand) => {
+	game.round.hands.forEach( (hand) => {
 		const spokenHand = []
 		spokenHands.push(spokenHand)
 		hand.forEach( (card) => {
@@ -31,7 +31,7 @@ function printRound(round) {
 	})
 
 	const spokenPiles = []
-	round.piles.forEach( (pile) => {
+	game.round.piles.forEach( (pile) => {
 		const spokenPile = []
 		spokenPiles.push(spokenPile)
 		pile.cards.forEach( (card) => {
@@ -79,14 +79,14 @@ clients[2].onopen = async () => {
 		console.log(messageData)
 	}
 
-	printRound(game.round)
+	printRound()
 	for(let cardIndex = 6; cardIndex >= 0; cardIndex--) {
 		doAction(0, 'moveCard', getPlayArgs(cardIndex))
 	}
 	await new Promise( (resolve) => {setTimeout(resolve, 100)} )
-	printRound(game.round)
+	printRound()
 	doAction(0, 'writeRule', 'When someone plays a two card, it becomes their turn again.')
 	await new Promise( (resolve) => {setTimeout(resolve, 100)} )
-	printRound(game.round)
+	printRound()
 	console.log(game.rules)
 }

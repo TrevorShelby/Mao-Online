@@ -12,17 +12,19 @@ function accuse_(game, actionPools, accuserSeat) {
 	function accuse(accusedSeat=undefined) {
 		if(!(accusedSeat in game.round.seating)) { return }
 
-		if(game.round.mode == 'play') {
-			accuseDuringPlay(accusedSeat)
-		}
-		else if(game.round.mode == 'lastChance') {
-			if(accusedSeat == game.round.winner) {
-				//TODO: add stop timer or whatever and then accuse. use same event.
-			}
-			else { return }
+		if(
+			game.round.mode == 'play'
+			|| (game.round.mode == 'lastChance' && accusedSeat == game.round.winner)
+		) { 
+			startAccusation(accusedSeat)
+			sendEvent_(game, game.round.seating)('playerAccused', {
+				accuser: game.round.accusation.accuser,
+				accused: game.round.accusation.accused
+			})
 		}
 
-		function accuseDuringPlay(accusedSeat) {
+
+		function startAccusation(accusedSeat) {
 			actionPools.forEach( (actionPool) => {
 				actionPool.changeActivityByTags( 
 					(tags) => { return tags.includes('accusation') }
@@ -30,11 +32,13 @@ function accuse_(game, actionPools, accuserSeat) {
 			})
 			actionPools[accusedSeat].activate('acceptAccusation')
 			actionPools[accuserSeat].activate('cancelAccusation')
+			const previousMode = game.round.mode
+			game.round.mode = 'accusation'
 			game.round.accusation = {
 				accuser: accuserSeat,
-				accused: accusedSeat
+				accused: accusedSeat,
+				previousMode
 			}
-			sendEvent_(game, game.round.seating)('playerAccused', game.round.accusation)
 		}
 	}
 

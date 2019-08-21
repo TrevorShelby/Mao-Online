@@ -2,24 +2,19 @@ const { sendEvent_ } = require('./sendMessage.js')
 
 
 
-function endRound_(game, seatedActionPools) {
-	function endRound(winningSeat) {
-		game.round.mode = 'betweenRounds'
-		game.round.winner = winningSeat
+function endRound(game, actionPools, winningSeat) {
+	game.round.lastChance = undefined
+	game.round.mode = 'betweenRounds'
+	game.round.winner = winningSeat
 
-		seatedActionPools.forEach( (actionPool, poolOwnerSeat) => {
-			for(actionName in actionPool.active) { 
-				if(actionName != 'talk') { delete actionPool.active[actionName] }
-			}
-
-			if(poolOwnerSeat == winningSeat) { actionPool.activate('writeRule') }
-		})
-
-		sendEvent_(game, game.round.seating)('roundOver', winningSeat)
-	}
-	return endRound
+	actionPools.forEach( (actionPool) => {
+		actionPool.changeActivityByTags( 
+			(tags) => { return tags.includes('accusation') }
+		)
+	})
+	actionPools[winningSeat].activate('writeRule')	
 }
 
 
 
-module.exports = endRound_
+module.exports = endRound

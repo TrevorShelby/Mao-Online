@@ -5,16 +5,16 @@ const endAccusation = require('../endAccusation.js')
 
 function acceptAccusation_(game, actionPools) {
 	function acceptAccusation() {
-		if(game.round.mode == 'play') {
-			endAccusation(game, actionPools)
+		if(game.round.accusation.previousMode == 'play') {
+			endAccusation(game, actionPools, 'play')
 		}
 		//second condition should always be true if the game.round.mode is lastChance. (don't
 		//remove though)
 		else if(
-			game.round.mode == 'lastChance'
+			game.round.accusation.previousMode == 'lastChance'
 			&& game.round.accusation.accused == game.round.winner
 		) {
-			//TODO: add resume timer or whatever and then cancel accusation. use same event.
+			game.round.lastChance.end()
 		}
 		sendEvent_(game, game.round.seating)('accusationAccepted')
 	}

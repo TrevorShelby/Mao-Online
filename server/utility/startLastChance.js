@@ -1,4 +1,6 @@
-const { sendEvent_ } = require('../sendMessage.js')
+const { sendEvent_ } = require('./sendMessage.js')
+const endRound = require('./endRound.js')
+const endAccusation = require('./endAccusation.js')
 
 
 
@@ -12,39 +14,45 @@ function startLastChance_(game, actionPools) {
 				(tags) => { return tags.includes('lastChance') }
 			)
 			//yes, even for the winner.
-			actionPool.activate('accuseWinner')
+			actionPool.activate('accuse')
 		})
 
-		endRoundWhenLastChancePasses(game)
+		endRoundWhenLastChancePasses(game, actionPools, winningSeat)
 	}
 	return startLastChance
 }
 
 
+async function endRoundWhenLastChancePasses(game, actionPools, winningSeat) {
+	game.round.lastChance = { resume: undefined, end: undefined }
 
+	let lastChanceWasSeized = false
+	for(let ticksLeft = 100; ticksLeft > 0; ticksLeft--) {
+		//waits a tick
+		await new Promise( (resolve) => {setTimeout(resolve, 100)})
 
-//copied reference for my tiny peabrain:
-//https://dev.to/chromiumdev/cancellable-async-functions-in-javascript-5gp7
-function makeSingle(generator) {
-  let globalNonce;
-  return async function(...args) {
-    const localNonce = globalNonce = new Object();
-
-    const iter = generator(...args);
-    let resumeValue;
-    for (;;) {
-      const n = iter.next(resumeValue);
-      if (n.done) {
-        return n.value; 
-      }
-
-      resumeValue = await n.value;
-      //this happens during an accuse and would await for accusation to end.
-      if (localNonce !== globalNonce) {
-      }
-    }
-  };
+		if(game.round.mode == 'accusation') {
+			await new Promise( (resolve) => {
+				game.round.lastChance.resume = resolve
+				game.round.lastChance.end = () => {
+					lastChanceWasSeized = true
+					resolve()
+				}
+			})
+			if(lastChanceWasSeized) {
+				game.round.lastChance = undefined
+				endAccusation(game, actionPools, 'play')
+				return
+			}
+			endAccusation(game, actionPools, 'lastChance')
+			game.round.lastChance.resume = undefined
+			game.round.lastChance.end = undefined
+		}
+	}
+	endRound(game, actionPools, winningSeat)
+	sendEvent_(game, game.round.seating)('roundOver', winningSeat)
 }
+
 
 
 module.exports = startLastChance_

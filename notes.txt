@@ -623,3 +623,10 @@ playerActionPools: {
 }
 actionPool: <actionName*, action> (modeled as an object, as actionName is represented by string)
 action: Function(ackUID*, data)
+
+
+
+
+
+
+need a way into a table. probably http upgrade request. that should allow clients to host and join tables. there should also be a way to browse tables so that clients can be informed enough to join a table using the http upgrade request.

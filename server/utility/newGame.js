@@ -3,7 +3,6 @@ const uuidv4 = require('uuid/v4')
 const talk_ = require('./actions/talk.js')
 const moveCard_ = require('./actions/moveCard.js')
 const accuse_ = require('./actions/accuse.js')
-const accuseWinner_ = require('./actions/accuseWinner.js')
 const endAccusation_ = require('./actions/endAccusation.js')
 const writeRule_ = require('./actions/writeRule.js')
 

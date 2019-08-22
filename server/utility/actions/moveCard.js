@@ -6,7 +6,7 @@ const startLastChance = require('../startLastChance.js')
 
 function moveCard_(game, cardMovingSeat) {
 	const notifyMover = (data) => { 
-		sendEvent_(game, game.round.seating[cardMovingSeat])('cardMoved', data)
+		sendEvent_(game, [game.round.seating[cardMovingSeat]])('cardMoved', data)
 	}
 	const notifyOthers = (data) => { 
 		//using game.round.seating instead of game.playerConnections, since moveCard affects the

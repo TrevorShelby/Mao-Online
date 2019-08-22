@@ -66,7 +66,6 @@ function createNewGame(tableID, connections) {
 		messageHistories,
 		inBetweenRounds: false
 	}
-	games.set(tableID, game)
 	return game
 }
 
@@ -75,8 +74,8 @@ function createNewGame(tableID, connections) {
 //There is an assumption that everyone at the table is seated for the round. It doesn't need
 //fixing, since this is development code anyways, but I figure it should be noted so the same
 //assumption doesn't carry over to an actual implementation.
-function createGameActionPools(game) {
-	const gameActionPools = []
+function createTableActionPools(game) {
+	const tableActionPools = []
 
 	game.playerConnections.forEach( (conn, playerID) => {
 		const playerActionPool = {}
@@ -91,9 +90,9 @@ function createGameActionPools(game) {
 		playerActionPool.cancelAccusation = cancelAccusation_(game, playerSeat)
 
 		conn.on('message', onMessage_(playerActionPool))
-		gameActionPools.push(playerActionPool)
+		tableActionPools.push(playerActionPool)
 	})
-	return gameActionPools
+	return tableActionPools
 }
 
 
@@ -103,8 +102,8 @@ function onMessage_(actionPool) {
 		if(typeof message != 'object') { return }
 
 		if(message.type == 'action' && typeof message.name == 'string') {
-			for(actionName in actions) {
-				const action = actionName == message.name ? actions[actionName] : undefined
+			for(actionName in actionPool) {
+				const action = actionName == message.name ? actionPool[actionName] : undefined
 				if(action != undefined) {
 					action(message.args)
 					break
@@ -119,4 +118,4 @@ function onMessage_(actionPool) {
 
 
 module.exports.createNewGame = createNewGame
-module.exports.createGameActionPools = createGameActionPools
+module.exports.createtableActionPools = createtableActionPools

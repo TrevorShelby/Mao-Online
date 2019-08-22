@@ -1,6 +1,6 @@
 const WebSocket = require('ws')
 
-const { createNewGame, createGameActionPools } = require('../../utility/newGame.js')
+const { createNewGame, createTableActionPools } = require('../../utility/newGame.js')
 const safeJsonParse = require('../../utility/safeJsonParse.js')
 
 
@@ -13,7 +13,7 @@ wsServer.on('connection', (conn, req) => {
 	if(players.length == 3) {
 		const tableID = 0
 		game = createNewGame(tableID, players)
-		actionPools = createGameActionPools(game)
+		actionPools = createTableActionPools(game)
 	}
 })
 
@@ -24,7 +24,7 @@ function printAvailableActions() {
 	console.log()
 	actionPools.forEach( (actionPool, seat) => {
 		console.log('seat ' + seat)
-		console.log(actionPool.active)
+		console.log(actionPool)
 	})
 	console.log('--------------------')
 }

@@ -577,18 +577,29 @@ game.round.lastChance.resumeTimer = undefined
 
 
 
-
-
-games: <tableID*, game>
-game: {
+table: {
+	mode: 'game',
 	playerConnections,
-	round,
 	chatLog,
+	game
+}
+
+playerConnections: <playerID*, WebSocket>
+
+chatLog: chat[]
+chat: {
+	quote: string,
+	by: playerID*,
+	timestamp: number
+}
+
+game: {
+	round,
 	rules,
 	messageHistories,
 }
 
-playerConnections: <playerID*, WebSocket>
+
 
 round: { hands, piles, seating, mode*, accusation, winner }
 hands: <seat*, card[]>
@@ -602,12 +613,7 @@ accusation: {
 }
 winner: seat*
 
-chatLog: chat[]
-chat: {
-	quote: string,
-	by: playerID*,
-	timestamp: number
-}
+
 
 //index of a rule in roundRules corresponds to the round it was written after.
 rules: { starterRules: string[], roundRules: string[] }

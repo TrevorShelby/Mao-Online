@@ -3,7 +3,6 @@ const WebSocket = require('ws')
 const { createNewGame, createGameActionPools } = require('../utility/newGame.js')
 
 
-
 const connections = []
 const numPlayersToStart = 4
 const wsServer = new WebSocket.Server({port: 1258})

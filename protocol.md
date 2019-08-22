@@ -33,8 +33,8 @@ Cards can be in one of two card groups: hands or piles. Cards can also be retrie
 During play, one player may accuse another (or even themselves) of breaking a rule. Play cannot continue until the accusation has been settled (players can still talk to each other though). In order for an accusation to be settled, one of two things must happen. Either the accused player accepts the accusation, or the accusing playing cancels the accusation.
 
 
-##Winning and Rule-Writing
-A player wins a round of Mao by playing the last card from their hand. Once this is done, the player creates a new rule in secret, and a new round begins.
+##Winning
+For a player to win a round of Mao, they need to play the last card from their hand. Once they do these, a timer of ten seconds begins. During this time, players can only talk and accuse the winning player of breaking a rule. Once the timer hits zero seconds, that player wins the round. However, if a player accuses the winning player, that timer pauses. And if the winning player then accepts the accusation, they'll forfeit their potential victory (they can still win later in the round). Alternatively, if the accusing player decides to cancel the accusation, the timer resumes. Once a player has won, the victorious player creates a new rule in secret, and a new round begins.
 
 
 #Actions
@@ -104,7 +104,7 @@ Since the deck is infinite, a deck-`to` object will get rid of the card being mo
 
 
 ##The `accuse` Action
-The `accuse` action lets the client accuse a player of breaking a rule. It is only available during play. `args` is a number describing the seat of the player being accused.
+The `accuse` action lets the client accuse a player of breaking a rule. It is only available during play and when a player is about to win after playing their last card. `args` is a number describing the seat of the player being accused.
 
 
 ##The `acceptAccusation` Action

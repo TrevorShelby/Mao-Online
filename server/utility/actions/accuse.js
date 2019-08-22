@@ -10,6 +10,7 @@ function accuse_(game, accuserSeat) {
 	//TODO: Add logic for if target is accuser. (only once other accusation actions have been made)
 	//TODO: Add accusation timeout logic.
 	function accuse(accusedSeat=undefined) {
+		if(game.inBetweenRounds) { return }
 		if(!(accusedSeat in game.round.seating)) { return }
 
 		if(

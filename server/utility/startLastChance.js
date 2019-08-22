@@ -8,12 +8,12 @@ const endAccusation = require('./endAccusation.js')
 function startLastChance(game, winningSeat) {
 	game.round.mode = 'lastChance'
 	game.round.winner = winningSeat
-
-	endRoundWhenLastChancePasses(game, winningSeat)
+	endRoundIfLastChancePasses(game, winningSeat)
 }
 
 
-async function endRoundWhenLastChancePasses(game, winningSeat) {
+//NOTE: DO NOT replace call with code. This function is async. startLastChance is not.
+async function endRoundIfLastChancePasses(game, winningSeat) {
 	game.round.lastChance = { resume: undefined, end: undefined }
 
 	let lastChanceWasSeized = false

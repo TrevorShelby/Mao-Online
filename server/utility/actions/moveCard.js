@@ -18,6 +18,7 @@ function moveCard_(game, cardMovingSeat) {
 	}
 
 	function moveCard({from, to}={}) {
+		if(game.inBetweenRounds) { return }
 		if(game.round.mode != 'play') { return }
 
 		if(typeof from != 'object' || typeof to != 'object') { return }

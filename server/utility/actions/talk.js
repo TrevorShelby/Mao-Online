@@ -2,6 +2,7 @@ const { sendEvent_ } = require('../sendMessage.js')
 
 
 
+//TODO: Replace game with whatever will hold playerConnections.
 function talk_(game, playerID) {
 	function talk(quote) {
 		const playerIDs = []

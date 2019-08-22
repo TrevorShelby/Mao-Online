@@ -15,8 +15,7 @@ const startLastChance_ = require('./startLastChance.js')
 
 
 //This module is not to be used in production. Only to help with discovery and testing.
-const games = new Map()
-const playerActionPools = new Map()
+
 
 //Sets up a game and seats connections into a round in play with some round 0 rules.
 function createNewGame(tableID, connections) {
@@ -93,7 +92,6 @@ function createGameActionPools(game) {
 
 		conn.on('message', onMessage_(playerActionPool))
 		gameActionPools.push(playerActionPool)
-		playerActionPools.set(playerID, playerActionPool)
 	})
 	return gameActionPools
 }

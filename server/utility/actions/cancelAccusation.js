@@ -5,6 +5,8 @@ const endAccusation = require('../endAccusation.js')
 
 function cancelAccusation_(game, cancellingSeat) {
 	function cancelAccusation() {
+		if(game.inBetweenRounds) { return }
+		if(game.round.mode != 'accusation') { return }
 		if(game.round.accusation.accuser != cancellingSeat) { return }
 
 		if(game.round.accusation.previousMode == 'play') {

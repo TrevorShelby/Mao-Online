@@ -3,8 +3,8 @@ const { sendEvent_ } = require('../sendMessage.js')
 
 
 
-//TODO: Fix. A valid from object and an invalid to object will end with the function removing the
-//card from the round without placing it anywhere. What should happen instead is nothing.
+
+//TODO: remove playerID, replace with seat
 function moveCard_(game, playerID, startLastChance) {
 	const notifyMover = (data) => { sendEvent_(game, [playerID])('cardMoved', data) }
 	const notifyOthers = (data) => { 

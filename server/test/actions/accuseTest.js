@@ -4,7 +4,6 @@ const { createNewGame, createGameActionPools } = require('../../utility/newGame.
 const safeJsonParse = require('../../utility/safeJsonParse.js')
 
 
-//TODO: Find way to verify actionPools
 let game
 let actionPools
 const players = []

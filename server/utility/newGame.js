@@ -80,35 +80,18 @@ function createGameActionPools(game) {
 
 	game.playerConnections.forEach( (conn, playerID) => {
 
-		const playerActionPool = new ActionPool()
+		const playerActionPool = {}
 
 		const seat = game.round.seating.indexOf(playerID)
-		playerActionPool.setAction(
-			'talk', talk_(game, playerID),
-			['play', 'accusation', 'lastChance', 'betweenRounds']
+		playerActionPool.talk = talk_(game, playerID)
+		playerActionPool.moveCard = moveCard_(
+			game, playerID, startLastChance_(game, gameActionPools)
 		)
-		playerActionPool.setAction(
-			'moveCard', moveCard_(game, playerID, startLastChance_(game, gameActionPools)),
-			['play']
-		)
-		playerActionPool.setAction(
-			'accuse', accuse_(game, gameActionPools, seat),
-			['play', 'lastChance']
-		)
-		playerActionPool.setAction(
-			'acceptAccusation', acceptAccusation_(game, gameActionPools),
-			['accused']
-		)
-		playerActionPool.setAction(
-			'cancelAccusation', cancelAccusation_(game, gameActionPools),
-			['accuser']
-		)
-		playerActionPool.setAction(
-			'writeRule', writeRule_(game, gameActionPools, playerID),
-			['ruleWriter']
-		)
+		playerActionPool.accuse = accuse_(game, gameActionPools, seat)
+		playerActionPool.acceptAccusation = acceptAccusation_(game, gameActionPools)
+		playerActionPool.cancelAccusation = cancelAccusation_(game, gameActionPools)
+		playerActionPool.writeRule = writeRule_(game, gameActionPools, playerID)
 
-		playerActionPool.activateByTag('play')
 		conn.on('message', onMessage_(playerActionPool.active))
 		gameActionPools.push(playerActionPool)
 		playerActionPools.set(playerID, playerActionPool)

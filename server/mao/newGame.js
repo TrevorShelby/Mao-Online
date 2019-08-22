@@ -1,4 +1,4 @@
-const uuidv4 = require('uuid/v4')
+const uuidv4 = require('uuid')
 
 const talk_ = require('./actions/talk.js')
 const moveCard_ = require('./actions/moveCard.js')
@@ -74,7 +74,7 @@ function createNewGame(tableID, connections) {
 //There is an assumption that everyone at the table is seated for the round. It doesn't need
 //fixing, since this is development code anyways, but I figure it should be noted so the same
 //assumption doesn't carry over to an actual implementation.
-function createTableActionPools(game) {
+function addGameActions(game) {
 	const tableActionPools = []
 
 	game.playerConnections.forEach( (conn, playerID) => {
@@ -92,7 +92,6 @@ function createTableActionPools(game) {
 		conn.on('message', onMessage_(playerActionPool))
 		tableActionPools.push(playerActionPool)
 	})
-	return tableActionPools
 }
 
 
@@ -118,4 +117,4 @@ function onMessage_(actionPool) {
 
 
 module.exports.createNewGame = createNewGame
-module.exports.createTableActionPools = createTableActionPools
+module.exports.addGameActions = addGameActions

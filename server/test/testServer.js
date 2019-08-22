@@ -1,6 +1,6 @@
 const WebSocket = require('ws')
 
-const { createNewGame, createTableActionPools } = require('../game/newGame.js')
+const { createNewGame, addGameActions } = require('../mao/newGame.js')
 
 
 const connections = []
@@ -13,6 +13,6 @@ function onConnectionDuringLobby(conn) {
 	if(connections.length == numPlayersToStart) {
 		wsServer.off('connection', onConnectionDuringLobby)
 		const game = createNewGame(0, connections)
-		createTableActionPools(game)
+		addGameActions(game)
 	}
 }

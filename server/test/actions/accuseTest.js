@@ -1,7 +1,7 @@
 const WebSocket = require('ws')
 
-const { createNewGame, createTableActionPools } = require('../../game/newGame.js')
-const safeJsonParse = require('../../game/safeJsonParse.js')
+const { createNewGame, addGameActions } = require('../../mao/newGame.js')
+const safeJsonParse = require('../../mao/safeJsonParse.js')
 
 
 let game
@@ -13,7 +13,7 @@ wsServer.on('connection', (conn, req) => {
 	if(players.length == 3) {
 		const tableID = 0
 		game = createNewGame(tableID, players)
-		actionPools = createTableActionPools(game)
+		actionPools = addGameActions(game)
 	}
 })
 

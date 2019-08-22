@@ -2,7 +2,6 @@ const getPlayingCard = require('./playingCard.js')
 
 
 
-//This module is not to be used in production. Only to help with discovery and testing.
 function getNewRound(seating) {
 	const hands = []
 	for(let seat = 0; seat < seating.length; seat++) {

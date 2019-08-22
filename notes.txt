@@ -564,19 +564,7 @@ an action that can't be performed because of the state vs an action that can't b
 
 
 
-function cancelAccusation() {
-	//once cancelled
-	game.round.resumeLastChance()
-}
-
-
-await new Promise( (resolve) => {
-	game.round.resumeLastChance = resolve
-})
-game.round.lastChance.resumeTimer = undefined
-
-
-
+//do not add player action pools here. you'll only be repeating the same mistakes. remember, actions themselves check the state to see whether or not and how they should perform.
 table: {
 	playerConnections,
 	mode*,

@@ -1,17 +1,18 @@
 const getPlayingCard = require('../playingCard.js')
 const { sendEvent_ } = require('../sendMessage.js')
+const startLastChance = require('../startLastChance.js')
 
 
 
-
-//TODO: remove playerID, replace with seat
-function moveCard_(game, playerID, startLastChance) {
-	const notifyMover = (data) => { sendEvent_(game, [playerID])('cardMoved', data) }
+function moveCard_(game, cardMovingSeat) {
+	const notifyMover = (data) => { 
+		sendEvent_(game, game.round.seating[cardMovingSeat])('cardMoved', data)
+	}
 	const notifyOthers = (data) => { 
 		//using game.round.seating instead of game.playerConnections, since moveCard affects the
 		//round.
-		const otherPlayerIDs = game.round.seating.filter( (otherPlayerID) => {
-			return playerID != otherPlayerID
+		const otherPlayerIDs = game.round.seating.filter( (_, anotherPlayerSeat) => {
+			return cardMovingSeat != anotherPlayerSeat
 		})
 		sendEvent_(game, otherPlayerIDs)('cardMoved', data)
 	}
@@ -26,7 +27,6 @@ function moveCard_(game, playerID, startLastChance) {
 			&& from.pileIndex == to.pileIndex && from.cardIndex == to.cardIndex
 		) { return }
 		if(from.source == 'deck' && to.source == 'deck') { return }
-		const seat = game.round.seating.indexOf(playerID)
 
 		//getCard is assigned instead of card, so that if an invalid 'to' object is supplied, the
 		//card won't already be taken from its place. In other words, if card was assigned instead,
@@ -35,7 +35,7 @@ function moveCard_(game, playerID, startLastChance) {
 		//of this action that gets forwarded to them.
 		let getCard, eventFrom
 		if(from.source == 'hand') {
-			const hand = game.round.hands[seat]
+			const hand = game.round.hands[cardMovingSeat]
 			if(!(from.cardIndex in hand)) { return }
 			getCard = () => {return hand.splice(from.cardIndex, 1)[0]}
 			eventFrom = {source: 'hand', length: hand.length - 1}
@@ -58,18 +58,18 @@ function moveCard_(game, playerID, startLastChance) {
 		else { return }
 
 		if(to.source == 'hand') {
-			const hand = game.round.hands[seat]
+			const hand = game.round.hands[cardMovingSeat]
 			const card = getCard()
 			const cardIndex = hand.push(card) - 1
 
 			notifyMover({ 
 				card, cardIndex,
-				from, to, by: seat 
+				from, to, by: cardMovingSeat 
 			})
 			const data = {
 				from, //can't be hand-from if to is a hand-to is. no eventFrom necessary.
 				to: {source: 'hand', length: hand.length},
-				by: seat
+				by: cardMovingSeat
 			}
 			if(from.source != 'deck') { data.card = card }
 			notifyOthers(data)
@@ -84,7 +84,7 @@ function moveCard_(game, playerID, startLastChance) {
 			) { return }
 			const card = getCard()
 			pile.cards.splice(to.cardIndex, 0, card)
-			const data = { card, from: eventFrom, to, by: seat }
+			const data = { card, from: eventFrom, to, by: cardMovingSeat }
 			notifyMover(data)
 			notifyOthers(data)
 		}
@@ -92,16 +92,18 @@ function moveCard_(game, playerID, startLastChance) {
 			const card = getCard()
 			notifyMover({
 				card,
-				from: eventFrom, to, by: seat
+				from: eventFrom, to, by: cardMovingSeat
 			})
-			const cardMovedEvent = { from: eventFrom, to, by: seat }
+			const cardMovedEvent = { from: eventFrom, to, by: cardMovingSeat }
 			if(from.source != 'hand') { cardMovedEvent.card = card }
 			notifyOthers(cardMovedEvent)
 		}
 		//TODO: Might require removing or changing
 		else { return }
 
-		if(from.source == 'hand' && game.round.hands[seat].length == 0) { startLastChance(seat) }
+		if(from.source == 'hand' && game.round.hands[cardMovingSeat].length == 0) {
+			startLastChance(game, cardMovingSeat)
+		}
 	}
 
 

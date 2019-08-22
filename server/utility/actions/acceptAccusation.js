@@ -3,12 +3,12 @@ const endAccusation = require('../endAccusation.js')
 
 
 
-function acceptAccusation_(game, actionPools, acceptingSeat) {
+function acceptAccusation_(game, acceptingSeat) {
 	function acceptAccusation() {
 		if(game.round.accusation.accused != acceptingSeat) { return }
 
 		if(game.round.accusation.previousMode == 'play') {
-			endAccusation(game, actionPools, 'play')
+			endAccusation(game, 'play')
 		}
 		//second condition should always be true if the game.round.mode is lastChance. (don't
 		//remove though)

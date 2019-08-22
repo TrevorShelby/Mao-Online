@@ -4,11 +4,11 @@ const getNewRound = require('../newRound.js')
 
 
 
-function writeRule_(game, actionPools, authorID) {
+function writeRule_(game, authorID) {
 	function writeRule(rule=undefined) {
-		if(game.inBetweenRound && game.lastWinner == authorID) { return }
+		if(game.inBetweenRounds && game.lastWinner == authorID) { return }
 
-		if(typeof rule != 'string') { return }
+		if(typeof rule != 'string' && rule.length < 200) { return }
 
 		game.rules.roundRules.push({ rule, author: authorID })
 		sendEvent_(game, [authorID])('ruleWrote', rule)

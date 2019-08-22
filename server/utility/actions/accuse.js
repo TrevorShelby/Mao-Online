@@ -6,7 +6,7 @@ const { sendEvent_ } = require('../sendMessage.js')
 
 
 
-function accuse_(game, actionPools, accuserSeat) {
+function accuse_(game, accuserSeat) {
 	//TODO: Add logic for if target is accuser. (only once other accusation actions have been made)
 	//TODO: Add accusation timeout logic.
 	function accuse(accusedSeat=undefined) {
@@ -25,13 +25,6 @@ function accuse_(game, actionPools, accuserSeat) {
 
 
 		function startAccusation(accusedSeat) {
-			actionPools.forEach( (actionPool) => {
-				actionPool.changeActivityByTags( 
-					(tags) => { return tags.includes('accusation') }
-				)
-			})
-			actionPools[accusedSeat].activate('acceptAccusation')
-			actionPools[accuserSeat].activate('cancelAccusation')
 			const previousMode = game.round.mode
 			game.round.mode = 'accusation'
 			game.round.accusation = {

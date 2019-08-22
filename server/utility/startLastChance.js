@@ -4,26 +4,16 @@ const endAccusation = require('./endAccusation.js')
 
 
 
-function startLastChance_(game, actionPools) {
-	function startLastChance(winningSeat) {
-		game.round.mode = 'lastChance'
-		game.round.winner = winningSeat
 
-		actionPools.forEach( (actionPool, poolOwnerSeat) => {
-			actionPool.changeActivityByTags(
-				(tags) => { return tags.includes('lastChance') }
-			)
-			//yes, even for the winner.
-			actionPool.activate('accuse')
-		})
+function startLastChance(game, winningSeat) {
+	game.round.mode = 'lastChance'
+	game.round.winner = winningSeat
 
-		endRoundWhenLastChancePasses(game, actionPools, winningSeat)
-	}
-	return startLastChance
+	endRoundWhenLastChancePasses(game, winningSeat)
 }
 
 
-async function endRoundWhenLastChancePasses(game, actionPools, winningSeat) {
+async function endRoundWhenLastChancePasses(game, winningSeat) {
 	game.round.lastChance = { resume: undefined, end: undefined }
 
 	let lastChanceWasSeized = false
@@ -41,18 +31,18 @@ async function endRoundWhenLastChancePasses(game, actionPools, winningSeat) {
 			})
 			if(lastChanceWasSeized) {
 				game.round.lastChance = undefined
-				endAccusation(game, actionPools, 'play')
+				endAccusation(game, 'play')
 				return
 			}
-			endAccusation(game, actionPools, 'lastChance')
+			endAccusation(game, 'lastChance')
 			game.round.lastChance.resume = undefined
 			game.round.lastChance.end = undefined
 		}
 	}
-	endRound(game, actionPools, winningSeat)
+	endRound(game, winningSeat)
 	sendEvent_(game, game.round.seating)('roundOver', winningSeat)
 }
 
 
 
-module.exports = startLastChance_
+module.exports = startLastChance

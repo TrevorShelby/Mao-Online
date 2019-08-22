@@ -64,7 +64,8 @@ function createNewGame(tableID, connections) {
 		round,
 		chatLog,
 		rules,
-		messageHistories
+		messageHistories,
+		inBetweenRounds: false
 	}
 	games.set(tableID, game)
 	return game
@@ -79,20 +80,18 @@ function createGameActionPools(game) {
 	const gameActionPools = []
 
 	game.playerConnections.forEach( (conn, playerID) => {
-
 		const playerActionPool = {}
 
-		const seat = game.round.seating.indexOf(playerID)
 		playerActionPool.talk = talk_(game, playerID)
-		playerActionPool.moveCard = moveCard_(
-			game, playerID, startLastChance_(game, gameActionPools)
-		)
-		playerActionPool.accuse = accuse_(game, gameActionPools, seat)
-		playerActionPool.acceptAccusation = acceptAccusation_(game, gameActionPools)
-		playerActionPool.cancelAccusation = cancelAccusation_(game, gameActionPools)
-		playerActionPool.writeRule = writeRule_(game, gameActionPools, playerID)
+		playerActionPool.writeRule = writeRule_(game, playerID)
 
-		conn.on('message', onMessage_(playerActionPool.active))
+		const playerSeat = game.round.seating.indexOf(playerID)
+		playerActionPool.moveCard = moveCard_(game, playerSeat)
+		playerActionPool.accuse = accuse_(game, playerSeat)
+		playerActionPool.acceptAccusation = acceptAccusation_(game, playerSeat)
+		playerActionPool.cancelAccusation = cancelAccusation_(game, playerSeat)
+
+		conn.on('message', onMessage_(playerActionPool))
 		gameActionPools.push(playerActionPool)
 		playerActionPools.set(playerID, playerActionPool)
 	})
@@ -100,15 +99,14 @@ function createGameActionPools(game) {
 }
 
 
-function onMessage_(activeActions) {
+function onMessage_(actionPool) {
 	function onMessage(messageStr) {
 		const message = safeJsonParse(messageStr)
 		if(typeof message != 'object') { return }
 
 		if(message.type == 'action' && typeof message.name == 'string') {
-			for(activeActionName in activeActions) {
-				const action = activeActionName == message.name ? 
-					activeActions[activeActionName] : undefined
+			for(actionName in actions) {
+				const action = actionName == message.name ? actions[actionName] : undefined
 				if(action != undefined) {
 					action(message.args)
 					break

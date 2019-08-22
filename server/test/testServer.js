@@ -1,6 +1,6 @@
 const WebSocket = require('ws')
 
-const { createNewGame, createTableActionPools } = require('../utility/newGame.js')
+const { createNewGame, createTableActionPools } = require('../game/newGame.js')
 
 
 const connections = []

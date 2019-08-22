@@ -1,8 +1,8 @@
 const WebSocket = require('ws')
 
-const { createNewGame, createTableActionPools } = require('../utility/newGame.js')
-const getSpokenCard = require('../utility/spokenCard.js')
-const safeJsonParse = require('../utility/safeJsonParse.js')
+const { createNewGame, createTableActionPools } = require('../game/newGame.js')
+const getSpokenCard = require('../game/spokenCard.js')
+const safeJsonParse = require('../game/safeJsonParse.js')
 
 
 
@@ -74,6 +74,7 @@ clients[2].onopen = async () => {
 	clients[0].onmessage = (messageStr) => {
 		const message = safeJsonParse(messageStr)
 		const messageData = safeJsonParse(message.data)
+		if(messageData.order < 6) { return }
 		console.log()
 		console.log('seat 0')
 		console.log(messageData)
@@ -83,10 +84,9 @@ clients[2].onopen = async () => {
 	for(let cardIndex = 6; cardIndex >= 0; cardIndex--) {
 		doAction(0, 'moveCard', getPlayArgs(cardIndex))
 	}
-	await new Promise( (resolve) => {setTimeout(resolve, 100)} )
+	await new Promise( (resolve) => {setTimeout(resolve, 11000)} )
 	printRound()
 	doAction(0, 'writeRule', 'When someone plays a two card, it becomes their turn again.')
 	await new Promise( (resolve) => {setTimeout(resolve, 100)} )
-	printRound()
 	console.log(game.rules)
 }

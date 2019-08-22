@@ -1,8 +1,8 @@
 const WebSocket = require('ws')
 
-const { createNewGame, createTableActionPools } = require('../../utility/newGame.js')
-const getSpokenCard = require('../../utility/spokenCard.js')
-const safeJsonParse = require('../../utility/safeJsonParse.js')
+const { createNewGame, createTableActionPools } = require('../../game/newGame.js')
+const getSpokenCard = require('../../game/spokenCard.js')
+const safeJsonParse = require('../../game/safeJsonParse.js')
 
 
 

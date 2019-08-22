@@ -17,6 +17,8 @@ function moveCard_(game, playerID, startLastChance) {
 	}
 
 	function moveCard({from, to}={}) {
+		if(game.round.mode != 'play') { return }
+
 		if(typeof from != 'object' || typeof to != 'object') { return }
 		if(from.source == 'hand' && to.source == 'hand') { return }
 		if(

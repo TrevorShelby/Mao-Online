@@ -1,9 +1,5 @@
-function endAccusation(game, actionPools, newMode) {
-	actionPools.forEach( (actionPool) => {
-		actionPool.changeActivityByTags(
-			(tags) => { return tags.includes(newMode) }
-		)
-	})
+//TODO: Remove this and replace uses with this code
+function endAccusation(game, newMode) {
 	game.round.mode = newMode
 	game.round.accusation = undefined
 }

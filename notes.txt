@@ -597,11 +597,13 @@ game: {
 	round,
 	rules,
 	messageHistories,
+	inBetweenRound: boolean,
+	lastWinner: playerID*
 }
 
 
 
-round: { hands, piles, seating, mode*, accusation, winner }
+round: { hands, piles, seating, mode*, accusation }
 hands: <seat*, card[]>
 piles: pile[]
 pile: { owner: seat*, cards: card[] }
@@ -611,7 +613,6 @@ accusation: {
 	accuser: seat*,
 	start: number (timestamp)
 }
-winner: seat*
 
 
 

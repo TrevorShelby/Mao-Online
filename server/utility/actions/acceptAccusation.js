@@ -3,8 +3,10 @@ const endAccusation = require('../endAccusation.js')
 
 
 
-function acceptAccusation_(game, actionPools) {
+function acceptAccusation_(game, actionPools, acceptingSeat) {
 	function acceptAccusation() {
+		if(game.round.accusation.accused != acceptingSeat) { return }
+
 		if(game.round.accusation.previousMode == 'play') {
 			endAccusation(game, actionPools, 'play')
 		}
@@ -16,6 +18,8 @@ function acceptAccusation_(game, actionPools) {
 		) {
 			game.round.lastChance.end()
 		}
+		else { return }
+
 		sendEvent_(game, game.round.seating)('accusationAccepted')
 	}
 	return acceptAccusation

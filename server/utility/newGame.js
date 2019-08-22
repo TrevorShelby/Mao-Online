@@ -100,46 +100,6 @@ function createGameActionPools(game) {
 }
 
 
-
-class ActionPool {
-	constructor() {
-		this.total = {}
-		this.active = {}
-		this.actionTags = {}
-	}
-
-	setAction(actionName, action, tags=[])  {
-		this.total[actionName] = action
-		this.actionTags[actionName] = tags
-	}
-
-	activate(actionName) {this.active[actionName] = this.total[actionName]}
-	activateByTag(tag) {
-		for(let actionName in this.total) {
-			if(this.actionTags[actionName].includes(tag)) { this.activate(actionName) }
-		}
-	}
-
-
-	deactivate(actionName) {delete this.active[actionName]}
-	deactivateByTag(tag) {
-		for(let actionName in this.total) {
-			if(this.actionTags[actionName].includes(tag)) { this.deactivate(actionName) }
-		}
-	}
-
-
-	changeActivityByTags(predicate) {
-		for(let actionName in this.actionTags) {
-			const activeFlag = predicate(this.actionTags[actionName])
-			if(activeFlag == true) { this.activate(actionName) }
-			else if(activeFlag == false) { this.deactivate(actionName) }
-		}
-	}
-}
-
-
-
 function onMessage_(activeActions) {
 	function onMessage(messageStr) {
 		const message = safeJsonParse(messageStr)

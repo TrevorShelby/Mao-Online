@@ -2,17 +2,11 @@ const { sendEvent_ } = require('./sendMessage.js')
 
 
 
-function endRound(game, actionPools, winningSeat) {
+function endRound(game, gameActionPools, winningPlayerID) {
 	game.round.lastChance = undefined
-	game.round.mode = 'betweenRounds'
-	game.round.winner = winningSeat
-
-	actionPools.forEach( (actionPool) => {
-		actionPool.changeActivityByTags( 
-			(tags) => { return tags.includes('accusation') }
-		)
-	})
-	actionPools[winningSeat].activate('writeRule')	
+	game.round.mode = undefined
+	game.inBetweenRounds = true
+	game.round.winner = winningPlayerID
 }
 
 

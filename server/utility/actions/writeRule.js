@@ -4,21 +4,16 @@ const getNewRound = require('../newRound.js')
 
 
 
-const legalActionNamesDuringPlay = ['talk', 'moveCard', 'accuse']
-
 function writeRule_(game, actionPools, authorID) {
 	function writeRule(rule=undefined) {
+		if(game.inBetweenRound && game.lastWinner == authorID) { return }
+
 		if(typeof rule != 'string') { return }
 
 		game.rules.roundRules.push({ rule, author: authorID })
 		sendEvent_(game, [authorID])('ruleWrote', rule)
 
 		game.round = getNewRound(game.round.seating)
-		actionPools.forEach( (actionPool) => {
-			actionPool.changeActivityByTags(
-				(tags) => { return tags.includes('play') }
-			)
-		})
 		sendEvent_(game, game.round.seating)('roundStarted')
 	}
 	return writeRule

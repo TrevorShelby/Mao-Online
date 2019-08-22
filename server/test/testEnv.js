@@ -1,7 +1,7 @@
 const WebSocket = require('ws')
 
-const { createNewGame, createGameActionPools } = require('../../utility/newGame.js')
-const safeJsonParse = require('../../utility/safeJsonParse.js')
+const { createNewGame, createGameActionPools } = require('../utility/newGame.js')
+const safeJsonParse = require('../utility/safeJsonParse.js')
 
 
 let game
@@ -19,10 +19,10 @@ wsServer.on('connection', (conn, req) => {
 
 
 
-function printAvailableActions() {
-	actionPools.forEach( (actionPool, seat) => {
-		console.log('seat ' + seat)
-		console.log(actionPool.active)
+function printChatLog() {
+	game.chatLog.forEach( (chat) => {
+		const speakingSeat = game.round.seating.indexOf(chat.by)
+		console.log('seat ' +  speakingSeat + ': ' + chat.quote)
 	})
 }
 
@@ -127,11 +127,11 @@ clients[2].onopen = async () => {
 	}
 
 	//basic pattern: print, do action, wait (for game to update on action), repeat.
-	printDetails(['mode', 'availableActions'])
+	printDetails(['mode'])
 	accuse(0, 1)
 	await sleep()
-	printDetails(['mode', 'availableActions'])
+	printDetails(['mode'])
 	acceptAccusation(1)
 	await sleep()
-	printDetails(['mode', 'availableActions'])
+	printDetails(['mode'])
 }

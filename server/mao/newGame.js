@@ -1,16 +1,11 @@
-const uuidv4 = require('uuid')
-
-const talk_ = require('./actions/talk.js')
 const moveCard_ = require('./actions/moveCard.js')
 const accuse_ = require('./actions/accuse.js')
 const acceptAccusation_ = require('./actions/acceptAccusation.js')
 const cancelAccusation_ = require('./actions/cancelAccusation.js')
 const writeRule_ = require('./actions/writeRule.js')
 
-const safeJsonParse = require('./safeJsonParse.js')
-const getPlayingCard = require('./playingCard.js')
 const getNewRound = require('./newRound.js')
-const startLastChance_ = require('./startLastChance.js')
+const onActionMessage_ = require('./onActionMessage.js')
 
 
 
@@ -18,20 +13,9 @@ const startLastChance_ = require('./startLastChance.js')
 
 
 //Sets up a game and seats connections into a round in play with some round 0 rules.
-function createNewGame(tableID, connections) {
-	const playerConnections = new Map()
-	//seating relates playerIDs to seats. The index of seating is the seat, and the element is the
-	//playerID.
-	const seating = []
-	connections.forEach( (conn, seat) => {
-		const playerID = uuidv4()
-		playerConnections.set(playerID, conn)
-		seating.push(playerID)
-	})
-
-	const round = getNewRound(seating)
-
-	const chatLog = []
+function createNewGame(playerConnections) {
+	const playerIDs = Array.from(playerConnections.keys())
+	const round = getNewRound(playerIDs)
 
 	const rules = {
 		starterRules: [
@@ -54,18 +38,19 @@ function createNewGame(tableID, connections) {
 	}
 
 	const messageHistories = new Map()
-	seating.forEach( (playerID) => {
+	round.seating.forEach( (playerID) => {
 		messageHistories.set(playerID, [])
 	})
 
+	const inBetweenRounds = false
+
 	const game = {
-		playerConnections,
 		round,
-		chatLog,
 		rules,
 		messageHistories,
-		inBetweenRounds: false
+		inBetweenRounds
 	}
+	addGameActions(game, playerConnections)
 	return game
 }
 
@@ -74,47 +59,19 @@ function createNewGame(tableID, connections) {
 //There is an assumption that everyone at the table is seated for the round. It doesn't need
 //fixing, since this is development code anyways, but I figure it should be noted so the same
 //assumption doesn't carry over to an actual implementation.
-function addGameActions(game) {
-	const tableActionPools = []
-
-	game.playerConnections.forEach( (conn, playerID) => {
-		const playerActionPool = {}
-
-		playerActionPool.talk = talk_(game, playerID)
-		playerActionPool.writeRule = writeRule_(game, playerID)
-
+function addGameActions(game, playerConnections) {
+	playerConnections.forEach( (conn, playerID) => {
 		const playerSeat = game.round.seating.indexOf(playerID)
-		playerActionPool.moveCard = moveCard_(game, playerSeat)
-		playerActionPool.accuse = accuse_(game, playerSeat)
-		playerActionPool.acceptAccusation = acceptAccusation_(game, playerSeat)
-		playerActionPool.cancelAccusation = cancelAccusation_(game, playerSeat)
-
-		conn.on('message', onMessage_(playerActionPool))
-		tableActionPools.push(playerActionPool)
+		conn.on('message', onActionMessage_({
+			writeRule:        writeRule_(game, playerID),
+			moveCard:         moveCard_(game, playerSeat),
+			accuse:           accuse_(game, playerSeat),
+			acceptAccusation: acceptAccusation_(game, playerSeat),
+			cancelAccusation: cancelAccusation_(game, playerSeat)
+		}))
 	})
 }
 
 
-function onMessage_(actionPool) {
-	function onMessage(messageStr) {
-		const message = safeJsonParse(messageStr)
-		if(typeof message != 'object') { return }
 
-		if(message.type == 'action' && typeof message.name == 'string') {
-			for(actionName in actionPool) {
-				const action = actionName == message.name ? actionPool[actionName] : undefined
-				if(action != undefined) {
-					action(message.args)
-					break
-				}
-			}
-		}
-	}
-
-	return onMessage
-}
-
-
-
-module.exports.createNewGame = createNewGame
-module.exports.addGameActions = addGameActions
+module.exports = createNewGame

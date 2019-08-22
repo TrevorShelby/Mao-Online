@@ -587,7 +587,7 @@ game: {
 	round,
 	rules,
 	eventHistories,
-	inBetweenRound: boolean,
+	inBetweenRounds: boolean,
 	lastWinner: playerID*
 }
 

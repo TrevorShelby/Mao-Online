@@ -1,29 +1,26 @@
 const WebSocket = require('ws')
 
-const { createNewGame, addGameActions } = require('../mao/newGame.js')
+const createNewTable = require('../mao/newTable.js')
 const safeJsonParse = require('../mao/safeJsonParse.js')
 const getSpokenCard = require('../mao/spokenCard.js')
 
 
 
-let game
-let actionPools
+let table
 const players = []
 const wsServer = new WebSocket.Server({port: 1258})
 wsServer.on('connection', (conn, req) => {
 	players.push(conn)
 	if(players.length == 3) {
-		const tableID = 0
-		game = createNewGame(tableID, players)
-		actionPools = addGameActions(game)
+		table = createNewTable(players)
 	}
 })
 
 
 
 function printChatLog() {
-	game.chatLog.forEach( (chat) => {
-		const speakingSeat = game.round.seating.indexOf(chat.by)
+	table.chatLog.forEach( (chat) => {
+		const speakingSeat = table.game.round.seating.indexOf(chat.by)
 		console.log('seat ' +  speakingSeat + ': ' + chat.quote)
 	})
 }
@@ -31,7 +28,7 @@ function printChatLog() {
 
 function printRound() {
 	const spokenHands = []
-	game.round.hands.forEach( (hand) => {
+	table.game.round.hands.forEach( (hand) => {
 		const spokenHand = []
 		spokenHands.push(spokenHand)
 		hand.forEach( (card) => {
@@ -40,7 +37,7 @@ function printRound() {
 	})
 
 	const spokenPiles = []
-	game.round.piles.forEach( (pile) => {
+	table.game.round.piles.forEach( (pile) => {
 		const spokenPile = []
 		spokenPiles.push(spokenPile)
 		pile.cards.forEach( (card) => {
@@ -64,7 +61,7 @@ function printDetails(details) {
 		console.log()
 		if(detail == 'chatLog') {printChatLog()}
 		else if(detail == 'round') {printRound()}
-		else if(detail == 'mode') {console.log(game.round.mode)}
+		else if(detail == 'mode') {console.log(table.game.round.mode)}
 	})
 	printDivider()
 }
@@ -94,7 +91,7 @@ function drawCard(drawingSeat) {
 }
 
 function playCard(playingSeat, cardIndex) {
-	const discardTopCardIndex = game.round.piles[0].cards.length
+	const discardTopCardIndex = table.game.round.piles[0].cards.length
 	doAction(playingSeat, 'moveCard', {
 		from: {source: 'hand', cardIndex},
 		to: {source: 'pile', pileIndex: 0, cardIndex: discardTopCardIndex}
@@ -129,19 +126,15 @@ clients[2].onopen = async () => {
 	clients[relayingSeat].onmessage = (messageStr) => {
 		const message = safeJsonParse(messageStr)
 		const messageData = safeJsonParse(message.data)
-		if(messageData.order < 6) { return }
 		console.log()
 		console.log('event (from seat ' + relayingSeat + '):')
 		console.log(messageData)
 	}
 
-	//basic pattern: print, do action, wait (for game to update on action), repeat.
-	for(let i = 0; i < 7; i++) {
-		playCard(0, 0)
-	}
+	//basic pattern: print, do action, wait, repeat.
+
+	printDetails(['round'])
 	await sleep()
-	printDetails(['mode', 'round'])
-	accuse(1, 0)
-	await sleep()
-	printDetails(['mode'])
+	drawCard(0)
+	printDetails(['round'])
 }

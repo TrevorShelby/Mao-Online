@@ -16,7 +16,7 @@ function cancelAccusation_(game, cancellingSeat) {
 		//remove though)
 		else if(
 			game.round.accusation.previousMode == 'lastChance'
-			&& game.round.accusation.accused == game.round.winner
+			&& game.round.accusation.accused == game.round.winningSeat
 		) {
 			game.round.lastChance.resume()
 		}

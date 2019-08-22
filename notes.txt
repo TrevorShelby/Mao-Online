@@ -578,8 +578,8 @@ game.round.lastChance.resumeTimer = undefined
 
 
 table: {
-	mode: 'game',
 	playerConnections,
+	mode*,
 	chatLog,
 	game
 }
@@ -593,17 +593,18 @@ chat: {
 	timestamp: number
 }
 
+
+
 game: {
 	round,
 	rules,
-	messageHistories,
+	eventHistories,
 	inBetweenRound: boolean,
 	lastWinner: playerID*
 }
 
 
-
-round: { hands, piles, seating, mode*, accusation }
+round: { hands, piles, seating, mode*, winningSeat: seat*, accusation } //different mode from table
 hands: <seat*, card[]>
 piles: pile[]
 pile: { owner: seat*, cards: card[] }
@@ -611,25 +612,19 @@ seating: <playerID*, seat*> (modeled as array, with playerIDs as elements, and s
 accusation: {
 	accused: seat*,
 	accuser: seat*,
-	start: number (timestamp)
 }
-
 
 
 //index of a rule in roundRules corresponds to the round it was written after.
 rules: { starterRules: string[], roundRules: string[] }
 
-messageHistories: <playerID*, messageHistory>
-messageHistory: messages[]
+eventHistories: <playerID*, eventHistory>
+eventHistory: messages[]
 
 
-actionPools: <playerID*, playerActionPools>
-playerActionPools: {
-	total: actionPool,
-	active: actionPool
-}
+actionPools: <playerID*, actionPools>
 actionPool: <actionName*, action> (modeled as an object, as actionName is represented by string)
-action: Function(ackUID*, data)
+action: Function(data: Any)
 
 
 

@@ -2,6 +2,7 @@ const WebSocket = require('ws')
 
 const { createNewGame, createTableActionPools } = require('../game/newGame.js')
 const safeJsonParse = require('../game/safeJsonParse.js')
+const getSpokenCard = require('../game/spokenCard.js')
 
 
 
@@ -61,7 +62,7 @@ function printDetails(details) {
 	console.log()
 	details.forEach( (detail) => {
 		console.log()
-		if(detail == 'availableActions') {printAvailableActions()}
+		if(detail == 'chatLog') {printChatLog()}
 		else if(detail == 'round') {printRound()}
 		else if(detail == 'mode') {console.log(game.round.mode)}
 	})
@@ -82,15 +83,21 @@ function talk(talkingSeat, quote) {
 	doAction(talkingSeat, 'talk', quote)
 }
 
-function moveCard(playingSeat, from, to) {
-	doAction(playingSeat, 'moveCard', {from, to})
+function moveCard(cardMovingSeat, from, to) {
+	doAction(cardMovingSeat, 'moveCard', {from, to})
+}
+
+function drawCard(drawingSeat) {
+	doAction(drawingSeat, 'moveCard', {
+		from: {source: 'deck'}, to: {source: 'hand'}
+	})
 }
 
 function playCard(playingSeat, cardIndex) {
 	const discardTopCardIndex = game.round.piles[0].cards.length
 	doAction(playingSeat, 'moveCard', {
 		from: {source: 'hand', cardIndex},
-		to: {source: 'pile', playingSeat}
+		to: {source: 'pile', pileIndex: 0, cardIndex: discardTopCardIndex}
 	})
 }
 
@@ -122,17 +129,19 @@ clients[2].onopen = async () => {
 	clients[relayingSeat].onmessage = (messageStr) => {
 		const message = safeJsonParse(messageStr)
 		const messageData = safeJsonParse(message.data)
+		if(messageData.order < 6) { return }
 		console.log()
 		console.log('event (from seat ' + relayingSeat + '):')
 		console.log(messageData)
 	}
 
 	//basic pattern: print, do action, wait (for game to update on action), repeat.
-	printDetails(['mode'])
-	accuse(0, 1)
+	for(let i = 0; i < 7; i++) {
+		playCard(0, 0)
+	}
 	await sleep()
-	printDetails(['mode'])
-	acceptAccusation(1)
+	printDetails(['mode', 'round'])
+	accuse(1, 0)
 	await sleep()
 	printDetails(['mode'])
 }

@@ -1,11 +1,10 @@
 const { sendEvent_ } = require('./sendMessage.js')
-const endRound = require('./endRound.js')
 
 
 
 function startLastChance(game, winningSeat) {
 	game.round.mode = 'lastChance'
-	game.round.winner = winningSeat
+	game.round.winningSeat = winningSeat
 	endRoundIfLastChancePasses(game, winningSeat)
 }
 
@@ -39,7 +38,13 @@ async function endRoundIfLastChancePasses(game, winningSeat) {
 			game.round.lastChance.end = undefined
 		}
 	}
-	endRound(game, game.round.seating[winningSeat])
+
+	//ends the round
+	game.round.lastChance = undefined
+	game.round.mode = undefined
+	game.inBetweenRounds = true
+	game.lastWinner = winningPlayerID
+
 	sendEvent_(game, game.round.seating)('roundOver', winningSeat)
 }
 

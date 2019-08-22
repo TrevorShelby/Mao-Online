@@ -15,8 +15,8 @@ function accuse_(game, accuserSeat) {
 
 		if(
 			game.round.mode == 'play'
-			|| (game.round.mode == 'lastChance' && accusedSeat == game.round.winner)
-		) { 
+			|| (game.round.mode == 'lastChance' && accusedSeat == game.round.winningSeat)
+		) {
 			startAccusation(accusedSeat)
 			sendEvent_(game, game.round.seating)('playerAccused', {
 				accuser: game.round.accusation.accuser,

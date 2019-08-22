@@ -4,6 +4,7 @@ const talk_ = require('./actions/talk.js')
 
 const createNewGame = require('./newGame.js')
 const onActionMessage_ = require('./onActionMessage.js')
+const sendEvent_ = require('./sendEvent.js')
 
 
 
@@ -19,8 +20,13 @@ function createNewTable(connections) {
 
 	const mode = 'game'
 
-	const playerIDs = Array.from(playerConnections.values())
-	const game = createNewGame(playerIDs, playerConnections)
+	const messageHistories = new Map()
+	playerConnections.forEach( (_, playerID) => {
+		messageHistories.set(playerID, [])
+	})
+	const sendEvent = sendEvent_(playerConnections, messageHistories)
+
+	const game = createNewGame(sendEvent)
 
 
 	const table = {
@@ -32,7 +38,7 @@ function createNewTable(connections) {
 
 	table.playerConnections.forEach( (conn, playerID) => {
 		conn.on('message', onActionMessage_({
-			talk: talk_(game, playerID)
+			talk: talk_(game, sendEvent, playerID)
 		}))
 	})
 

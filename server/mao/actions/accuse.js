@@ -1,12 +1,7 @@
-const { sendEvent_ } = require('../sendMessage.js')
-
 //TODO: When the accused or accusers connections drops, accusation must end. This probably doesn't
 //have any implication on this file in particular, it's just the only one kinda related to the
 //issue at the moment.
-
-
-
-function accuse_(game, accuserSeat) {
+function accuse_(game, sendEvent, accuserSeat) {
 	//TODO: Add logic for if target is accuser. (only once other accusation actions have been made)
 	//TODO: Add accusation timeout logic.
 	function accuse(accusedSeat=undefined) {
@@ -18,7 +13,7 @@ function accuse_(game, accuserSeat) {
 			|| (game.round.mode == 'lastChance' && accusedSeat == game.round.winningSeat)
 		) {
 			startAccusation(accusedSeat)
-			sendEvent_(game, game.round.seating)('playerAccused', {
+			sendEvent(game.round.seating, 'playerAccused', {
 				accuser: game.round.accusation.accuser,
 				accused: game.round.accusation.accused
 			})

@@ -1,7 +1,3 @@
-const { sendEvent_ } = require('../sendMessage.js')
-
-
-
 function talk_(table, playerID) {
 	function talk(quote) {
 		const playerIDs = []
@@ -13,7 +9,7 @@ function talk_(table, playerID) {
 		const chatData = {quote, by: playerID, timestamp: Date.now()}
 		table.chatLog.push(chatData)
 
-		sendEvent_(table, playerIDs)('playerTalked', chatData)
+		sendEvent(playerIDs, 'playerTalked', chatData)
 	}
 	return talk
 }

@@ -1,4 +1,4 @@
-const { sendEvent_ } = require('./sendMessage.js')
+const sendEvent_ = require('./sendEvent.js')
 
 
 

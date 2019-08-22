@@ -1,4 +1,3 @@
-const { sendEvent_ } = require('../sendMessage.js')
 const getNewRound = require('../newRound.js')
 
 
@@ -15,7 +14,7 @@ function writeRule_(game, authorID) {
 
 		game.round = getNewRound(game.round.seating)
 		game.inBetweenRounds = false
-		sendEvent_(game, game.round.seating)('roundStarted')
+		sendEvent(game.round.seating, 'roundStarted')
 	}
 	return writeRule
 }

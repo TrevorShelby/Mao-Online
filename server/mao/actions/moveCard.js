@@ -1,12 +1,11 @@
 const getPlayingCard = require('../playingCard.js')
-const { sendEvent_ } = require('../sendMessage.js')
 const startLastChance = require('../startLastChance.js')
 
 
 
-function moveCard_(game, cardMovingSeat) {
+function moveCard_(game, sendEvent, cardMovingSeat) {
 	const notifyMover = (data) => { 
-		sendEvent_(game, [game.round.seating[cardMovingSeat]])('cardMoved', data)
+		sendEvent([game.round.seating[cardMovingSeat]], 'cardMoved', data)
 	}
 	const notifyOthers = (data) => { 
 		//using game.round.seating instead of game.playerConnections, since moveCard affects the
@@ -14,7 +13,7 @@ function moveCard_(game, cardMovingSeat) {
 		const otherPlayerIDs = game.round.seating.filter( (_, anotherPlayerSeat) => {
 			return cardMovingSeat != anotherPlayerSeat
 		})
-		sendEvent_(game, otherPlayerIDs)('cardMoved', data)
+		sendEvent(otherPlayerIDs, 'cardMoved', data)
 	}
 
 	function moveCard({from, to}={}) {

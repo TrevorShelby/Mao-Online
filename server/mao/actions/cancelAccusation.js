@@ -1,8 +1,4 @@
-const { sendEvent_ } = require('../sendMessage.js')
-
-
-
-function cancelAccusation_(game, cancellingSeat) {
+function cancelAccusation_(game, sendEvent, cancellingSeat) {
 	function cancelAccusation() {
 		if(game.inBetweenRounds) { return }
 		if(game.round.mode != 'accusation') { return }
@@ -22,7 +18,7 @@ function cancelAccusation_(game, cancellingSeat) {
 		}
 		else { return }
 
-		sendEvent_(game, game.round.seating)('accusationCancelled')
+		sendEvent(game.round.seating, 'accusationCancelled')
 	}
 	return cancelAccusation
 }

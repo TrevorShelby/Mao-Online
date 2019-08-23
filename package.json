@@ -4,7 +4,7 @@
   "description": "A server that can run games of Mao.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node ./server/test/testEnv.js"
   },
   "author": "Trevor",
   "license": "ISC",

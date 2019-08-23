@@ -2,7 +2,7 @@ const getNewRound = require('../newRound.js')
 
 
 
-function writeRule_(game, authorID) {
+function writeRule_(game, sendEvent, authorID) {
 	function writeRule(rule=undefined) {
 		if(!game.inBetweenRounds) { return }
 		if(game.lastWinner != authorID) { return }

@@ -13,7 +13,7 @@ const onActionMessage_ = require('./onActionMessage.js')
 
 
 //Sets up a game and seats connections into a round in play with some round 0 rules.
-function createNewGame(sendEvent) {
+function createNewGame(playerConnections, sendEvent) {
 	const playerIDs = Array.from(playerConnections.keys())
 	const round = getNewRound(playerIDs)
 
@@ -44,7 +44,7 @@ function createNewGame(sendEvent) {
 		rules,
 		inBetweenRounds
 	}
-	addGameActions(game, sendEvent)
+	addGameActions(game, playerConnections, sendEvent)
 	return game
 }
 

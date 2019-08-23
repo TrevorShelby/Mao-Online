@@ -23,6 +23,7 @@ function printChatLog() {
 		const speakingSeat = table.game.round.seating.indexOf(chat.by)
 		console.log('seat ' +  speakingSeat + ': ' + chat.quote)
 	})
+	console.log('--------------------')
 }
 
 
@@ -50,20 +51,7 @@ function printRound() {
 	console.log()
 	console.log('piles:')
 	console.log(spokenPiles)
-}
-
-
-function printDivider() {console.log('--------------------')}
-
-function printDetails(details) {
-	console.log()
-	details.forEach( (detail) => {
-		console.log()
-		if(detail == 'chatLog') {printChatLog()}
-		else if(detail == 'round') {printRound()}
-		else if(detail == 'mode') {console.log(table.game.round.mode)}
-	})
-	printDivider()
+	console.log('--------------------')
 }
 
 
@@ -98,6 +86,15 @@ function playCard(playingSeat, cardIndex) {
 	})
 }
 
+function takeCard(takingSeat) {
+	const discardTopCardIndex = table.game.round.piles[0].cards.length - 1
+	doAction(takingSeat, 'moveCard', {
+		from: {source: 'pile', pileIndex: 0, cardIndex: discardTopCardIndex},
+		to: {source: 'hand'}
+	})
+}
+
+
 function accuse(accusingSeat, accusedSeat) {
 	doAction(accusingSeat, 'accuse', accusedSeat)
 }
@@ -112,6 +109,35 @@ function cancelAccusation(accusingSeat) {
 
 
 
+//basic pattern: print, do action, wait, repeat.
+async function testTalk() {
+	talk(0, 'hello world')
+	await sleep()
+	printChatLog()
+	talk(1, 'hey there. how are you?')
+	await sleep()
+	printChatLog()
+	talk(0, 'good. thanks for asking.')
+	await sleep()
+	printChatLog()
+}
+
+
+async function testMoveCard() {
+	printRound()
+	playCard(0, 6)
+	await sleep()
+	printRound()
+	takeCard(1)
+	await sleep()
+	printRound()
+	drawCard(1)
+	await sleep()
+	printRound()
+}
+
+
+
 async function sleep(ms=100) {
 	await new Promise( (resolve) => {setTimeout(resolve, ms)} )
 }
@@ -121,20 +147,15 @@ const clients = [
 	new WebSocket('ws://127.0.0.1:1258'),
 	new WebSocket('ws://127.0.0.1:1258')
 ]
-clients[2].onopen = async () => {
+clients[2].onopen = () => {
 	const relayingSeat = 2
 	clients[relayingSeat].onmessage = (messageStr) => {
 		const message = safeJsonParse(messageStr)
 		const messageData = safeJsonParse(message.data)
-		console.log()
 		console.log('event (from seat ' + relayingSeat + '):')
 		console.log(messageData)
+		console.log()
 	}
 
-	//basic pattern: print, do action, wait, repeat.
-
-	printDetails(['round'])
-	await sleep()
-	drawCard(0)
-	printDetails(['round'])
+	testMoveCard()
 }

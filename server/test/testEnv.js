@@ -2,8 +2,7 @@ const WebSocket = require('ws')
 const uuidv4 = require('uuid/v4')
 
 const createNewTable = require('../mao/newTable.js')
-const safeJsonParse = require('../mao/safeJsonParse.js')
-const getSpokenCard = require('../mao/spokenCard.js')
+const getSpokenCard = require('./spokenCard.js')
 
 
 
@@ -275,4 +274,17 @@ clients[2].onopen = async () => {
 
 	await testAccuse(table)
 	console.log('test complete')
+}
+
+
+
+function safeJsonParse(objStr) {
+	let obj
+	try {
+		obj = JSON.parse(objStr)
+	}
+	catch(err) {
+		obj = objStr
+	}
+	return obj
 }

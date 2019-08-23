@@ -1,6 +1,3 @@
-const safeJsonParse = require('./safeJsonParse.js')
-
-
 function onActionMessage_(actions) {
 	function onActionMessage(messageStr) {
 		const message = safeJsonParse(messageStr)
@@ -18,6 +15,18 @@ function onActionMessage_(actions) {
 	}
 
 	return onActionMessage
+}
+
+
+function safeJsonParse(objStr) {
+	let obj
+	try {
+		obj = JSON.parse(objStr)
+	}
+	catch(err) {
+		obj = objStr
+	}
+	return obj
 }
 
 

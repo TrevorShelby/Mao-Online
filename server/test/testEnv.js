@@ -1,4 +1,5 @@
 const WebSocket = require('ws')
+const uuidv4 = require('uuid/v4')
 
 const createNewTable = require('../mao/newTable.js')
 const safeJsonParse = require('../mao/safeJsonParse.js')
@@ -11,9 +12,16 @@ const players = []
 const wsServer = new WebSocket.Server({port: 1258})
 wsServer.on('connection', (conn, req) => {
 	players.push(conn)
-	if(players.length == 3) {
-		table = createNewTable(players)
+	if(players.length == 1) {
+		table = createNewTable({
+			connection: conn, playerID: uuidv4()
+		}, 4)
 	}
+	else {
+		table.addPlayer(conn, uuidv4())
+	}
+
+	if(players.length == 3) { startGame() }
 })
 
 
@@ -66,6 +74,13 @@ function doAction(seatIndex, name, args) {
 	client.send(JSON.stringify({
 		type: 'action', name, args
 	}))
+}
+
+
+function startGame() {
+	setTimeout( () => {
+		doAction(0, 'startGame')
+	}, 100)
 }
 
 
@@ -256,6 +271,8 @@ clients[2].onopen = async () => {
 		console.log()
 	}
 
-	await testLastChance(table)
+	await sleep()
+
+	await testAccuse(table)
 	console.log('test complete')
 }

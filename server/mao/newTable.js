@@ -23,9 +23,9 @@ function createNewTable(connections) {
 
 	const chatLog = []
 
-	const mode = 'game'
+	const mode = 'lobby'
 
-	const game = createNewGame(playerConnections, sendEvent)
+	const game = undefined
 
 
 	const table = {

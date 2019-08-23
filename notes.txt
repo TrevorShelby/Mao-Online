@@ -586,7 +586,6 @@ chat: {
 game: {
 	round,
 	rules,
-	eventHistories,
 	inBetweenRounds: boolean,
 	lastWinner: playerID*
 }
@@ -624,7 +623,50 @@ need a way into a table. probably http upgrade request. that should allow client
 
 
 
-playerConnections: <playerID*, WebSocket>
-eventHistories: <playerID*, eventHistory>
-sendEvent_: Function(playerConnections, eventHistories)
-createNewGame: Function(playerConnections, sendEvent)
+table: {
+	playerConnections: <playerID*, WebSocket>,
+	chatLog: [
+		{
+			quote: string,
+			by: playerID*,
+			timestamp: number
+		}
+	],
+	mode*: string,
+	game: {
+		round: {
+			hands: [
+				[
+					{ value: number, rank: number, suit: number }
+				]
+			],
+			piles: [
+				{
+					owner: seat*,
+					cards: [
+						{ value: number, rank: number, suit: number }
+					]
+				}
+			],
+			seating: [ playerID* ],
+			mode*: string,
+			winningSeat: seat*,
+			accusation: {
+				accuser: seat*,
+				accused: seat*
+				previousMode: mode*
+			}
+		},
+		rules: {
+			starterRules: [ string ],
+			playerrules: [
+				{
+					rule: string,
+					author: playerID*
+				}
+			]
+		},
+		inBetweenRounds: boolean,
+		lastWinner: playerID*
+	}
+}

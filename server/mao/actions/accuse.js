@@ -1,40 +1,34 @@
 //TODO: When the accused or accusers connections drops, accusation must end. This probably doesn't
 //have any implication on this file in particular, it's just the only one kinda related to the
 //issue at the moment.
-function accuse_(game, sendEvent, accuserSeat) {
-	//TODO: Add logic for if target is accuser. (only once other accusation actions have been made)
-	//TODO: Add accusation timeout logic.
-	function accuse(accusedSeat=undefined) {
-		if(game.inBetweenRounds) { return }
-		if(!(accusedSeat in game.round.seating)) { return }
+//TODO: Add logic for if target is accuser. (only once other accusation actions have been made)
+//TODO: Add accusation timeout logic.
+function accuse(round, sendEvent, accuserSeat, accusedSeat=undefined) {
+	if(!(accusedSeat in round.seating)) { return }
 
-		if(
-			game.round.mode == 'play'
-			|| (game.round.mode == 'lastChance' && accusedSeat == game.round.winningSeat)
-		) {
-			startAccusation(accusedSeat)
-			sendEvent(game.round.seating, 'playerAccused', {
-				accuser: game.round.accusation.accuser,
-				accused: game.round.accusation.accused
-			})
-		}
-
-
-		function startAccusation(accusedSeat) {
-			const previousMode = game.round.mode
-			game.round.mode = 'accusation'
-			game.round.accusation = {
-				accuser: accuserSeat,
-				accused: accusedSeat,
-				previousMode
-			}
-		}
+	if(
+		round.mode == 'play'
+		|| (round.mode == 'lastChance' && accusedSeat == round.winningSeat)
+	) {
+		startAccusation(accusedSeat)
+		sendEvent(round.seating, 'playerAccused', {
+			accuser: round.accusation.accuser,
+			accused: round.accusation.accused
+		})
 	}
 
 
-	return accuse
+	function startAccusation(accusedSeat) {
+		const previousMode = round.mode
+		round.mode = 'accusation'
+		round.accusation = {
+			accuser: accuserSeat,
+			accused: accusedSeat,
+			previousMode
+		}
+	}
 }
 
 
 
-module.exports = accuse_
+module.exports = accuse

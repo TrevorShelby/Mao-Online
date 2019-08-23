@@ -1,6 +1,12 @@
 const uuidv4 = require('uuid')
 
 const talk_ = require('./actions/talk.js')
+const writeRule_ = require('./actions/writeRule.js')
+const roundAction_ = require('./actions/roundAction.js')
+const moveCard = require('./actions/moveCard.js')
+const accuse = require('./actions/accuse.js')
+const acceptAccusation = require('./actions/acceptAccusation.js')
+const cancelAccusation = require('./actions/cancelAccusation.js')
 
 const createNewGame = require('./newGame.js')
 const onActionMessage_ = require('./onActionMessage.js')
@@ -23,9 +29,9 @@ function createNewTable(connections) {
 
 	const chatLog = []
 
-	const mode = 'lobby'
+	const mode = 'game'
 
-	const game = undefined
+	const game = createNewGame(playerConnections, sendEvent)
 
 
 	const table = {
@@ -36,10 +42,21 @@ function createNewTable(connections) {
 	}
 
 	table.playerConnections.forEach( (conn, playerID) => {
-		conn.on('message', onActionMessage_({
-			talk: talk_(table, sendEvent, playerID)
-		}))
+		//TODO: Add writeRule
+		const onActionMessage = onActionMessage_({
+			talk:             talk_(table, sendEvent, playerID),
+
+			writeRule:        writeRule_(table, sendEvent, playerID),
+
+			moveCard:         roundAction_(moveCard, table, sendEvent, playerID),
+			accuse:           roundAction_(accuse, table, sendEvent, playerID),
+			acceptAccusation: roundAction_(acceptAccusation, table, sendEvent, playerID),
+			cancelAccusation: roundAction_(cancelAccusation, table, sendEvent, playerID)
+		})
+		conn.on('message', onActionMessage)
 	})
+
+
 
 	return table
 }

@@ -1,28 +1,22 @@
-function cancelAccusation_(game, sendEvent, cancellingSeat) {
-	function cancelAccusation() {
-		if(game.inBetweenRounds) { return }
-		if(game.round.mode != 'accusation') { return }
-		if(game.round.accusation.accuser != cancellingSeat) { return }
+function cancelAccusation(round, sendEvent, cancellingSeat) {
+	if(round.mode != 'accusation') { return }
+	if(round.accusation.accuser != cancellingSeat) { return }
 
-		if(game.round.accusation.previousMode == 'play') {
-			game.round.mode = 'play'
-			game.round.accusation = undefined
-		}
-		//second condition should always be true if the game.round.mode is lastChance. (don't
-		//remove though)
-		else if(
-			game.round.accusation.previousMode == 'lastChance'
-			&& game.round.accusation.accused == game.round.winningSeat
-		) {
-			game.round.lastChance.resume()
-		}
-		else { return }
+	const previousMode = round.accusation.previousMode
 
-		sendEvent(game.round.seating, 'accusationCancelled')
+	if(previousMode == 'play') {
+		round.mode = 'play'
+		round.accusation = undefined
 	}
-	return cancelAccusation
+	//second condition should always be true if the round.mode is lastChance. (don't remove though)
+	else if(previousMode == 'lastChance' && round.accusation.accused == round.winningSeat) {
+		round.lastChance.resume()
+	}
+	else { return }
+
+	sendEvent(round.seating, 'accusationCancelled', previousMode)
 }
 
 
 
-module.exports = cancelAccusation_
+module.exports = cancelAccusation

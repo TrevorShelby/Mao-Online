@@ -1,28 +1,22 @@
-function acceptAccusation_(game, sendEvent, acceptingSeat) {
-	function acceptAccusation() {
-		if(game.inBetweenRounds) { return }
-		if(game.round.mode != 'accusation') { return }
-		if(game.round.accusation.accused != acceptingSeat) { return }
+function acceptAccusation(round, sendEvent, acceptingSeat) {
+	if(round.mode != 'accusation') { return }
+	if(round.accusation.accused != acceptingSeat) { return }
 
-		if(game.round.accusation.previousMode == 'play') {
-			game.round.mode = 'play'
-			game.round.accusation = undefined
-		}
-		//second condition should always be true if the game.round.mode is lastChance. (don't
-		//remove though)
-		else if(
-			game.round.accusation.previousMode == 'lastChance'
-			&& game.round.accusation.accused == game.round.winningSeat
-		) {
-			game.round.lastChance.end()
-		}
-		else { return }
+	const previousMode = round.accusation.previousMode 
 
-		sendEvent(game.round.seating, 'accusationAccepted')
+	if(previousMode == 'play') {
+		round.mode = 'play'
+		round.accusation = undefined
 	}
-	return acceptAccusation
+	//second condition should always be true if the round.mode is lastChance. (don't remove though)
+	else if(previousMode == 'lastChance' && round.accusation.accused == round.winningSeat) {
+		round.lastChance.end()
+	}
+	else { return }
+
+	sendEvent(round.seating, 'accusationAccepted', previousMode)
 }
 
 
 
-module.exports = acceptAccusation_
+module.exports = acceptAccusation

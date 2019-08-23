@@ -37,6 +37,7 @@ function createNewTable(host, maxPlayers) {
 		mode,
 		game,
 		hostID,
+		//TODO: Add logic for when the host leaves.
 		addPlayer(connection, playerID) {
 			const connections = Array.from(playerConnections.values())
 			if(connections.includes(connection)) { return false }

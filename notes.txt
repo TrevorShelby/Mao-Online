@@ -620,3 +620,11 @@ action: Function(data: Any)
 
 
 need a way into a table. probably http upgrade request. that should allow clients to host and join tables. there should also be a way to browse tables so that clients can be informed enough to join a table using the http upgrade request.
+
+
+
+
+playerConnections: <playerID*, WebSocket>
+eventHistories: <playerID*, eventHistory>
+sendEvent_: Function(playerConnections, eventHistories)
+createNewGame: Function(playerConnections, sendEvent)

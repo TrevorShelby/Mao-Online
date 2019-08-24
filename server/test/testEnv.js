@@ -6,21 +6,10 @@ const getSpokenCard = require('./spokenCard.js')
 
 
 
-let table
-const players = []
+const table = createNewTable()
 const wsServer = new WebSocket.Server({port: 1258})
 wsServer.on('connection', (conn, req) => {
-	players.push(conn)
-	if(players.length == 1) {
-		table = createNewTable({
-			connection: conn, playerID: uuidv4()
-		}, 4)
-	}
-	else {
-		table.addPlayer(conn, uuidv4())
-	}
-
-	if(players.length == 3) { startGame() }
+	table.addPlayer(conn, uuidv4())
 })
 
 
@@ -73,13 +62,6 @@ function doAction(seatIndex, name, args) {
 	client.send(JSON.stringify({
 		type: 'action', name, args
 	}))
-}
-
-
-function startGame() {
-	setTimeout( () => {
-		doAction(0, 'startGame')
-	}, 100)
 }
 
 

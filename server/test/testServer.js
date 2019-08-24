@@ -1,5 +1,5 @@
 const WebSocket = require('ws')
-const uuiv4 = require('uuid/v4')
+const uuidv4 = require('uuid/v4')
 
 const createNewTable = require('../mao/newTable.js')
 
@@ -14,11 +14,31 @@ let table
 function onConnectionDuringLobby(conn) {
 	connections.push(conn)
 	if(connections.length == 1) {
+		const hostID = uuidv4()
 		table = createNewTable({
-			connection: conn, hostID: uuidv4()
+			connection: conn, playerID: hostID
 		}, 5)
+		conn.send(JSON.stringify({
+			type: 'event', name: 'tableJoined', data: {
+				uuid: hostID, isHost: true
+			}
+		}))
 	}
 	else {
-		table.addPlayer(connection, uuidv4())
+		const playerID = uuidv4()
+		table.addPlayer(conn, playerID)
+		conn.send(JSON.stringify({
+			type: 'event', name: 'tableJoined', data: {
+				uuid: playerID, isHost: false
+			}
+		}))
+	}
+}
+
+
+async function restartWhenNeeded() {
+	while(true) {
+		await new Promise( (resolve) => {setTimeout(resolve, 5000)} )
+		
 	}
 }

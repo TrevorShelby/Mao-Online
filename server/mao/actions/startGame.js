@@ -12,7 +12,11 @@ function startGame_(table, sendEvent, starterID) {
 		//code. It doesn't though, because that would make it a bit messier.
 		table.game = createNewGame(table.playerConnections, sendEvent)
 		sendEvent(table.game.playerIDs, 'gameStarted')
-		sendEvent(table.game.round.seating, 'roundStarted')
+		const discard = table.game.round.piles[0].cards
+		table.game.round.seating.forEach( (playerID, seat) => {
+			const hand = table.game.round.hands[seat]
+			sendEvent([playerID], 'roundStarted', {hand, discard})
+		})
 	}
 	return startGame
 }

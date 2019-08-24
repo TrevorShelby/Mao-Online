@@ -37,7 +37,6 @@ function createNewTable(host, maxPlayers) {
 		mode,
 		game,
 		hostID,
-		//TODO: Add logic for when the host leaves.
 		addPlayer(connection, playerID) {
 			const connections = Array.from(playerConnections.values())
 			if(connections.includes(connection)) { return false }
@@ -64,6 +63,14 @@ function createNewTable(host, maxPlayers) {
 			connection.on('close', () => {
 				playerConnections.delete(playerID)
 				eventHistories.delete(playerID)
+				//TODO: Replace with close table
+				if(playerID == hostID) {
+					table.hostID = table.playerConnections.keys().next().value
+					if(table.hostID == undefined) { throw new Error('no more players.') }
+					table.playerConnections.get(hostID).send(JSON.stringify({
+						type: 'event', name: 'madeHost'
+					}))
+				}
 			})
 			return true
 		}

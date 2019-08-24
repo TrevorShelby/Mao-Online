@@ -1,7 +1,7 @@
-function disconnect_(table, sendEvent, disconnectingID) {
+function disconnect_(table, eventHistories, sendEvent, disconnectingID) {
 	function disconnect() {
 		table.playerConnections.delete(disconnectingID)
-		table.eventHistories.delete(disconnectingID)
+		eventHistories.delete(disconnectingID)
 
 		sendEvent(Array.from(table.playerConnections.values), 'playerLeft', disconnectingID)
 

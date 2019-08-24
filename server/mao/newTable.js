@@ -9,12 +9,13 @@ const cancelAccusation = require('./actions/cancelAccusation.js')
 
 const onActionMessage_ = require('./onActionMessage.js')
 const sendEvent_ = require('./sendEvent.js')
+const createNewGame = require('./newGame.js')
 
 
 
 //This module is not to be used in production. Only to help with discovery and testing.
 
-function createNewTable() {
+function createNewTable(playersToStart) {
 	const playerConnections = new Map()
 	const eventHistories = new Map()
 	const sendEvent = sendEvent_(playerConnections, eventHistories)
@@ -23,9 +24,7 @@ function createNewTable() {
 
 	const mode = 'lobby'
 
-	const lobby = {
-		playersToStart: 5
-	}
+	const lobby = { playersToStart }
 
 	const game = undefined
 
@@ -34,6 +33,7 @@ function createNewTable() {
 		chatLog,
 		mode,
 		game,
+		lobby,
 		addPlayer(connection, playerID) {
 			const connections = Array.from(table.playerConnections.values())
 			if(connections.includes(connection)) { return false }
@@ -41,9 +41,8 @@ function createNewTable() {
 			if(table.playerConnections.has(playerID)) { return false }
 			if(table.mode != 'lobby') { return false }
 			if(table.lobby.maxPlayers == table.playerConnections.size) { return false }
-
 			table.playerConnections.set(playerID, connection)
-			table.eventHistories.set(playerID, [])
+			eventHistories.set(playerID, [])
 			const onActionMessage = onActionMessage_({
 				talk:             talk_(table, sendEvent, playerID),
 
@@ -56,9 +55,9 @@ function createNewTable() {
 			})
 			connection.on('message', onActionMessage)
 
-			const disconnect = disconnect_(table, sendEvent, playerID)
+			const disconnect = disconnect_(table, eventHistories, sendEvent, playerID)
 			connection.on('close', disconnect)
-			sendEvent([playerID], 'joinedTable')
+			sendEvent([playerID], 'joinedTable', playerID)
 			if(lobby.playersToStart == table.playerConnections.size) {
 				startGame(table, sendEvent)
 			}

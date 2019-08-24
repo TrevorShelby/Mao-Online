@@ -14,7 +14,7 @@ const sendEvent_ = require('./sendEvent.js')
 
 //This module is not to be used in production. Only to help with discovery and testing.
 
-function createNewTable(host, maxPlayers) {
+function createNewTable(host) {
 	const playerConnections = new Map()
 	const eventHistories = new Map()
 	const sendEvent = sendEvent_(playerConnections, eventHistories)
@@ -24,7 +24,7 @@ function createNewTable(host, maxPlayers) {
 	const mode = 'lobby'
 
 	const lobby = {
-		maxPlayers
+		maxPlayers: 5
 	}
 
 	const game = undefined
@@ -63,15 +63,15 @@ function createNewTable(host, maxPlayers) {
 			connection.on('close', () => {
 				playerConnections.delete(playerID)
 				eventHistories.delete(playerID)
-				//TODO: Replace with close table
+				//TODO: Review later
 				if(playerID == hostID) {
-					table.hostID = table.playerConnections.keys().next().value
-					if(table.hostID == undefined) { throw new Error('no more players.') }
-					table.playerConnections.get(hostID).send(JSON.stringify({
-						type: 'event', name: 'madeHost'
-					}))
+					sendEvent(Array.from(table.playerConnections.values), 'hostLeft')
+					table.playerConnections.forEach( (conn) => {
+						conn.close(4000, 'host left')
+					})
 				}
 			})
+			sendEvent([playerID], 'gameJoined')
 			return true
 		}
 	}

@@ -6,7 +6,7 @@ const getSpokenCard = require('./spokenCard.js')
 
 
 
-const table = createNewTable()
+const table = createNewTable(3)
 const wsServer = new WebSocket.Server({port: 1258})
 wsServer.on('connection', (conn, req) => {
 	table.addPlayer(conn, uuidv4())
@@ -252,9 +252,9 @@ clients[2].onopen = async () => {
 		console.log()
 	}
 
-	await sleep()
+	await sleep(1000)
 
-	await testAccuse(table)
+	await testLastChance(table)
 	console.log('test complete')
 }
 

@@ -101,7 +101,7 @@ function moveCard(round, sendEvent, cardMovingSeat, {from, to}={}) {
 	else { return }
 
 	if(from.source == 'hand' && round.hands[cardMovingSeat].length == 0) {
-		startLastChance(round, sendEvent, cardMovingSeat)
+		startLastChance(round, cardMovingSeat)
 	}
 }
 

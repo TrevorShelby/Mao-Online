@@ -3,10 +3,7 @@ const onActionMessage_ = require('./onActionMessage.js')
 
 
 
-//This module is not to be used in production. Only to help with discovery and testing.
-
-
-//Sets up a game and seats connections into a round in play with some round 0 rules.
+//Sets up a game and seats connections into a round in play with some starter rules.
 function createNewGame(playerConnections, sendEvent) {
 	const playerIDs = Array.from(playerConnections.keys())
 	const round = getNewRound(playerIDs)
@@ -29,9 +26,9 @@ function createNewGame(playerConnections, sendEvent) {
 		rules,
 		inBetweenRounds
 	}
-	game.round.endRound = (winningPlayerID) => {
+	game.round.endRound = (winningSeat) => {
 		game.inBetweenRounds = true
-		game.lastWinner = winningPlayerID
+		game.lastWinner = game.round.seating[winningSeat]
 
 		sendEvent(game.round.seating, 'roundOver', winningSeat)
 		game.round = undefined

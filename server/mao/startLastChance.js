@@ -1,8 +1,4 @@
-const sendEvent_ = require('./sendEvent.js')
-
-
-
-function startLastChance(round, sendEvent, winningSeat) {
+function startLastChance(round, winningSeat) {
 	round.mode = 'lastChance'
 	round.winningSeat = winningSeat
 	endRoundIfLastChancePasses(round, winningSeat)
@@ -10,11 +6,11 @@ function startLastChance(round, sendEvent, winningSeat) {
 
 
 //NOTE: DO NOT replace call with code. This function is async. startLastChance is not.
-async function endRoundIfLastChancePasses(round, sendEvent, winningSeat) {
+async function endRoundIfLastChancePasses(round, winningSeat) {
 	round.lastChance = { resume: undefined, end: undefined }
 
 	let lastChanceWasSeized = false
-	for(let ticksLeft = 30; ticksLeft > 0; ticksLeft--) {
+	for(let ticksLeft = 100; ticksLeft > 0; ticksLeft--) {
 		//waits a tick
 		await new Promise( (resolve) => {setTimeout(resolve, 100)})
 
@@ -42,8 +38,7 @@ async function endRoundIfLastChancePasses(round, sendEvent, winningSeat) {
 		}
 	}
 
-	const winningPlayerID = round.seating.indexOf(winningSeat)
-	round.endRound(winningPlayerID)
+	round.endRound(winningSeat)
 }
 
 

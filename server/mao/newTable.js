@@ -13,8 +13,6 @@ const createNewGame = require('./newGame.js')
 
 
 
-//This module is not to be used in production. Only to help with discovery and testing.
-
 function createNewTable(playersToStart) {
 	const playerConnections = new Map()
 	const eventHistories = new Map()
@@ -24,8 +22,6 @@ function createNewTable(playersToStart) {
 
 	const mode = 'lobby'
 
-	const lobby = { playersToStart }
-
 	const game = undefined
 
 	const table = {
@@ -33,14 +29,14 @@ function createNewTable(playersToStart) {
 		chatLog,
 		mode,
 		game,
-		lobby,
+		playersToStart,
 		addPlayer(connection, playerID) {
 			const connections = Array.from(table.playerConnections.values())
 			if(connections.includes(connection)) { return false }
 			if(typeof playerID != 'string') { return false }
 			if(table.playerConnections.has(playerID)) { return false }
 			if(table.mode != 'lobby') { return false }
-			if(table.lobby.maxPlayers == table.playerConnections.size) { return false }
+			if(table.playersToStart == table.playerConnections.size) { return false }
 			table.playerConnections.set(playerID, connection)
 			eventHistories.set(playerID, [])
 			const onActionMessage = onActionMessage_({
@@ -58,7 +54,7 @@ function createNewTable(playersToStart) {
 			const disconnect = disconnect_(table, eventHistories, sendEvent, playerID)
 			connection.on('close', disconnect)
 			sendEvent([playerID], 'joinedTable', playerID)
-			if(lobby.playersToStart == table.playerConnections.size) {
+			if(playersToStart == table.playerConnections.size) {
 				startGame(table, sendEvent)
 			}
 			return true
@@ -73,7 +69,7 @@ function createNewTable(playersToStart) {
 
 function startGame(table, sendEvent) {
 	table.mode = 'game'
-	//Passing sendEvent here is find. startGame could just as well have used the createNewGame
+	//Passing sendEvent here is fine. startGame could just as well have used the createNewGame
 	//code. It doesn't though, because that would make it a bit messier.
 	table.game = createNewGame(table.playerConnections, sendEvent)
 	sendEvent(table.game.playerIDs, 'gameStarted')

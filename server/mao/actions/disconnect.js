@@ -1,15 +1,20 @@
+const getNewRound = require('../newRound.js')
+
+
+
 function disconnect_(table, eventHistories, sendEvent, disconnectingID) {
 	function disconnect() {
 		table.playerConnections.delete(disconnectingID)
 		eventHistories.delete(disconnectingID)
 
-		sendEvent(Array.from(table.playerConnections.values), 'playerLeft', disconnectingID)
+		sendEvent(Array.from(table.playerConnections.keys()), 'playerLeft', disconnectingID)
 
 		if(table.mode == 'game') {
+			delete table.game.playerIDs[table.game.playerIDs.indexOf(disconnectingID)]
 			if(table.game.inBetweenRounds && table.game.lastWinner == disconnectingID) {
-				table.game.round = getNewRound(game.playerIDs)
+				table.game.round = getNewRound(table.game.playerIDs)
 				table.game.inBetweenRounds = false
-				sendEvent(game.round.seating, 'roundStarted')
+				sendEvent(table.game.playerIDs, 'roundStarted')
 			}
 			else if(!table.game.inBetweenRounds) {
 				const disconnectingSeat = table.game.round.seating.indexOf(disconnectingID)

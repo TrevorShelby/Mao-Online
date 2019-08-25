@@ -633,6 +633,7 @@ table: {
 		}
 	],
 	mode*: string,
+	playersToStart: number
 	game: {
 		round: {
 			hands: [
@@ -659,7 +660,7 @@ table: {
 		},
 		rules: {
 			starterRules: [ string ],
-			playerrules: [
+			playerRules: [
 				{
 					rule: string,
 					author: playerID*

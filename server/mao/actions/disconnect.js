@@ -35,7 +35,9 @@ function disconnect_(table, eventHistories, sendEvent, disconnectingID) {
 				}
 			})
 			if(disconnectorRules.length > 0) {
-				sendEvent(table.game.round.seating, 'rulesRevealed', disconnectorRules)
+				sendEvent(table.game.round.seating, 'rulesRevealed', {
+					author: disconnectingID, rules: disconnectorRules
+				})
 			}
 		}
 		//TODO: replace later

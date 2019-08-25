@@ -13,9 +13,9 @@ function writeRule_(table, sendEvent, authorID) {
 		table.game.rules.playerRules.push({ rule, author: authorID })
 		sendEvent([authorID], 'ruleWrote', rule)
 
-		table.game.round = getNewRound(game.playerIDs)
+		table.game.round = getNewRound(table.game.playerIDs)
 		table.game.inBetweenRounds = false
-		sendEvent(game.round.seating, 'roundStarted')
+		sendEvent(table.game.round.seating, 'roundStarted')
 	}
 	return writeRule
 }

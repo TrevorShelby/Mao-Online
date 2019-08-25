@@ -30,17 +30,17 @@ connections.forEach( (conn) => {
 })
 
 await waitFor('roundStarted')
-
 table.game.round.hands[0] = [ {value: 0, rank: 0, suit: 0} ]
-
 doAction(client1, 'moveCard', {
 	from: {source: 'hand', cardIndex: 0},
 	to: {source: 'pile', pileIndex: 0, cardIndex: 1}
 })
+
 await waitFor('roundOver')
+doAction(client1, 'writeRule', 'whenever a two is played, go again.')
 
+await waitFor('roundStarted')
 client1.close()
-
 
 })
 

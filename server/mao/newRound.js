@@ -2,7 +2,9 @@ const getPlayingCard = require('./playingCard.js')
 
 
 
-function getNewRound(seating) {
+function getNewRound(playerIDs) {
+	//TODO: Look into this assignment and see if seating is necessary.
+	const seating = playerIDs.concat([])
 	const hands = []
 	for(let seat = 0; seat < seating.length; seat++) {
 		const hand = []

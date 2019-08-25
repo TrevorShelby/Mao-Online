@@ -1,4 +1,5 @@
 const getNewRound = require('../newRound.js')
+const sendRoundStartedEvent = require('../sendRoundStartedEvent.js')
 
 
 
@@ -15,7 +16,7 @@ function writeRule_(table, sendEvent, authorID) {
 
 		table.game.round = getNewRound(table.game.playerIDs)
 		table.game.inBetweenRounds = false
-		sendEvent(table.game.round.seating, 'roundStarted')
+		sendRoundStartedEvent(table.game.round, sendEvent)
 	}
 	return writeRule
 }

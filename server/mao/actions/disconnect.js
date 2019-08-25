@@ -1,4 +1,5 @@
 const getNewRound = require('../newRound.js')
+const sendRoundStartedEvent = require('../sendRoundStartedEvent.js')
 
 
 
@@ -14,7 +15,7 @@ function disconnect_(table, eventHistories, sendEvent, disconnectingID) {
 			if(table.game.inBetweenRounds && table.game.lastWinner == disconnectingID) {
 				table.game.round = getNewRound(table.game.playerIDs)
 				table.game.inBetweenRounds = false
-				sendEvent(table.game.playerIDs, 'roundStarted')
+				sendRoundStartedEvent(table.game.round, sendEvent)
 			}
 			else if(!table.game.inBetweenRounds) {
 				const disconnectingSeat = table.game.round.seating.indexOf(disconnectingID)

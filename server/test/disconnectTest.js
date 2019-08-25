@@ -42,6 +42,9 @@ doAction(client1, 'writeRule', 'whenever a two is played, go again.')
 await waitFor('roundStarted')
 client1.close()
 
+
+
+
 })
 
 

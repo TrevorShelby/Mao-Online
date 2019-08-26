@@ -1,7 +1,7 @@
 function startLastChance(round, sendEvent, winningSeat) {
 	round.mode = 'lastChance'
 	round.winningSeat = winningSeat
-	sendEvent(round.seating, 'lastChanceBegun', winningSeat)
+	sendEvent(round.seating, 'lastChanceStarted', {winningSeat, timeStarted: Date.now()})
 	endRoundIfLastChancePasses(round)
 }
 

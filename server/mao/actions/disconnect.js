@@ -34,7 +34,10 @@ function disconnect_(table, eventHistories, sendEvent, disconnectingID) {
 					table.game.round.mode == 'lastChance' 
 					&& table.game.round.winningSeat == disconnectingSeat
 				) {
-					//TODO: Change lastChance code.
+					table.game.round.mode = 'play'
+					table.game.round.accusation = undefined
+					table.game.round.winningSeat = undefined
+					sendEvent(table.game.round.seating, 'winningSeatEmptied')
 				}
 			}
 			const disconnectorRules = table.game.rules.playerRules.filter( (playerRule) => {

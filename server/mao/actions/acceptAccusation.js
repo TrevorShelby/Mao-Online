@@ -12,7 +12,6 @@ function acceptAccusation(round, sendEvent, acceptingSeat) {
 	else if(previousMode == 'lastChance' && round.accusation.accused == round.winningSeat) {
 		round.mode = 'play'
 		round.accusation = undefined
-		round.lastChance = undefined
 		round.winningSeat = undefined
 	}
 	else { return }

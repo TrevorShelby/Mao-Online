@@ -51,7 +51,7 @@ doAction(client1, 'moveCard', {
 	to: {source: 'pile', pileIndex: 0, cardIndex: 1}
 })
 
-await waitFor('lastChanceBegun')
+await waitFor('lastChanceStarted')
 doAction(client2, 'accuse', 3)
 await new Promise( (resolve) => {setTimeout(resolve, 300)})
 if(table.game.round.mode != 'lastChance') {throw new Error('mode not lastChance')}

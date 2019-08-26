@@ -17,7 +17,7 @@ function getNewRound(playerIDs) {
 	const piles = [{owner: undefined, cards: [topCard]}]
 	return { 
 		hands, piles, seating,
-		mode: 'play', accusation: undefined, lastChance: undefined, winningSeat: undefined
+		mode: 'play', accusation: undefined, winningSeat: undefined
 	}
 }
 

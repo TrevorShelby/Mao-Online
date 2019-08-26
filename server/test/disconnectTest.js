@@ -41,15 +41,12 @@ doAction(client1, 'moveCard', {
 	to: {source: 'pile', pileIndex: 0, cardIndex: 1}
 })
 
-await waitFor('roundOver')
-doAction(client1, 'writeRule', 'whenever a two is played, go again.')
-
-await waitFor('roundStarted')
-doAction(client1, 'moveCard', {
-	from: {source: 'hand', cardIndex: 0},
-	to: {source: 'pile', pileIndex: 0, cardIndex: 0 }
-})
-
+await waitFor('lastChanceStarted')
+client1.close()
+await waitFor('winningSeatEmptied')
+if(table.game.round.mode != 'play') {throw new Error('mode not play')}
+if(table.game.round.winningPlayer != undefined) {throw new Error('winningSeat exists.')}
+console.log('done')
 
 
 })

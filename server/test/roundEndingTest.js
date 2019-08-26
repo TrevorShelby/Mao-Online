@@ -36,7 +36,7 @@ doAction(client1, 'moveCard', {
 	from: {source: 'hand', cardIndex: 0},
 	to: {source: 'pile', pileIndex: 0, cardIndex: 1}
 })
-await waitFor('lastChanceBegun')
+await waitFor('lastChanceStarted')
 if(table.game.round.mode != 'lastChance') {throw new Error('mode not lastChance')}
 if(table.game.round.winningSeat != 0) {throw new Error('winningSeat incorrect')}
 

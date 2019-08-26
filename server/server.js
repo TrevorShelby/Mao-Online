@@ -11,7 +11,7 @@ const createNewTable = require('./mao/newTable.js')
 const tables = []
 for(let playersToStart = 3; playersToStart <= 8; playersToStart++) {
 	for(let tableNum = 0; tableNum < 20; tableNum++) {
-		tables.push(createNewTable({playersToStart}))
+		tables.push(createNewTable({playersToStart, roundLimit: 10}))
 	}
 }
 

@@ -12,7 +12,7 @@ wsServer.on('connection', (conn) => {
 })
 
 
-const table = createNewTable({playersToStart: 4})
+const table = createNewTable({playersToStart: 4, roundLimit: 1})
 
 const address = 'ws://127.0.0.1:1258'
 const client1 = new WebSocket(address); const client2 = new WebSocket(address); client3 = new WebSocket(address)
@@ -44,8 +44,10 @@ console.log('10 second pause here')
 await waitFor('roundOver')
 if(!table.game.inBetweenRounds) {throw new Error('round still in progress')}
 if(table.game.lastWinner != futureWinnerID) {throw new Error('winner incorrect')}
+await new Promise( (resolve) => {setTimeout(resolve, 100)})
+if(table.mode != 'lobby') {throw new Error('mode not lobby')}
 console.log('done')
-
+console.log(table)
 
 })
 

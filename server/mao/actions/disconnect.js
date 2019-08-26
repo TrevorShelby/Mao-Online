@@ -13,7 +13,10 @@ function disconnect_(table, eventHistories, sendEvent, disconnectingID) {
 		if(table.mode == 'game') {
 			delete table.game.playerIDs[table.game.playerIDs.indexOf(disconnectingID)]
 			const nonEmptyPlayerIDs = table.game.playerIDs.filter(Boolean)
-			if(nonEmptyPlayerIDs.length == 1) {
+			if(
+				nonEmptyPlayerIDs.length == 1
+				&& table.options.roundLimit > table.game.numRoundsPlayed
+			) {
 				sendEvent(table.game.playerIDs, 'gameEnded')
 				table.playerConnections.forEach( (conn) => {conn.close()})
 			}

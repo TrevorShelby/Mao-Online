@@ -74,7 +74,7 @@ function startGame(table, sendEvent) {
 	table.mode = 'game'
 	//Passing sendEvent here is fine. startGame could just as well have used the createNewGame
 	//code. It doesn't though, because that would make it a bit messier.
-	table.game = createNewGame(table.playerConnections, sendEvent)
+	table.game = createNewGame(table, sendEvent)
 	sendEvent(table.game.playerIDs, 'gameStarted')
 	sendRoundStartedEvent(table.game.round, sendEvent)
 }

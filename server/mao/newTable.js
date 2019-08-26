@@ -38,6 +38,8 @@ function createNewTable(options) {
 			if(table.playerConnections.has(playerID)) { return false }
 			if(table.mode != 'lobby') { return false }
 			if(table.options.playersToStart == table.playerConnections.size) { return false }
+			//others gets used later in function.
+			const others = Array.from(table.playerConnections.keys())
 			table.playerConnections.set(playerID, connection)
 			eventHistories.set(playerID, [])
 			const onActionMessage = onActionMessage_({
@@ -54,7 +56,7 @@ function createNewTable(options) {
 
 			const disconnect = disconnect_(table, eventHistories, sendEvent, playerID)
 			connection.on('close', disconnect)
-			sendEvent([playerID], 'joinedTable', playerID)
+			sendEvent([playerID], 'joinedTable', {you: playerID, others})
 			if(table.options.playersToStart == table.playerConnections.size) {
 				startGame(table, sendEvent)
 			}
@@ -74,13 +76,7 @@ function startGame(table, sendEvent) {
 	//code. It doesn't though, because that would make it a bit messier.
 	table.game = createNewGame(table.playerConnections, sendEvent)
 	sendEvent(table.game.playerIDs, 'gameStarted')
-	const discard = table.game.round.piles[0].cards
-	table.game.round.seating.forEach( (playerID, seat) => {
-		const hand = table.game.round.hands[seat]
-		sendEvent([playerID], 'roundStarted', {
-			you: {hand, seat}, discard, seating: table.game.round.seating
-		})
-	})
+	sendRoundStartedEvent(table.game.round, sendEvent)
 }
 
 

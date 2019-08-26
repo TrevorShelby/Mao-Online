@@ -12,7 +12,7 @@ wsServer.on('connection', (conn) => {
 })
 
 
-const table = createNewTable(4)
+const table = createNewTable({playersToStart: 4})
 
 const address = 'ws://127.0.0.1:1258'
 const client1 = new WebSocket(address); const client2 = new WebSocket(address); client3 = new WebSocket(address)
@@ -23,6 +23,9 @@ const client4 = new WebSocket(address).once('open', async () => {
 client4.on('message', (messageStr) => {
 	const message = safeJsonParse(messageStr)
 	console.log(message)
+})
+client4.on('close', () => {
+	console.log('closed!')
 })
 
 connections.forEach( (conn) => {
@@ -46,8 +49,25 @@ client1.close()
 await waitFor('winningSeatEmptied')
 if(table.game.round.mode != 'play') {throw new Error('mode not play')}
 if(table.game.round.winningPlayer != undefined) {throw new Error('winningSeat exists.')}
-console.log('done')
 
+client3.close()
+await waitFor('gameEnded')
+await new Promise( (resolve) => {setTimeout(resolve, 100)})
+if(table.mode != 'lobby') {throw new Error('mode not lobby')}
+
+console.log('New players joining!')
+
+for(let i = 0; i < 3; i++) { new WebSocket(address) }
+new WebSocket(address).on('message', (messageStr) => {
+	console.log(safeJsonParse(messageStr))
+})
+await new Promise( (resolve) => {setTimeout(resolve, 100)})
+connections.forEach( (conn, i) => {
+	if(i > 3) {table.addPlayer(conn, uuidv4())}
+})
+await new Promise( (resolve) => {setTimeout(resolve, 100)})
+if(table.mode != 'game') {throw new Error('mode not game')}
+console.log('done')
 
 })
 

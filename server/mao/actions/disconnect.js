@@ -12,14 +12,16 @@ function disconnect_(table, eventHistories, sendEvent, disconnectingID) {
 
 		if(table.mode == 'game') {
 			delete table.game.playerIDs[table.game.playerIDs.indexOf(disconnectingID)]
-			if(table.game.playerIDs.length == 1) {
+			const nonEmptyPlayerIDs = table.game.playerIDs.filter(Boolean)
+			if(nonEmptyPlayerIDs.length == 1) {
 				sendEvent(table.game.playerIDs, 'gameEnded')
-				table.playerConnections.forEach( (conn) => {console.log(conn)})
+				table.playerConnections.forEach( (conn) => {conn.close()})
 			}
-			else if(table.game.playerIDs.length == 0) {
+			else if(nonEmptyPlayerIDs.length == 0) {
 				table.game = undefined
 				table.chatLog = []
 				table.mode = 'lobby'
+				return
 			}
 			if(table.game.inBetweenRounds && table.game.lastWinner == disconnectingID) {
 				table.game.round = getNewRound(table.game.playerIDs)
@@ -61,7 +63,7 @@ function disconnect_(table, eventHistories, sendEvent, disconnectingID) {
 			}
 		}
 		//TODO: replace later
-		if(table.playerConnections.size == 0) { throw new Error('No more players.') }
+		//if(table.playerConnections.size == 0) { throw new Error('No more players.') }
 	}
 	return disconnect
 }

@@ -12,7 +12,7 @@ wsServer.on('connection', (conn) => {
 })
 
 
-const table = createNewTable(4)
+const table = createNewTable({playersToStart: 4})
 
 const address = 'ws://127.0.0.1:1258'
 const client1 = new WebSocket(address); const client2 = new WebSocket(address); client3 = new WebSocket(address)

@@ -18,13 +18,11 @@ function createNewGame(playerConnections, sendEvent) {
 		playerRules: []
 	}
 
-	const inBetweenRounds = false
-
 	const game = {
 		playerIDs,
 		round,
 		rules,
-		inBetweenRounds
+		inBetweenRounds: false, lastWinner: undefined
 	}
 	game.round.endRound = (winningSeat) => {
 		game.inBetweenRounds = true

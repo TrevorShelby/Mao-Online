@@ -10,7 +10,10 @@ function cancelAccusation(round, sendEvent, cancellingSeat) {
 	}
 	//second condition should always be true if the round.mode is lastChance. (don't remove though)
 	else if(previousMode == 'lastChance' && round.accusation.accused == round.winningSeat) {
-		round.lastChance.resume()
+		round.mode = 'lastChance'
+		round.accusation = undefined
+		round.lastChance.resume = undefined
+		round.lastChance.end = undefined
 	}
 	else { return }
 

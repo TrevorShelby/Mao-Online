@@ -29,11 +29,21 @@ connections.forEach( (conn) => {
 	table.addPlayer(conn, uuidv4())
 })
 await waitFor('roundStarted')
-client2.close()
-
-await waitFor('seatEmptied')
-//nothing should happen!!!
 doAction(client1, 'accuse', 1)
+
+await waitFor('playerAccused')
+doAction(client1, 'acceptAccusation')
+doAction(client3, 'acceptAccusation')
+doAction(client2, 'cancelAccusation')
+doAction(client3, 'cancelAccusation')
+await new Promise( (resolve) => {setTimeout(resolve, 100)} )
+if(table.game.round.mode != 'accusation') {throw new Error('mode not accusation')}
+doAction(client2, 'acceptAccusation')
+await waitFor('accusationAccepted')
+doAction(client1, 'accuse', 1)
+doAction(client1, 'cancelAccusation')
+await waitFor('accusationCancelled')
+console.log('done')
 
 table.game.round.hands[0] = [ {value: 0, rank: 0, suit: 0} ]
 doAction(client1, 'moveCard', {
@@ -41,14 +51,21 @@ doAction(client1, 'moveCard', {
 	to: {source: 'pile', pileIndex: 0, cardIndex: 1}
 })
 
-await waitFor('roundOver')
-doAction(client1, 'writeRule', 'whenever a two is played, go again.')
+await waitFor('lastChanceBegun')
+doAction(client2, 'accuse', 3)
+await new Promise( (resolve) => {setTimeout(resolve, 300)})
+if(table.game.round.mode != 'lastChance') {throw new Error('mode not lastChance')}
+doAction(client2, 'accuse', 0)
+await waitFor('playerAccused')
+doAction(client2, 'cancelAccusation')
+await waitFor('accusationCancelled')
+if(table.game.round.mode != 'lastChance') {throw new Error('mode not lastChance')}
+doAction(client2, 'accuse', 0)
+doAction(client1, 'acceptAccusation')
+await waitFor('accusationAccepted')
+if(table.game.round.mode != 'play') {throw new Error('mode not play')}
+console.log('done')
 
-await waitFor('roundStarted')
-doAction(client1, 'moveCard', {
-	from: {source: 'hand', cardIndex: 0},
-	to: {source: 'pile', pileIndex: 0, cardIndex: 0 }
-})
 
 
 

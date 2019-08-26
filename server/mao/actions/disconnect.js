@@ -29,12 +29,19 @@ function disconnect_(table, eventHistories, sendEvent, disconnectingID) {
 						delete table.game.round.piles[pileIndex]
 					}
 				})
-			}
-			const disconnectorRules = table.game.rules.playerRules.map( (playerRule) => {
-				if(playerRule.author == disconnectingID) {
-					return playerRule.rule
+
+				if(
+					table.game.round.mode == 'lastChance' 
+					&& table.game.round.winningSeat == disconnectingSeat
+				) {
+					//TODO: Change lastChance code.
 				}
-			})
+			}
+			const disconnectorRules = table.game.rules.playerRules.filter( (playerRule) => {
+				if(playerRule.author == disconnectingID) {
+					return true
+				}
+			}).map( (playerRule) => { return playerRule.rule } )
 			if(disconnectorRules.length > 0) {
 				sendEvent(table.game.round.seating, 'rulesRevealed', {
 					author: disconnectingID, rules: disconnectorRules

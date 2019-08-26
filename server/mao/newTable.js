@@ -14,7 +14,7 @@ const sendRoundStartedEvent = require('./sendRoundStartedEvent.js')
 
 
 
-function createNewTable(playersToStart) {
+function createNewTable(options) {
 	const playerConnections = new Map()
 	const eventHistories = new Map()
 	const sendEvent = sendEvent_(playerConnections, eventHistories)
@@ -30,14 +30,14 @@ function createNewTable(playersToStart) {
 		chatLog,
 		mode,
 		game,
-		playersToStart,
+		options,
 		addPlayer(connection, playerID) {
 			const connections = Array.from(table.playerConnections.values())
 			if(connections.includes(connection)) { return false }
 			if(typeof playerID != 'string') { return false }
 			if(table.playerConnections.has(playerID)) { return false }
 			if(table.mode != 'lobby') { return false }
-			if(table.playersToStart == table.playerConnections.size) { return false }
+			if(table.options.playersToStart == table.playerConnections.size) { return false }
 			table.playerConnections.set(playerID, connection)
 			eventHistories.set(playerID, [])
 			const onActionMessage = onActionMessage_({
@@ -55,7 +55,7 @@ function createNewTable(playersToStart) {
 			const disconnect = disconnect_(table, eventHistories, sendEvent, playerID)
 			connection.on('close', disconnect)
 			sendEvent([playerID], 'joinedTable', playerID)
-			if(playersToStart == table.playerConnections.size) {
+			if(table.options.playersToStart == table.playerConnections.size) {
 				startGame(table, sendEvent)
 			}
 			return true

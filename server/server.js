@@ -1,3 +1,4 @@
+const http = require('http')
 const WebSocket = require('ws')
 const url = require('url')
 const uuidv4 = require('uuid/v4')
@@ -6,17 +7,37 @@ const createNewTable = require('./mao/newTable.js')
 
 
 //TODO: Add tables here. Decide on number of tables per server and how many tables get how many
-//players to start.
+//players to start. Round limit.
 const tables = []
+for(let playersToStart = 3; playersToStart <= 8; playersToStart++) {
+	for(let tableNum = 0; tableNum < 20; tableNum++) {
+		tables.push(createNewTable({playersToStart}))
+	}
+}
 
 
-const wsServer = new WebSocket.Server({port: 1258})
-wsServer.on('connection', (conn, req) => {
+const tableHostingServer = new WebSocket.Server({port: 1258})
+tableHostingServer.on('connection', (conn, req) => {
 	const query = url.parse(req.url, true).query
-	if(query.business == 'joining') {
-		const table = tables[parseInt(query.tableID, 10)]
-		if(table != undefined) {
-			table.addPlayer(conn, uuidv4())
+	const table = tables[parseInt(query.tableID, 10)]
+	if(table != undefined) {
+		const didJoinTable = table.addPlayer(conn, uuidv4())
+		if(!didJoinTable) {
+			conn.close(4001, 'Could not join table.')
 		}
 	}
 })
+
+
+const tableListingServer = http.createServer((req, res) => {
+	const tableInfo = tables.map( (table) => {
+		return {
+			inGame: table.mode == 'game',
+			numPlayers: table.playerConnections.size,
+			maxPlayers: table.options.playersToStart
+		}
+	})
+	res.end(JSON.stringify(tableInfo))
+})
+
+tableListingServer.listen(8080)

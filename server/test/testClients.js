@@ -7,23 +7,26 @@ setTimeout(() => {
 
 
 
+const address = '192.168.137.117'
 const options = {
-	hostname: '192.168.137.107',
+	hostname: address,
 	port: 8080,
 	path: '/'
 }
 for(let i = 0; i < 3; i ++) {
 	http.request(options, (res) => {
 		res.setEncoding('utf-8')
-		res.on('data', (chunk) => {
-			const tableID = safeJsonParse(chunk).findIndex( (tableInfo) => {
+		let data = ''
+		res.on('data', (chunk) => {data += chunk})
+		res.on('end', () => {
+			const tableID = safeJsonParse(data).findIndex( (tableInfo) => {
 				return !tableInfo.inGame && tableInfo.numPlayers < tableInfo.maxPlayers
 			})
 			if(i == 2) {
-				const client = new WebSocket('ws://192.168.137.107:1258?tableID=' + tableID)
+				const client = new WebSocket('ws://' + address + ':1258?tableID=' + tableID)
 				client.on('message', (messageStr) => {console.log(safeJsonParse(messageStr))})
 			}
-			new WebSocket('ws://192.168.137.107:1258?tableID=' + tableID)
+			new WebSocket('ws://' + address + ':1258?tableID=' + tableID)
 		})
 	}).end()
 }

@@ -29,15 +29,16 @@ tableHostingServer.on('connection', (conn, req) => {
 })
 
 
-const tableListingServer = http.createServer((req, res) => {
-	const tableInfo = tables.map( (table) => {
-		return {
-			inGame: table.mode == 'game',
-			numPlayers: table.playerConnections.size,
-			maxPlayers: table.options.playersToStart
+const lobbyListingServer = http.createServer((req, res) => {
+	const lobbyInfo = {}
+	tables.forEach( (table, tableID) => {
+		if(table.mode == 'lobby') { 
+			lobbyInfo[tableID] = {
+				numPlayers: table.playerConnections.size,
+				maxPlayers: table.options.playersToStart
+			}
 		}
 	})
-	res.end(JSON.stringify(tableInfo))
+	res.end(JSON.stringify(lobbyInfo))
 })
-
-tableListingServer.listen(8080)
+lobbyListingServer.listen(8080)

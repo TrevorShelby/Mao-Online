@@ -12,6 +12,15 @@ function disconnect_(table, eventHistories, sendEvent, disconnectingID) {
 
 		if(table.mode == 'game') {
 			delete table.game.playerIDs[table.game.playerIDs.indexOf(disconnectingID)]
+			if(table.game.playerIDs.length == 1) {
+				sendEvent(table.game.playerIDs, 'gameEnded')
+				table.playerConnections.forEach( (conn) => {console.log(conn)})
+			}
+			else if(table.game.playerIDs.length == 0) {
+				table.game = undefined
+				table.chatLog = []
+				table.mode = 'lobby'
+			}
 			if(table.game.inBetweenRounds && table.game.lastWinner == disconnectingID) {
 				table.game.round = getNewRound(table.game.playerIDs)
 				table.game.inBetweenRounds = false

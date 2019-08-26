@@ -4,7 +4,7 @@ const onActionMessage_ = require('./onActionMessage.js')
 
 
 //Sets up a game and seats connections into a round in play with some starter rules.
-function createNewGame(playerConnections, sendEvent) {
+function createNewGame(playerConnections, /*roundLimit,*/ sendEvent/*, endGame*/) {
 	const playerIDs = Array.from(playerConnections.keys())
 	const round = getNewRound(playerIDs)
 
@@ -22,7 +22,7 @@ function createNewGame(playerConnections, sendEvent) {
 		playerIDs,
 		round,
 		rules,
-		inBetweenRounds: false, lastWinner: undefined
+		inBetweenRounds: false, lastWinner: undefined, numRoundsPlayed: 0
 	}
 	game.round.endRound = (winningSeat) => {
 		game.inBetweenRounds = true
@@ -30,6 +30,11 @@ function createNewGame(playerConnections, sendEvent) {
 
 		sendEvent(game.round.seating, 'roundOver', winningSeat)
 		game.round = undefined
+
+		game.numRoundsPlayed += 1
+		// if(game.numRoundsPlayed == roundLimit) {
+		// 	endGame()
+		// }
 	}
 	return game
 }

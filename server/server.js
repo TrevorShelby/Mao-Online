@@ -3,7 +3,7 @@ const WebSocket = require('ws')
 const url = require('url')
 const uuidv4 = require('uuid/v4')
 
-const createNewTable = require('./mao/newTable.js')
+const createNewTable = require('./game/newTable.js')
 
 
 //TODO: Add tables here. Decide on number of tables per server and how many tables get how many

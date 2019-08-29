@@ -1,7 +1,7 @@
 const WebSocket = require('ws')
 const uuidv4 = require('uuid/v4')
 
-const createNewTable = require('../mao/newTable.js')
+const createNewTable = require('../newTable.js')
 
 
 

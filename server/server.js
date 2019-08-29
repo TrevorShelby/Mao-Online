@@ -16,7 +16,23 @@ for(let playersToStart = 3; playersToStart <= 8; playersToStart++) {
 }
 
 
-const tableHostingServer = new WebSocket.Server({port: 1258})
+
+const httpServer = http.createServer((req, res) => {
+	const reqUrl = url.parse(req.url)
+	if(reqUrl.pathname == '/') {
+		res.end('<html><script>alert(\'hello\');new WebSocket(\'ws://192.168.137.107:8080\')</script>hey</html>')
+	}
+	else if(reqUrl.pathname == '/lobbies') {
+		res.end( JSON.stringify(getLobbyInfo()) )
+	}
+	else {
+		res.statusCode = 404
+		res.end()
+	}
+})
+
+
+const tableHostingServer = new WebSocket.Server({server: httpServer})
 tableHostingServer.on('connection', (conn, req) => {
 	const query = url.parse(req.url, true).query
 	const table = tables[parseInt(query.tableID, 10)]
@@ -29,7 +45,8 @@ tableHostingServer.on('connection', (conn, req) => {
 })
 
 
-const lobbyListingServer = http.createServer((req, res) => {
+
+function getLobbyInfo() {
 	const lobbyInfo = {}
 	tables.forEach( (table, tableID) => {
 		if(table.mode == 'lobby') { 
@@ -39,6 +56,7 @@ const lobbyListingServer = http.createServer((req, res) => {
 			}
 		}
 	})
-	res.end(JSON.stringify(lobbyInfo))
-})
-lobbyListingServer.listen(8080)
+	return lobbyInfo
+}
+
+httpServer.listen(8080)

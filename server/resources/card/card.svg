@@ -1,0 +1,17 @@
+<svg viewBox="0 0 125 175">
+	<path fill="#fbfbfb" stroke="black" d="
+		M 1 6
+		A 5 5 0 0 1 6 1
+		H 119
+		A 5 5 0 0 1 124 6
+		V 169
+		A 5 5 0 0 1 119 174
+		H 6
+		A 5 5 0 0 1 1 169
+		V 6
+	"/>
+	<text x=5 y=25 style="font: bold 25px serif;">A</text>
+	<svg viewbox="0 0 50 75" x=5 y=30 width=20 height=30>
+		//suit
+	</svg>
+</svg>

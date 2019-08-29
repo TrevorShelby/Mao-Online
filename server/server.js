@@ -6,17 +6,6 @@ const uuidv4 = require('uuid/v4')
 const createNewTable = require('./game/newTable.js')
 
 
-//TODO: Add tables here. Decide on number of tables per server and how many tables get how many
-//players to start. Round limit.
-const tables = []
-for(let playersToStart = 3; playersToStart <= 8; playersToStart++) {
-	for(let tableNum = 0; tableNum < 20; tableNum++) {
-		tables.push(createNewTable({playersToStart, roundLimit: 10}))
-	}
-}
-
-
-
 const httpServer = http.createServer((req, res) => {
 	const reqUrl = url.parse(req.url)
 	if(reqUrl.pathname == '/') {
@@ -31,6 +20,14 @@ const httpServer = http.createServer((req, res) => {
 	}
 })
 
+
+
+const tables = []
+for(let playersToStart = 3; playersToStart <= 8; playersToStart++) {
+	for(let tableNum = 0; tableNum < 20; tableNum++) {
+		tables.push(createNewTable({playersToStart, roundLimit: 10}))
+	}
+}
 
 const tableHostingServer = new WebSocket.Server({server: httpServer})
 tableHostingServer.on('connection', (conn, req) => {

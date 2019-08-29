@@ -1,2 +1,3 @@
 /node_modules/*
 /server/app/dist/*
+!/server/app/dist/index.html

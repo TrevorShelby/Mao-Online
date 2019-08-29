@@ -10,8 +10,15 @@
   "license": "ISC",
   "dependencies": {
     "http": "0.0.0",
+    "npm": "^6.11.2",
     "url": "^0.11.0",
     "uuid": "^3.3.2",
     "ws": "^7.1.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0"
   }
 }

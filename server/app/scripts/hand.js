@@ -45,7 +45,7 @@ function Hand_(setOnCardAddedToHand, setOnCardRemovedFromHand) {
   return Hand;
 }
 
-const spokenRanks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K'];
+const spokenRanks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 const spokenSuits = ['♣', '♦', '♥', '♠'];
 
 class Card extends React.Component {
@@ -61,19 +61,4 @@ class Card extends React.Component {
     }, this.spokenSuit + '\n' + this.spokenRank);
   }
 
-} // const cardAddedToHandListeners = []
-// const cardRemovedFromHandListeners = []
-// tableEvents.on('cardMoved', ({card, from, to, by}) => {
-// 	const mySeat = table.game.round.seating.indexOf(table.me)
-// 	if(by != mySeat) { return }
-// 	if(to.source == 'hand') {
-// 		cardAddedToHandListeners.forEach( listener => listener(card, to.cardIndex))
-// 	}
-// 	else if(from.source == 'hand') {
-// 		cardRemovedFromHandListeners.forEach( listener => listener(from.cardIndex) )
-// 	}
-// 	else { return }
-// })
-// const setOnCardAddedToHand = Array.prototype.push.bind(cardAddedToHandListeners)
-// const setOnCardRemovedFromHand = Array.prototype.push.bind(cardRemovedFromHandListeners)
-// const Hand = new Hand_(setOnCardAddedToHand, setOnCardRemovedFromHand)
+}

@@ -14,6 +14,7 @@ const sendRoundStartedEvent = require('./sendRoundStartedEvent.js')
 
 
 
+let counter = 0
 function createNewTable(options) {
 	const playerConnections = new Map()
 	const eventHistories = new Map()

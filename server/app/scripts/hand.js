@@ -1,30 +1,12 @@
-function Hand_(table) {
+function Hand_(setOnCardAddedToHand, setOnCardRemovedFromHand) {
   class Hand extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
         hand: this.props.startingHand.concat([])
       };
-      table.on('moveCard', ({
-        card,
-        from,
-        to,
-        by
-      }) => {
-        const mySeat = table.game.round.seating.indexOf(table.me);
-
-        if (by != mySeat) {
-          return;
-        }
-
-        if (from.source == 'hand') {
-          this.removeCard(from.cardIndex);
-        } else if (to.source == 'hand') {
-          this.addCard(card, to.cardIndex);
-        } else {
-          return;
-        }
-      });
+      setOnCardAddedToHand(Hand.prototype.addCard.bind(this));
+      setOnCardRemovedFromHand(Hand.prototype.removeCard.bind(this));
     }
 
     addCard(card, cardIndex) {
@@ -79,4 +61,19 @@ class Card extends React.Component {
     }, this.spokenSuit + '\n' + this.spokenRank);
   }
 
-}
+} // const cardAddedToHandListeners = []
+// const cardRemovedFromHandListeners = []
+// tableEvents.on('cardMoved', ({card, from, to, by}) => {
+// 	const mySeat = table.game.round.seating.indexOf(table.me)
+// 	if(by != mySeat) { return }
+// 	if(to.source == 'hand') {
+// 		cardAddedToHandListeners.forEach( listener => listener(card, to.cardIndex))
+// 	}
+// 	else if(from.source == 'hand') {
+// 		cardRemovedFromHandListeners.forEach( listener => listener(from.cardIndex) )
+// 	}
+// 	else { return }
+// })
+// const setOnCardAddedToHand = Array.prototype.push.bind(cardAddedToHandListeners)
+// const setOnCardRemovedFromHand = Array.prototype.push.bind(cardRemovedFromHandListeners)
+// const Hand = new Hand_(setOnCardAddedToHand, setOnCardRemovedFromHand)

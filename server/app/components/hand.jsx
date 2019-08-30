@@ -2,7 +2,7 @@ function Hand_(table) {
 	class Hand extends React.Component {
 		constructor(props) {
 			super(props)
-			this.state = { hand: [] }
+			this.state = { hand: this.props.startingHand.concat([]) }
 			table.on('moveCard', ({card, from, to, by}) => {
 				const mySeat = table.game.round.seating.indexOf(table.me)
 				if(by != mySeat) { return }
@@ -19,9 +19,9 @@ function Hand_(table) {
 
 
 		addCard(card, cardIndex) {
-			const hand = this.state.hand
 			this.setState( (state) => {
-				return { 
+				const hand = state.hand
+				return {
 					hand: hand.slice(0, cardIndex).concat([card]).concat(hand.slice(cardIndex))
 				}
 			})
@@ -29,8 +29,8 @@ function Hand_(table) {
 
 
 		removeCard(cardIndex) {
-			const hand = this.state.hand
 			this.setState( (state) => {
+				const hand = state.hand
 				return { hand: hand.slice(0, cardIndex).concat(hand.slice(cardIndex + 1)) }
 			})
 		}
@@ -38,10 +38,10 @@ function Hand_(table) {
 
 		render() {
 			const cardElements = this.state.hand.map( (card) => {
-				return <Card rank={card.rank} suit={card.suit} />
+				return <Card rank={card.rank} suit={card.suit} key={card.value}/>
 			})
 			return (
-				<div id="hand">
+				<div id='hand'>
 					{cardElements}
 				</div>
 			)
@@ -55,12 +55,6 @@ function Hand_(table) {
 
 const spokenRanks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K']
 const spokenSuits = ['♣', '♦', '♥', '♠']
-const cardStyles = {
-	width: '30px',
-	height: '45px',
-	outline: '1px solid black',
-	whiteSpace: 'pre-line'
-}
 class Card extends React.Component {
 	constructor(props) {
 		super(props)
@@ -70,7 +64,7 @@ class Card extends React.Component {
 
 	render() {
 		return (
-			<div style={cardStyles}>{this.spokenSuit + '\n' + this.spokenRank}</div>
+			<div class='card'>{this.spokenSuit + '\n' + this.spokenRank}</div>
 		)
 	}
 }

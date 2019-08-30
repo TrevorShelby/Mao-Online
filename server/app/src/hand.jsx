@@ -53,15 +53,24 @@ function Hand_(table) {
 
 
 
+const spokenRanks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K']
+const spokenSuits = ['♣', '♦', '♥', '♠']
 const cardStyles = {
-	width: '20px',
-	height: '30px',
-	outline: '1px solid black'
+	width: '30px',
+	height: '45px',
+	outline: '1px solid black',
+	whiteSpace: 'pre-line'
 }
 class Card extends React.Component {
+	constructor(props) {
+		super(props)
+		this.spokenRank = spokenRanks[this.props.rank]
+		this.spokenSuit = spokenSuits[this.props.suit]
+	}
+
 	render() {
 		return (
-			<div style={cardStyles}>{this.props.rank + ', ' + this.props.suit}</div>
+			<div style={cardStyles}>{this.spokenSuit + '\n' + this.spokenRank}</div>
 		)
 	}
 }

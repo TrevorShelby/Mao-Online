@@ -2,23 +2,9 @@ const http = require('http')
 const WebSocket = require('ws')
 const url = require('url')
 const uuidv4 = require('uuid/v4')
+const fs = require('fs')
 
 const createNewTable = require('./game/newTable.js')
-
-
-const httpServer = http.createServer((req, res) => {
-	const reqUrl = url.parse(req.url)
-	if(reqUrl.pathname == '/') {
-		res.end('<html><script>alert(\'hello\');new WebSocket(\'ws://192.168.137.107:8080\')</script>hey</html>')
-	}
-	else if(reqUrl.pathname == '/lobbies') {
-		res.end( JSON.stringify(getLobbyInfo()) )
-	}
-	else {
-		res.statusCode = 404
-		res.end()
-	}
-})
 
 
 
@@ -28,6 +14,32 @@ for(let playersToStart = 3; playersToStart <= 8; playersToStart++) {
 		tables.push(createNewTable({playersToStart, roundLimit: 10}))
 	}
 }
+
+
+const httpServer = http.createServer((req, res) => {
+	const {pathname, query} = url.parse(req.url, true)
+	if(pathname == '/') {
+		res.writeHead(200, {'Content-Type': 'text/html'})
+		const scriptPath = __dirname + '/app/dist/index.html'
+		fs.createReadStream(scriptPath).pipe(res)
+	}
+	else if(pathname == '/lobbies') {
+		res.writeHead(200, {'Content-Type': 'application/json'})
+		res.end( JSON.stringify(getLobbyInfo()) )
+	}
+	else if(pathname.startsWith('/scripts/')) {
+		const scriptPath = __dirname + '/app/dist/' + pathname.split('/').slice(2).join('/')
+		if(!fs.existsSync(scriptPath)) { res.statusCode = 404; res.end(); return }
+		res.writeHead(200,  {'Content-Type': 'text/javascript'})
+		fs.createReadStream(scriptPath).pipe(res)
+	}
+	else {
+		res.statusCode = 404
+		res.end()
+	}
+})
+
+
 
 const tableHostingServer = new WebSocket.Server({server: httpServer})
 tableHostingServer.on('connection', (conn, req) => {

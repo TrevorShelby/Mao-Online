@@ -57,6 +57,7 @@ function createNewTable(options) {
 			const disconnect = disconnect_(table, eventHistories, sendEvent, playerID)
 			connection.on('close', disconnect)
 			sendEvent([playerID], 'joinedTable', {you: playerID, others})
+			sendEvent(others, 'playerJoined', playerID)
 			if(table.options.playersToStart == table.playerConnections.size) {
 				startGame(table, sendEvent)
 			}

@@ -74,6 +74,3 @@ class Card extends React.Component {
 		)
 	}
 }
-
-
-module.exports = Hand_

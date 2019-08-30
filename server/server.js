@@ -20,7 +20,7 @@ const httpServer = http.createServer((req, res) => {
 	const {pathname, query} = url.parse(req.url, true)
 	if(pathname == '/') {
 		res.writeHead(200, {'Content-Type': 'text/html'})
-		const scriptPath = __dirname + '/app/dist/index.html'
+		const scriptPath = __dirname + '/app/index.html'
 		fs.createReadStream(scriptPath).pipe(res)
 	}
 	else if(pathname == '/lobbies') {
@@ -28,7 +28,7 @@ const httpServer = http.createServer((req, res) => {
 		res.end( JSON.stringify(getLobbyInfo()) )
 	}
 	else if(pathname.startsWith('/scripts/')) {
-		const scriptPath = __dirname + '/app/dist/' + pathname.split('/').slice(2).join('/')
+		const scriptPath = __dirname + '/app/scripts/' + pathname.split('/').slice(2).join('/')
 		if(!fs.existsSync(scriptPath)) { res.statusCode = 404; res.end(); return }
 		res.writeHead(200,  {'Content-Type': 'text/javascript'})
 		fs.createReadStream(scriptPath).pipe(res)

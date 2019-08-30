@@ -8,6 +8,9 @@ const table = {
 	}
 }
 
+const handElement = document.createElement('div')
+handElement.id = 'hand'
+document.body.appendChild(handElement)
 ReactDOM.render(
 	React.createElement(new Hand_(table), {}, null),
 	document.getElementById('hand')

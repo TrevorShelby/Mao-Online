@@ -31,7 +31,7 @@ function Hand_(setOnCardAddedToHand, setOnCardRemovedFromHand) {
 				return <Card rank={card.rank} suit={card.suit} key={card.value}/>
 			})
 			return (
-				<div id='hand'>
+				<div class='myHand'>
 					{cardElements}
 				</div>
 			)

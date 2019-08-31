@@ -36,7 +36,7 @@ function Hand_(setOnCardAddedToHand, setOnCardRemovedFromHand) {
         });
       });
       return React.createElement("div", {
-        id: "hand"
+        class: "myHand"
       }, cardElements);
     }
 

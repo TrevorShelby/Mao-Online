@@ -1,5 +1,7 @@
 const address = 'ws://192.168.137.107:8080/?tableID=' + getParameterByName('tableID')
 const tableEvents = new TableEvents(new WebSocket(address))
+new WebSocket(address); new WebSocket(address);
+
 
 
 const table = {}
@@ -15,10 +17,10 @@ tableEvents.on('playerLeft', (playerID) => {
 })
 tableEvents.on('playerTalked', (chat) => {table.chatLog.push(chat)})
 tableEvents.on('gameStarted', () => {table.game = {}})
-tableEvents.on('roundStarted', ({discard, seating, you: {hand, seat}}) => {
-	const handLengths = seating.map( ()=>7 )
+tableEvents.on('roundStarted', ({discard, you: {hand, seat}}) => {
+	const handLengths = table.playerIDs.map( ()=>7 )
 	const piles = [{owner: undefined, cards: discard}]
-	table.game.round = {piles, seating, handLengths, me: {hand, seat}}
+	table.game.round = {piles, handLengths, me: {hand, seat}}
 })
 tableEvents.on('cardMoved', ({card, from, to, by}) => {
 	const movedByMe = table.game.round.me.seat == by
@@ -40,14 +42,14 @@ tableEvents.on('cardMoved', ({card, from, to, by}) => {
 		table.game.round.piles[from.pileIndex].cards.splice(to.cardIndex, 1)
 	}
 	if(to.source == 'pile') {
-		table.game.round.piles[to.pileIndex].cards[to.cardIndex].push(card)
+		table.game.round.piles[to.pileIndex].cards.splice(to.cardIndex, 0, card)
 	}
 })
 
 
 const Hand = (() => {
 	let cardAddedToHandListener
-	let cardRemovedFromHandListener 
+	let cardRemovedFromHandListener
 	tableEvents.on('cardMoved', ({card, from, to, by}) => {
 		const mySeat = table.game.round.seating.indexOf(table.me)
 		if(by != mySeat) { return }

@@ -3,7 +3,7 @@ function sendRoundStartedEvent(round, sendEvent) {
 	round.seating.forEach( (playerID, seat) => {
 		const hand = round.hands[seat]
 		sendEvent([playerID], 'roundStarted', {
-			you: {hand, seat}, discard, seating: round.seating
+			you: {hand, seat}, discard
 		})
 	})
 }

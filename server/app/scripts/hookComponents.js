@@ -48,27 +48,20 @@ tableEvents.on('cardMoved', ({card, from, to, by}) => {
 
 
 const Hand = (() => {
-	let cardAddedToHandListener
-	let cardRemovedFromHandListener
+	let handChangedListener = ()=>{}
 	tableEvents.on('cardMoved', ({card, from, to, by}) => {
 		const mySeat = table.game.round.seating.indexOf(table.me)
-		if(by != mySeat) { return }
-
-		if(to.source == 'hand') {
-			cardAddedToHandListener(card, to.cardIndex)
+		if(by == mySeat && (to.source == 'hand' || from.source == 'hand')) {
+			handChangedListener(table.game.round.me.hand)
 		}
-		else if(from.source == 'hand') {
-			cardRemovedFromHandListener(from.cardIndex)
-		}
-		else { return }
 	})
-	const setOnCardAddedToHand = (onCardAddedToHand) => {
-		cardAddedToHandListener = onCardAddedToHand
+	const setOnMyHandChanged = (onMyHandChanged) => {
+		handChangedListener = onMyHandChanged
 	}
-	const setOnCardRemovedFromHand = (onCardRemovedFromHand) => {
-		cardRemovedFromHandListeners = onCardRemovedFromHand
-	}
-	return new Hand_(setOnCardAddedToHand, setOnCardRemovedFromHand)
+	setTimeout( () => {
+		handChangedListener(table.game.round.me.hand.concat({value: 4, rank: 4, suit: 0}))
+	}, 2000)
+	return new Hand_(setOnMyHandChanged)
 })()
 
 

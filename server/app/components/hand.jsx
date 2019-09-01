@@ -1,27 +1,10 @@
-function Hand_(setOnCardAddedToHand, setOnCardRemovedFromHand) {
+function Hand_(setOnMyHandChanged) {
 	class Hand extends React.Component {
 		constructor(props) {
 			super(props)
 			this.state = { hand: this.props.startingHand.concat([]) }
-			setOnCardAddedToHand(Hand.prototype.addCard.bind(this))
-			setOnCardRemovedFromHand(Hand.prototype.removeCard.bind(this))
-		}
-
-
-		addCard(card, cardIndex) {
-			this.setState( (state) => {
-				const hand = state.hand
-				return {
-					hand: hand.slice(0, cardIndex).concat([card]).concat(hand.slice(cardIndex))
-				}
-			})
-		}
-
-
-		removeCard(cardIndex) {
-			this.setState( (state) => {
-				const hand = state.hand
-				return { hand: hand.slice(0, cardIndex).concat(hand.slice(cardIndex + 1)) }
+			setOnMyHandChanged( (newHand) => {
+				this.setState( () => ({hand: newHand}) )
 			})
 		}
 

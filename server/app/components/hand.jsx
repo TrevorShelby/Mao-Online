@@ -1,10 +1,15 @@
-function Hand_(setOnMyHandChanged) {
+function Hand_(tableEvents) {
 	class Hand extends React.Component {
 		constructor(props) {
 			super(props)
 			this.state = { hand: this.props.startingHand.concat([]) }
-			setOnMyHandChanged( (newHand) => {
-				this.setState( () => ({hand: newHand}) )
+			tableEvents.on('cardMoved', (table, {by, from, to}) => {
+				const mySeat = table.playerIDs.indexOf(table.me)
+				if(by == mySeat && (to.source == 'hand' || from.source == 'hand')) {
+					this.setState( () => {
+						return { hand: table.game.round.me.hand }
+					})
+				}
 			})
 		}
 

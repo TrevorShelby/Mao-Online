@@ -1,4 +1,5 @@
-tableEvents.on('roundStarted', ({you: {hand}}) => {
+tableEvents.on('roundStarted', (table) => {
+	const hand = table.game.round.me.hand
 	const handContainer = document.createElement('div')
 	document.body.appendChild(handContainer)
 	ReactDOM.render(

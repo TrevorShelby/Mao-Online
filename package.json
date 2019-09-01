@@ -19,6 +19,6 @@
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/plugin-transform-react-jsx": "^7.3.0",
-    "watchify": "^3.11.1"
+    "browserify": "^16.5.0"
   }
 }

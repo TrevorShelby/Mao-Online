@@ -166,6 +166,9 @@ The contents of `from` and `to` are dependent of where the card is going from an
 ```
 `length` describes the number of cards the player has in their hand after the event.
 
+####Hand-`from` Objects Sent to the Moving Player
+A player who is moving a card from their hand gets a `from` object similar to the one above, but with a `cardIndex` property instead of a `length` property.
+
 ###Pile-`from` and -`to` Objects
 ```JSON
 {

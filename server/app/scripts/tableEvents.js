@@ -88,3 +88,7 @@ function safeJsonParse(objStr) {
 	}
 	return obj
 }
+
+
+
+module.exports = TableEvents

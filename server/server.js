@@ -18,10 +18,10 @@ for(let playersToStart = 2; playersToStart <= 8; playersToStart++) {
 
 const httpServer = http.createServer((req, res) => {
 	const {pathname, query} = url.parse(req.url, true)
-	if(pathname == '/') {
+	if(pathname == '/' || pathname == '') {
 		res.writeHead(200, {'Content-Type': 'text/html'})
-		const scriptPath = __dirname + '/app/index.html'
-		fs.createReadStream(scriptPath).pipe(res)
+		const filePath = __dirname + '/app/index.html'
+		fs.createReadStream(filePath).pipe(res)
 	}
 	else if(pathname == '/lobbies') {
 		res.writeHead(200, {'Content-Type': 'application/json'})

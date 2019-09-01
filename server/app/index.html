@@ -15,9 +15,11 @@
 				padding-left: 2px;
 				white-space: pre-line;
 				display: inline-block;
+				user-select: none;
 			}
 			.card.red { color: red; }
 			.card.black { color: black; }
+			.card.selected { outline: 2px solid orange; }
 			.myHand {
 				width: 300px;
 				height: 45px;
@@ -27,9 +29,6 @@
 		<script src='scripts/libs/react-dom.js'></script>
 	</head>
 	<body>
-		<script src='scripts/tableEvents.js'></script>
-		<script src='scripts/hand.js'></script>
-		<script src='scripts/hookComponents.js'></script>
-		<script src='scripts/test/handTest.js'></script>
+		<script src='scripts/bundle.js'></script>
 	</body>
 </html>

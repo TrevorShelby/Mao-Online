@@ -1,3 +1,12 @@
+const { Hand, tableEvents } = require('../hookComponents.js')
+
+
+// <script src='scripts/tableEvents.js'></script>
+// <script src='scripts/card.js'></script>
+// <script src='scripts/hand.js'></script>
+// <script src='scripts/hookComponents.js'></script>
+
+
 tableEvents.on('roundStarted', (table) => {
 	const hand = table.game.round.me.hand
 	const handContainer = document.createElement('div')

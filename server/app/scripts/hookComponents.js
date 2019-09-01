@@ -1,23 +1,17 @@
+const TableEvents = require('./tableEvents.js')
+const Hand_ = require('./hand.js')
+const Discard_ = require('./discard.js')
+
+
 const address = 'ws://192.168.137.107:8080/?tableID=' + getParameterByName('tableID')
 const tableConn = new WebSocket(address)
 const tableEvents = new TableEvents(tableConn)
 const Hand = new Hand_(tableEvents, tableConn)
-
-
-setTimeout(() => {
-	tableConn.send(JSON.stringify({
-		type: 'action',
-		name: 'moveCard',
-		args: {
-			from: {source: 'deck'},
-			to: {source: 'hand'}
-		}
-	}))
-}, 1000)
+const Discard = new Discard_(tableEvents)
 
 
 
-new WebSocket(address); new WebSocket(address);
+// new WebSocket(address); new WebSocket(address);
 
 
 
@@ -32,3 +26,7 @@ function getParameterByName(name, url) {
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
+
+
+
+module.exports = { Hand, Discard, tableEvents }

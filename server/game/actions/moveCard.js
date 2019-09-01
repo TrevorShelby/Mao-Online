@@ -59,11 +59,12 @@ function moveCard(round, sendEvent, cardMovingSeat, {from, to}={}) {
 	if(to.source == 'hand') {
 		const hand = round.hands[cardMovingSeat]
 		const card = getCard()
-		const cardIndex = hand.push(card) - 1
+		hand.push(card)
 
-		notifyMover({ 
-			card, cardIndex,
-			from, to, by: cardMovingSeat 
+		notifyMover({
+			card,
+			from, to: { source: 'hand', length: hand.length },
+			by: cardMovingSeat 
 		})
 		const data = {
 			from, //can't be hand-from if to is a hand-to is. no eventFrom necessary.
@@ -83,19 +84,16 @@ function moveCard(round, sendEvent, cardMovingSeat, {from, to}={}) {
 		) { return }
 		const card = getCard()
 		pile.cards.splice(to.cardIndex, 0, card)
+		notifyMover({card, from, to, by: cardMovingSeat})
 		const data = { card, from: eventFrom, to, by: cardMovingSeat }
-		notifyMover(data)
 		notifyOthers(data)
 	}
 	else if(to.source == 'deck') {
 		const card = getCard()
-		notifyMover({
-			card,
-			from: eventFrom, to, by: cardMovingSeat
-		})
-		const cardMovedEvent = { from: eventFrom, to, by: cardMovingSeat }
+		notifyMover({card, from, to, by: cardMovingSeat})
+		const data = { from: eventFrom, to, by: cardMovingSeat }
 		if(from.source != 'hand') { cardMovedEvent.card = card }
-		notifyOthers(cardMovedEvent)
+		notifyOthers(data)
 	}
 	//TODO: Might require removing or changing
 	else { return }

@@ -1,8 +1,10 @@
 const address = 'ws://192.168.137.107:8080/?tableID=' + getParameterByName('tableID')
 const tableConn = new WebSocket(address)
 const tableEvents = new TableEvents(tableConn)
-new WebSocket(address); new WebSocket(address);
-setTimeout( () => {
+const Hand = new Hand_(tableEvents, tableConn)
+
+
+setTimeout(() => {
 	tableConn.send(JSON.stringify({
 		type: 'action',
 		name: 'moveCard',
@@ -11,10 +13,11 @@ setTimeout( () => {
 			to: {source: 'hand'}
 		}
 	}))
-}, 2000)
+}, 1000)
 
 
-const Hand = new Hand_(tableEvents)
+
+new WebSocket(address); new WebSocket(address);
 
 
 

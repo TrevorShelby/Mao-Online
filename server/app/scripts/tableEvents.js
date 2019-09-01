@@ -12,12 +12,12 @@ class TableEvents {
 				const playerIndex = table.playerIDs.indexOf(playerID)
 				table.playerIDs.splice(playerIndex, 1)
 			},
-			playerTalked: (chat) => {table.chatLog.push(chat)},
-			gameStarted: () => {table.game = {}},
+			playerTalked: (chat) => { table.chatLog.push(chat) },
+			gameStarted: () => { table.game = {inBetweenRounds: false, myRules: []} },
 			roundStarted: ({discard, you: {hand, seat}}) => {
 				const handLengths = table.playerIDs.map( ()=>7 )
 				const piles = [{owner: undefined, cards: discard}]
-				table.game.round = {piles, handLengths, me: {hand, seat}}
+				table.game.round = {mode: 'play', piles, handLengths, me: {hand, seat}}
 			},
 			cardMoved: ({card, from, to, by}) => {
 				const movedByMe = table.game.round.me.seat == by
@@ -45,20 +45,21 @@ class TableEvents {
 		}
 
 
-		this.eventCallbacks = {}
+		this.eventCallbacks = {tableChanged: []}
 		for(let eventName in eventHandlers) {
 			this.eventCallbacks[eventName] = []
 		}
-		this.table = table
 		tableConn.onmessage = (messageEvent) => {
 			const message = safeJsonParse(messageEvent.data)
 			console.log(message)
 			if(message.type != 'event' || !(message.name in eventHandlers)) { return }
 			eventHandlers[message.name](message.data)
 			if(message.name in this.eventCallbacks) {
+				const tableCopy = Object.assign({}, table)
 				this.eventCallbacks[message.name].forEach( 
-					callback => callback(this.table, message.data) 
+					callback => callback(tableCopy, message.data) 
 				)
+				this.eventCallbacks.tableChanged.forEach( callback => callback(tableCopy) )
 			}
 		}
 	}

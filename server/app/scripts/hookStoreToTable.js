@@ -1,4 +1,4 @@
-const { createNewSocket } = require('./config.js')
+const { createSocket } = require('./config.js')
 
 
 
@@ -8,6 +8,7 @@ function hookStoreToTable(dispatch) {
 	tableConn.onmessage = (messageEvent) => {
 		const message = JSON.parse(messageEvent.data)
 		if(message.type == 'event') {
+			console.log(message)
 			dispatch({
 				type: message.name,
 				data: message.data

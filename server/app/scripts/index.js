@@ -16,17 +16,19 @@ const App = require('./app.js');
 
 const rootReducer = require('./reducers.js');
 
-const hookStoreToTable = require('./actions.js');
+const hookStoreToTable = require('./hookStoreToTable.js');
 
 const {
-  createNewSocket
+  createSocket
 } = require('./config.js');
 
-const store = createStore(rootReducer, {
-  table: undefined
+const store = createStore(rootReducer, {});
+const tableConn = hookStoreToTable(store.dispatch.bind(store));
+store.dispatch({
+  type: 'connectionMade',
+  tableConn
 });
-hookStoreToTable(store.dispatch.bind(store));
 render(React.createElement(Provider, {
   store: store
 }, React.createElement(App, null)), document.body);
-createNewSocket(0);
+createSocket(0);

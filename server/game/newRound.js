@@ -3,7 +3,7 @@ const getPlayingCard = require('./playingCard.js')
 
 
 function getNewRound(playerIDs) {
-	const seating = playerIDs.concat([])
+	const seating = playerIDs.slice() //copies array
 	const hands = []
 	for(let seat = 0; seat < seating.length; seat++) {
 		const hand = []

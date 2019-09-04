@@ -4,16 +4,19 @@ const {
   connect
 } = require('react-redux');
 
+const uuidv4 = require('uuid/v4');
+
 const Card = require('./card.js');
 
-function Discard({
+const Discard = ({
   topCard
-}) {
-  return React.createElement(Card, {
-    rank: topCard.rank,
-    suit: topCard.suit
-  });
-}
+}) => React.createElement("div", {
+  className: "discard"
+}, React.createElement(Card, {
+  rank: topCard.rank,
+  suit: topCard.suit,
+  key: uuidv4()
+}));
 
 const getLast = arr => arr[arr.length - 1];
 

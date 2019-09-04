@@ -9,9 +9,9 @@ const Discard = require('./discard.js')
 function App({isInRound}) {
 	if(!isInRound) { return <div></div> }
 	return (
-		<div>
-			<Hand />
+		<div id='table'>
 			<Discard />
+			<Hand />
 		</div>
 	)
 }

@@ -6,13 +6,15 @@ const spokenSuits = ['♣', '♦', '♥', '♠'];
 function Card({
   rank,
   suit,
-  onClick
+  onClick,
+  isSelected = false
 }) {
   const spokenRank = spokenRanks[rank];
   const spokenSuit = spokenSuits[suit];
   const color = suit == 0 || suit == 3 ? 'black' : 'red';
+  const className = !isSelected ? 'card ' + color : 'card ' + color + ' selected';
   return React.createElement("div", {
-    className: 'card ' + color,
+    className: className,
     onClick: onClick
   }, spokenSuit + '\n' + spokenRank);
 }

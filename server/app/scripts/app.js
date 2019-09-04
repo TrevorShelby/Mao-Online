@@ -15,7 +15,9 @@ function App({
     return React.createElement("div", null);
   }
 
-  return React.createElement("div", null, React.createElement(Hand, null), React.createElement(Discard, null));
+  return React.createElement("div", {
+    id: "table"
+  }, React.createElement(Discard, null), React.createElement(Hand, null));
 }
 
 const mapStateToProps = state => ({

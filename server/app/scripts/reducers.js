@@ -14,7 +14,6 @@ const tableReducers = {
 	playerLeft: (table, playerID) => (
 		{...table,
 			playerIDs: without(playerIDs, playerID)
-
 		}
 	),
 	playerTalked: (table, chat) => (
@@ -58,6 +57,17 @@ function rootReducer(state={}, action) {
 			table: tableReducers[action.type](state.table, action.data)
 		})
 	}
+	else if(action.type == 'selectCard') {
+		return ({...state,
+			selectedCardIndex: action.selectedCardIndex
+		})
+	}
+	else if(action.type == 'connectionMade') {
+		return ({...state,
+			tableConn: action.tableConn
+		})
+	}
+	return state
 }
 
 
@@ -71,7 +81,7 @@ function without(arr, element) {
 function moveCard(round, {card, from, to, by}) {
 	const myHand = round.me.hand.slice() //copies array
 	const handLengths = round.handLengths.slice()
-	const piles = round.map( (pile) => ({
+	const piles = round.piles.map( (pile) => ({
 		owner: pile.owner,
 		cards: pile.cards.slice()
 	}))

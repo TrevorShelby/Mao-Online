@@ -5,13 +5,14 @@ const { Provider } = require('react-redux')
 
 const App = require('./app.js')
 const rootReducer = require('./reducers.js')
-const hookStoreToTable = require('./actions.js')
-const { createNewSocket } = require('./config.js')
+const hookStoreToTable = require('./hookStoreToTable.js')
+const { createSocket } = require('./config.js')
 
 
 
-const store = createStore(rootReducer, {table: undefined})
-hookStoreToTable(store.dispatch.bind(store))
+const store = createStore(rootReducer, {})
+const tableConn = hookStoreToTable(store.dispatch.bind(store))
+store.dispatch({type: 'connectionMade', tableConn})
 render(
 	<Provider store={store}>
 		<App />
@@ -21,4 +22,4 @@ render(
 
 
 
-createNewSocket(0)
+createSocket(0)

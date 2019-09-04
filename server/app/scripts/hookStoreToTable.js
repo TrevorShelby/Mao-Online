@@ -3,7 +3,8 @@ const { createSocket } = require('./config.js')
 
 
 function hookStoreToTable(dispatch) {
-	const tableConn = createSocket(0)
+	const tableID = parseInt(getParameterByName('tableID'), 10)
+	const tableConn = createSocket(tableID)
 
 	tableConn.onmessage = (messageEvent) => {
 		const message = JSON.parse(messageEvent.data)
@@ -17,6 +18,19 @@ function hookStoreToTable(dispatch) {
 	}
 
 	return tableConn
+}
+
+
+
+//credit to: https://stackoverflow.com/a/901144
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    let regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
 

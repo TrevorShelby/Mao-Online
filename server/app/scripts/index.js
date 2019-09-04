@@ -30,5 +30,4 @@ store.dispatch({
 });
 render(React.createElement(Provider, {
   store: store
-}, React.createElement(App, null)), document.body);
-createSocket(0);
+}, React.createElement(App, null)), document.body); // createSocket(0)

@@ -13,7 +13,7 @@ const tableReducers = {
 	),
 	playerLeft: (table, playerID) => (
 		{...table,
-			playerIDs: without(playerIDs, playerID)
+			playerIDs: replace(playerIDs, playerID, undefined)
 		}
 	),
 	playerTalked: (table, chat) => (
@@ -72,9 +72,11 @@ function rootReducer(state={}, action) {
 
 
 
-function without(arr, element) {
-	const index = arr.indexOf(playerID)
-	return arr.slice(0, index).concat(arr.slice(index + 1))
+function replace(arr, elementToReplace, replacement) {
+	arr.map( element => {
+		if(element == elementToReplace) { return replacement }
+		else { return element }
+	})
 }
 
 

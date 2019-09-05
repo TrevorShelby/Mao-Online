@@ -1,3 +1,4 @@
+//TODO: Actually get rid of accusation.
 const endAccusation = (table, mode) => (
 	{...table,
 		game: {...table.game,
@@ -35,6 +36,7 @@ const tableReducers = {
 	gameStarted: (table) => (
 		{...table,
 			game: {
+				inBetweenRounds: false,
 				myRules: []
 			}
 		}
@@ -69,7 +71,17 @@ const tableReducers = {
 		}
 	),
 	accusationCancelled: endAccusation,
-	accusationAccepted: endAccusation
+	accusationAccepted: endAccusation,
+	//actually get rid of round
+	roundOver: (table, winningSeat) => (
+		{...table,
+			game: {...table.game,
+				round: undefined,
+				inBetweenRounds: true,
+				lastWinner: table.playerIDs[winningSeat]
+			}
+		}
+	)
 }
 
 

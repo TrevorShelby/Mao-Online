@@ -7,26 +7,37 @@ const OthersHandLengths = require('./othersHandLengths.js')
 
 
 
-function App({isInRound, playerID}) {
-	if(!isInRound && playerID == undefined) { return <div></div> }
-	if(!isInRound && playerID != undefined) { return <div><span className='clientName'>{playerID}</span></div> }
+function App({tableHasRound, tint, playerID}) {
+	if(!tableHasRound && playerID == undefined) { return <div></div> }
+	if(!tableHasRound && playerID != undefined) { 
+		return <div><span className='clientName'>{playerID}</span></div>
+	}
 	return (
 		<div id='table'>
 			<OthersHandLengths />
 			<Discard />
 			<Hand />
 			<span className='clientName'>{playerID}</span>
+			<div className='overlay' style={{backgroundColor: tint}}></div>
 		</div>
 	)
 }
 
 
-const mapStateToProps = state => ({
-	isInRound:
-		state != undefined && 'table' in state && 'game' in state.table
-		&& 'round' in state.table.game,
-	playerID: state != undefined && 'table' in state ? state.table.me : undefined
-})
+const mapStateToProps = state => {
+	const tableExists = state != undefined && 'table' in state
+	const tableHasRound = tableExists && 'game' in state.table && 'round' in state.table.game
+	const tint = (
+		tableHasRound && state.table.game.round.mode == 'accusation' ? '#00000088' : '#00000000'
+	)
+	return {
+		tableHasRound,
+		tint,
+		playerID: tableExists ? state.table.me : undefined
+	}
+}
+
+
 
 
 

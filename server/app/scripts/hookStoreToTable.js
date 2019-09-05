@@ -9,6 +9,8 @@ function hookStoreToTable(dispatch) {
 	tableConn.onmessage = (messageEvent) => {
 		const message = JSON.parse(messageEvent.data)
 		if(message.type == 'event') {
+			console.log(message)
+			if(message.name == 'playerAccused') { new Audio('resources/thunk.wav').play() }
 			dispatch({
 				type: message.name,
 				data: message.data

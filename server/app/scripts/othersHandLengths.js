@@ -39,11 +39,13 @@ const mapStateToProps = state => ({
     return numCardsByPlayerID;
   }, []),
   accusePlayer_: seat => () => {
-    state.tableConn.send(JSON.stringify({
-      type: 'action',
-      name: 'accuse',
-      args: seat
-    }));
+    if (state.table.game.round.mode != 'accusation') {
+      state.tableConn.send(JSON.stringify({
+        type: 'action',
+        name: 'accuse',
+        args: seat
+      }));
+    }
   }
 });
 

@@ -43,7 +43,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  selectCard_: cardIndex => () => dispatch({
+  selectCard: cardIndex => dispatch({
     type: 'selectCard',
     selectedCardIndex: cardIndex
   })
@@ -52,32 +52,30 @@ const mapDispatchToProps = dispatch => ({
 const mergeProps = (stateProps, dispatchProps, ownProps) => ({
   cardObjs: stateProps.cardObjs,
   selectedCardIndex: stateProps.selectedCardIndex,
-  onCardClicked_: cardIndex => {
+  onCardClicked_: cardIndex => () => {
     if (!stateProps.isHandActive) {
-      return () => {};
+      return;
     }
 
     if (cardIndex == stateProps.selectedCardIndex) {
-      return () => {
-        stateProps.tableConn.send(JSON.stringify({
-          type: 'action',
-          name: 'moveCard',
-          args: {
-            from: {
-              source: 'hand',
-              cardIndex: stateProps.selectedCardIndex
-            },
-            to: {
-              source: 'pile',
-              pileIndex: 0,
-              cardIndex: stateProps.discardTopCardIndex
-            }
+      stateProps.tableConn.send(JSON.stringify({
+        type: 'action',
+        name: 'moveCard',
+        args: {
+          from: {
+            source: 'hand',
+            cardIndex: stateProps.selectedCardIndex
+          },
+          to: {
+            source: 'pile',
+            pileIndex: 0,
+            cardIndex: stateProps.discardTopCardIndex
           }
-        }));
-        dispatchProps.selectCard_(-1)();
-      };
+        }
+      }));
+      dispatchProps.selectCard(-1);
     } else {
-      return dispatchProps.selectCard_(cardIndex);
+      dispatchProps.selectCard(cardIndex);
     }
   }
 });

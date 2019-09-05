@@ -11,14 +11,15 @@ const Discard = require('./discard.js');
 const OthersHandLengths = require('./othersHandLengths.js');
 
 function App({
-  isInRound,
+  tableHasRound,
+  tint,
   playerID
 }) {
-  if (!isInRound && playerID == undefined) {
+  if (!tableHasRound && playerID == undefined) {
     return React.createElement("div", null);
   }
 
-  if (!isInRound && playerID != undefined) {
+  if (!tableHasRound && playerID != undefined) {
     return React.createElement("div", null, React.createElement("span", {
       className: "clientName"
     }, playerID));
@@ -28,12 +29,23 @@ function App({
     id: "table"
   }, React.createElement(OthersHandLengths, null), React.createElement(Discard, null), React.createElement(Hand, null), React.createElement("span", {
     className: "clientName"
-  }, playerID));
+  }, playerID), React.createElement("div", {
+    className: "overlay",
+    style: {
+      backgroundColor: tint
+    }
+  }));
 }
 
-const mapStateToProps = state => ({
-  isInRound: state != undefined && 'table' in state && 'game' in state.table && 'round' in state.table.game,
-  playerID: state != undefined && 'table' in state ? state.table.me : undefined
-});
+const mapStateToProps = state => {
+  const tableExists = state != undefined && 'table' in state;
+  const tableHasRound = tableExists && 'game' in state.table && 'round' in state.table.game;
+  const tint = tableHasRound && state.table.game.round.mode == 'accusation' ? '#00000088' : '#00000000';
+  return {
+    tableHasRound,
+    tint,
+    playerID: tableExists ? state.table.me : undefined
+  };
+};
 
 module.exports = connect(mapStateToProps)(App);

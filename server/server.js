@@ -29,11 +29,11 @@ const httpServer = http.createServer((req, res) => {
 	}
 	//TODO: Figure out which scripts (including components) should be visible to client. doesn't
 	//just have to be all necessary ones.
-	else if(pathname.startsWith('/scripts/')) {
-		const scriptPath = __dirname + '/app/scripts/' + pathname.split('/').slice(2).join('/')
-		if(!fs.existsSync(scriptPath)) { res.statusCode = 404; res.end(); return }
-		res.writeHead(200,  {'Content-Type': 'text/javascript'})
-		fs.createReadStream(scriptPath).pipe(res)
+	else if(pathname.startsWith('/scripts/') || pathname.startsWith('/resources/')) {
+		const fsPath = __dirname + '/app' + pathname
+		if(!fs.existsSync(fsPath)) { res.statusCode = 404; res.end(); return }
+		if(pathname.startsWith('/scripts/')) { res.writeHead(200,  {'Content-Type': 'text/javascript'}) }
+		fs.createReadStream(fsPath).pipe(res)
 	}
 	else {
 		res.statusCode = 404

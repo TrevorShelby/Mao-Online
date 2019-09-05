@@ -3,37 +3,52 @@ const { connect } = require('react-redux')
 
 const Hand = require('./hand.js')
 const Discard = require('./discard.js')
-const OthersHandLengths = require('./othersHandLengths.js')
+const OtherPlayers = require('./otherPlayers.js')
+const { CancelAccusationButton, AcceptAccusationButton } = require('./accusationButtons.js')
 
 
 
-function App({tableHasRound, tint, playerID}) {
-	if(!tableHasRound && playerID == undefined) { return <div></div> }
-	if(!tableHasRound && playerID != undefined) { 
-		return <div><span className='clientName'>{playerID}</span></div>
-	}
-	return (
-		<div id='table'>
-			<OthersHandLengths />
+const App = ({tableHasRound, tint, playerID, accusationState}) => (
+	<div id='table'>
+		{playerID != undefined &&
+			<span className='nameplate'>{playerID}</span>
+		}
+		{tableHasRound && (<React.Fragment>
+			<OtherPlayers />
 			<Discard />
 			<Hand />
-			<span className='clientName'>{playerID}</span>
 			<div className='overlay' style={{backgroundColor: tint}}></div>
-		</div>
-	)
-}
+		</React.Fragment>)}
+		{accusationState == 1 &&
+			<CancelAccusationButton />
+		}
+		{accusationState == 2 &&
+			<AcceptAccusationButton />
+		}
+	</div>
+)
 
 
 const mapStateToProps = state => {
 	const tableExists = state != undefined && 'table' in state
 	const tableHasRound = tableExists && 'game' in state.table && 'round' in state.table.game
+	const roundIsInAccusation = tableHasRound && state.table.game.round.mode == 'accusation'
+	//-1 when not in accusation, 0 if not involved in accusation, 1 if accuser, 2 if accused
+	const accusationState = (() => {
+		if(!roundIsInAccusation) { return -1 }
+		const { table: {game: {round: {accusation, me: {seat: mySeat} } } } } = state
+		if(accusation.accuser == mySeat) { return 1 }
+		if(accusation.accused == mySeat) { return 2 }
+		return 0
+	})()
 	const tint = (
 		tableHasRound && state.table.game.round.mode == 'accusation' ? '#00000088' : '#00000000'
 	)
 	return {
 		tableHasRound,
-		tint,
-		playerID: tableExists ? state.table.me : undefined
+		playerID: tableExists ? state.table.me : undefined,
+		accusationState,
+		tint
 	}
 }
 

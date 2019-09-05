@@ -1,3 +1,14 @@
+const endAccusation = (table, mode) => (
+	{...table,
+		game: {...table.game,
+			round: {...table.game.round,
+				accusation: undefined,
+				mode
+			}
+		}
+	}
+)
+
 const tableReducers = {
 	joinedTable: (table, {you, others}) => (
 		{...table,
@@ -56,8 +67,11 @@ const tableReducers = {
 				}
 			}
 		}
-	)
+	),
+	accusationCancelled: endAccusation,
+	accusationAccepted: endAccusation
 }
+
 
 
 function rootReducer(state={}, action) {

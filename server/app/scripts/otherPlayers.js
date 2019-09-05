@@ -11,13 +11,9 @@ const HandLength = ({
 }) => React.createElement("div", {
   className: "handLength",
   onClick: onClick
-}, React.createElement("div", {
-  className: "nameplate"
-}, playerID), React.createElement("div", {
-  className: "handLengthDisplay"
-}, numCards));
+}, React.createElement("div", null, playerID), React.createElement("div", null, numCards));
 
-const OthersHandLengths = ({
+const OtherPlayers = ({
   numCardsByPlayerID,
   accusePlayer_
 }) => React.createElement("div", {
@@ -49,4 +45,4 @@ const mapStateToProps = state => ({
   }
 });
 
-module.exports = connect(mapStateToProps)(OthersHandLengths);
+module.exports = connect(mapStateToProps)(OtherPlayers);

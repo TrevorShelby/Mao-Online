@@ -10,6 +10,7 @@ function hookStoreToTable(dispatch) {
 		const message = JSON.parse(messageEvent.data)
 		if(message.type == 'event') {
 			console.log(message)
+			//attribution: https://freesound.org/s/406493/
 			if(message.name == 'playerAccused') { new Audio('resources/thunk.wav').play() }
 			dispatch({
 				type: message.name,

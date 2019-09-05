@@ -5,13 +5,13 @@ const { connect } = require('react-redux')
 
 const HandLength = ({playerID, numCards, onClick}) => (
 	<div className='handLength' onClick={onClick}>
-		<div className='nameplate'>{playerID}</div>
-		<div className='handLengthDisplay'>{numCards}</div>
+		<div>{playerID}</div>
+		<div>{numCards}</div>
 	</div>
 )
 
 
-const OthersHandLengths = ({numCardsByPlayerID, accusePlayer_}) => (
+const OtherPlayers = ({numCardsByPlayerID, accusePlayer_}) => (
 	<div className='handLengths'>
 		{numCardsByPlayerID.map( ([playerID, numCards, seat]) => (
 			<HandLength
@@ -40,4 +40,4 @@ const mapStateToProps = state => ({
 })
 
 
-module.exports = connect(mapStateToProps)(OthersHandLengths)
+module.exports = connect(mapStateToProps)(OtherPlayers)

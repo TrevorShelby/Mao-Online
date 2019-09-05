@@ -53,6 +53,7 @@ function disconnect_(table, eventHistories, sendEvent, disconnectingID) {
 					table.game.round.winningSeat = undefined
 					sendEvent(table.game.round.seating, 'winningSeatEmptied')
 				}
+				//TODO: Add case for if someone in an accusation leaves.
 			}
 			const disconnectorRules = table.game.rules.playerRules.filter( (playerRule) => {
 				if(playerRule.author == disconnectingID) {

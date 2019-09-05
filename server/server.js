@@ -27,6 +27,8 @@ const httpServer = http.createServer((req, res) => {
 		res.writeHead(200, {'Content-Type': 'application/json'})
 		res.end( JSON.stringify(getLobbyInfo()) )
 	}
+	//TODO: Figure out which scripts (including components) should be visible to client. doesn't
+	//just have to be all necessary ones.
 	else if(pathname.startsWith('/scripts/')) {
 		const scriptPath = __dirname + '/app/scripts/' + pathname.split('/').slice(2).join('/')
 		if(!fs.existsSync(scriptPath)) { res.statusCode = 404; res.end(); return }

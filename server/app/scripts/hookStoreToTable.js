@@ -9,7 +9,6 @@ function hookStoreToTable(dispatch) {
 	tableConn.onmessage = (messageEvent) => {
 		const message = JSON.parse(messageEvent.data)
 		if(message.type == 'event') {
-			console.log(message)
 			dispatch({
 				type: message.name,
 				data: message.data
@@ -23,8 +22,8 @@ function hookStoreToTable(dispatch) {
 
 
 //credit to: https://stackoverflow.com/a/901144
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
+function getParameterByName(name) {
+    let url = window.location.href;
     name = name.replace(/[\[\]]/g, '\\$&');
     let regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
         results = regex.exec(url);

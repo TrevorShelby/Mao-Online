@@ -6,9 +6,11 @@ const {
 
 const HandLength = ({
   playerID,
-  numCards
+  numCards,
+  onClick
 }) => React.createElement("div", {
-  className: "handLength"
+  className: "handLength",
+  onClick: onClick
 }, React.createElement("div", {
   className: "nameplate"
 }, playerID), React.createElement("div", {
@@ -16,12 +18,14 @@ const HandLength = ({
 }, numCards));
 
 const OthersHandLengths = ({
-  numCardsByPlayerID
+  numCardsByPlayerID,
+  accusePlayer_
 }) => React.createElement("div", {
   className: "handLengths"
-}, numCardsByPlayerID.map(([playerID, numCards]) => React.createElement(HandLength, {
+}, numCardsByPlayerID.map(([playerID, numCards, seat]) => React.createElement(HandLength, {
   playerID: playerID,
   numCards: numCards,
+  onClick: accusePlayer_(seat),
   key: playerID
 })));
 
@@ -31,9 +35,16 @@ const mapStateToProps = state => ({
       return numCardsByPlayerID;
     }
 
-    numCardsByPlayerID.push([playerID, state.table.game.round.handLengths[seat]]);
+    numCardsByPlayerID.push([playerID, state.table.game.round.handLengths[seat], seat]);
     return numCardsByPlayerID;
-  }, [])
+  }, []),
+  accusePlayer_: seat => () => {
+    state.tableConn.send(JSON.stringify({
+      type: 'action',
+      name: 'accuse',
+      args: seat
+    }));
+  }
 });
 
 module.exports = connect(mapStateToProps)(OthersHandLengths);

@@ -13,7 +13,7 @@ const tableReducers = {
 	),
 	playerLeft: (table, playerID) => (
 		{...table,
-			playerIDs: replace(playerIDs, playerID, undefined)
+			playerIDs: replace(table.playerIDs, playerID, undefined)
 		}
 	),
 	playerTalked: (table, chat) => (
@@ -24,7 +24,6 @@ const tableReducers = {
 	gameStarted: (table) => (
 		{...table,
 			game: {
-				inBetweenRounds: false,
 				myRules: []
 			}
 		}
@@ -45,6 +44,16 @@ const tableReducers = {
 		{...table,
 			game: {...table.game,
 				round: moveCard(table.game.round, {card, from, to, by})
+			}
+		}
+	),
+	playerAccused: (table, {accuser, accused}) => (
+		{...table,
+			game: {...table.game,
+				round: {...table.game.round,
+					accusation: {accuser, accused},
+					mode: 'accusation'
+				}
 			}
 		}
 	)
@@ -73,7 +82,7 @@ function rootReducer(state={}, action) {
 
 
 function replace(arr, elementToReplace, replacement) {
-	arr.map( element => {
+	return arr.map( element => {
 		if(element == elementToReplace) { return replacement }
 		else { return element }
 	})

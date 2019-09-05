@@ -38,7 +38,8 @@ const mapStateToProps = state => ({
   cardObjs: state.table.game.round.me.hand,
   selectedCardIndex: state.selectedCardIndex,
   tableConn: state.tableConn,
-  discardTopCardIndex: state.table.game.round.piles[0].cards.length
+  discardTopCardIndex: state.table.game.round.piles[0].cards.length,
+  isHandActive: state.table.game.round.mode == 'play'
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -52,6 +53,10 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => ({
   cardObjs: stateProps.cardObjs,
   selectedCardIndex: stateProps.selectedCardIndex,
   onCardClicked_: cardIndex => {
+    if (!stateProps.isHandActive) {
+      return () => {};
+    }
+
     if (cardIndex == stateProps.selectedCardIndex) {
       return () => {
         stateProps.tableConn.send(JSON.stringify({

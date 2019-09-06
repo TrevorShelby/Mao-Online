@@ -21,7 +21,7 @@ const Discard = ({
 const getLast = arr => arr[arr.length - 1];
 
 const mapStateToProps = state => ({
-  topCard: getLast(state.table.game.round.piles[0].cards)
+  topCard: getLast(state.table.round.piles[0].cards)
 });
 
 module.exports = connect(mapStateToProps)(Discard);

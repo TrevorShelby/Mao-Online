@@ -31,18 +31,18 @@ const App = ({tableHasRound, playerHasToWriteRule, accusationState, playerID, ti
 
 const mapStateToProps = state => {
 	const tableExists = state != undefined && 'table' in state
-	const tableHasRound = tableExists && 'game' in state.table && 'round' in state.table.game
+	const tableHasRound = tableExists && 'round' in state.table
 	const playerHasToWriteRule = (
-		tableExists && 'game' in state.table && state.table.game.inBetweenRounds
-		&& state.table.game.lastWinner == state.table.me
+		tableExists && state.table.mode == 'inBetweenRounds'
+		&& state.table.lastWinner == state.table.me
 	)
-	const roundIsInAccusation = tableHasRound && state.table.game.round.mode == 'accusation'
+	const roundIsInAccusation = tableHasRound && state.table.round.mode == 'accusation'
 	//-1 when not in accusation, 0 if not involved in accusation, 1 if accuser, 2 if accused
 	const accusationState = (() => {
-		if(!roundIsInAccusation) { return -1 }
-		const { table: {game: {round: {accusation, me: {seat: mySeat} } } } } = state
-		if(accusation.accuser == mySeat) { return 1 }
-		if(accusation.accused == mySeat) { return 2 }
+		if(!roundIsInAccusation) return -1
+		const { table: {accusation, me } } = state
+		if(accusation.accuser == me) return 1
+		if(accusation.accused == me) return 2
 		return 0
 	})()
 	const tint = roundIsInAccusation ? '#00000088' : '#00000000'

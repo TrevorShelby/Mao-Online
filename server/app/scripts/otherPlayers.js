@@ -18,28 +18,26 @@ const OtherPlayers = ({
   accusePlayer_
 }) => React.createElement("div", {
   className: "handLengths"
-}, numCardsByPlayerID.map(([playerID, numCards, seat]) => React.createElement(HandLength, {
+}, Object.keys(numCardsByPlayerID).map(playerID => React.createElement(HandLength, {
   playerID: playerID,
-  numCards: numCards,
-  onClick: accusePlayer_(seat),
+  numCards: numCardsByPlayerID[playerID],
+  onClick: accusePlayer_(playerID),
   key: playerID
 })));
 
 const mapStateToProps = state => ({
-  numCardsByPlayerID: state.table.playerIDs.reduce((numCardsByPlayerID, playerID, seat) => {
-    if (playerID == state.table.me || playerID == undefined) {
-      return numCardsByPlayerID;
-    }
-
-    numCardsByPlayerID.push([playerID, state.table.game.round.handLengths[seat], seat]);
-    return numCardsByPlayerID;
-  }, []),
-  accusePlayer_: seat => () => {
-    if (state.table.game.round.mode != 'accusation') {
+  numCardsByPlayerID: state.table.playerIDs.reduce((numCardsByPlayerID, playerID) => {
+    if (playerID == state.table.me || playerID == undefined) return numCardsByPlayerID;
+    return { ...numCardsByPlayerID,
+      [playerID]: state.table.round.handLengths[playerID]
+    };
+  }, {}),
+  accusePlayer_: playerID => () => {
+    if (state.table.round.mode != 'accusation') {
       state.tableConn.send(JSON.stringify({
         type: 'action',
         name: 'accuse',
-        args: seat
+        args: playerID
       }));
     }
   }

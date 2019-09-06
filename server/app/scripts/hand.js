@@ -35,11 +35,11 @@ function Hand({
 }
 
 const mapStateToProps = state => ({
-  cardObjs: state.table.game.round.me.hand,
+  cardObjs: state.table.round.myHand,
   selectedCardIndex: state.selectedCardIndex,
   tableConn: state.tableConn,
-  discardTopCardIndex: state.table.game.round.piles[0].cards.length,
-  isHandActive: state.table.game.round.mode == 'play'
+  discardTopCardIndex: state.table.round.piles[0].cards.length,
+  isHandActive: state.table.round.mode == 'play'
 });
 
 const mapDispatchToProps = dispatch => ({

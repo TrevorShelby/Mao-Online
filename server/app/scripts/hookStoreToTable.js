@@ -6,12 +6,13 @@ function hookStoreToTable(dispatch) {
 	const tableID = parseInt(getParameterByName('tableID'), 10)
 	const tableConn = createSocket(tableID)
 
+	const thunk = new Audio('resources/thunk.wav')
 	tableConn.onmessage = (messageEvent) => {
 		const message = JSON.parse(messageEvent.data)
 		if(message.type == 'event') {
 			console.log(message)
 			//attribution: https://freesound.org/s/406493/
-			if(message.name == 'playerAccused') { new Audio('resources/thunk.wav').play() }
+			if(message.name == 'playerAccused') { thunk.play() }
 			dispatch({
 				type: message.name,
 				data: message.data

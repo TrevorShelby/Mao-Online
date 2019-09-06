@@ -9,7 +9,6 @@ const cancelAccusation = require('./actions/cancelAccusation.js')
 const onActionMessage_ = require('./onActionMessage.js')
 const sendEvent_ = require('./sendEvent.js')
 const startNewGame = require('./newGame.js')
-const sendRoundStartedEvent = require('./sendRoundStartedEvent.js')
 
 
 
@@ -54,10 +53,8 @@ function createNewTable(options) {
 		this.sendEvent([joiningPlayerID], 'joinedTable', {you: joiningPlayerID, others})
 		this.sendEvent(others, 'playerJoined', joiningPlayerID)
 		if(this.options.playersToStart == this.connections.length) {
-			startNewGame(this)
 			this.mode = 'round'
-			this.sendEvent(this.playerIDs, 'gameStarted')
-			sendRoundStartedEvent(this)
+			startNewGame(this)
 		}
 		return true
 	}).bind(table)

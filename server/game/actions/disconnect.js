@@ -1,75 +1,59 @@
 const startNewRound = require('../newRound.js')
-const sendRoundStartedEvent = require('../sendRoundStartedEvent.js')
 
 
 
-function disconnect_(table, eventHistories, disconnectingID) {
+function disconnect_(table, eventHistories, disconnectorID) {
 	function disconnect() {
-		const connectionIndex = table.playerIDs.indexOf(disconnectingID)
+		const connectionIndex = table.playerIDs.indexOf(disconnectorID)
 		delete table.connections[connectionIndex]
 		delete table.playerIDs[connectionIndex]
-		delete eventHistories[disconnectingID]
+		delete eventHistories[disconnectorID]
 
-		sendEvent(table.playerIDs, 'playerLeft', disconnectingID)
+		table.sendEvent(table.playerIDs, 'playerLeft', disconnectorID)
 
 		if(table.mode == 'round' || table.mode == 'inBetweenRounds') {
 			//gets rid of empty elements
-			const numPlayers = table.playerIDs.filter(Boolean).length
-		}
-
-		if(table.mode == 'game') {
-			delete table.game.playerIDs[table.game.playerIDs.indexOf(disconnectingID)]
-			const nonEmptyPlayerIDs = table.game.playerIDs.filter(Boolean)
-			if(
-				nonEmptyPlayerIDs.length == 1
-				&& table.options.roundLimit > table.game.numRoundsPlayed
-			) {
-				sendEvent(table.game.playerIDs, 'gameEnded')
-				table.playerConnections.forEach( (conn) => {conn.close()})
+			const numPlayersAtTable = table.playerIDs.filter(Boolean).length
+			if(numPlayersAtTable == 1 && table.options.roundLimit > table.numRoundsPlayed) {
+				table.sendEvent(table.playerIDs, 'gameEnded')
+				table.connections.forEach( conn => conn.close() )
 			}
-			else if(nonEmptyPlayerIDs.length == 0) {
-				table.game = undefined
-				table.chatLog = []
+			else if(numPlayersAtTable == 0) {
+				delete table.game; delete table.sendEvent; delete table.round
+				delete table.accusation; delete table.lastWinner; delete table.numRoundsPlayed
+				delete table.rules
 				table.mode = 'lobby'
+				table.chatLog = []
 				return
 			}
-			if(table.game.inBetweenRounds && table.game.lastWinner == disconnectingID) {
-				table.game.round = getNewRound(table.game.playerIDs)
-				table.game.inBetweenRounds = false
-				sendRoundStartedEvent(table.game.round, sendEvent)
+			if(table.mode == 'inBetweenRounds' && table.lastWinner == disconnectorID) {
+				startNewRound(table)
 			}
-			else if(!table.game.inBetweenRounds) {
-				const disconnectingSeat = table.game.round.seating.indexOf(disconnectingID)
-				delete table.game.round.seating[disconnectingSeat]
-				sendEvent(table.game.round.seating, 'seatEmptied', disconnectingSeat)
-				delete table.game.round.hands[disconnectingSeat]
+			else if(table.mode == 'round') {
+				delete table.round.hands[disconnectorID]
 
 				//TODO: When pile adding and deleting are introduced, add event that corresponds.
-				table.game.round.piles.forEach( (pile, pileIndex) => {
-					if(pile.owner == disconnectingSeat) {
-						delete table.game.round.piles[pileIndex]
-					}
+				table.round.piles.forEach( (pile, pileIndex) => {
+					if(pile.owner == disconnectingSeat) delete table.round.piles[pileIndex]
 				})
 
 				if(
-					table.game.round.mode == 'lastChance' 
-					&& table.game.round.winningSeat == disconnectingSeat
+					table.round.mode == 'lastChance'
+					&& table.round.winningPlayer == disconnectorID
 				) {
-					table.game.round.mode = 'play'
-					table.game.round.accusation = undefined
-					table.game.round.winningSeat = undefined
-					sendEvent(table.game.round.seating, 'winningSeatEmptied')
+					table.round.mode = 'play'
+					table.round.winningPlayer = undefined
+					table.sendEvent(table.playerIDs, 'winningPlayerLeft')
 				}
 				//TODO: Add case for if someone in an accusation leaves.
 			}
-			const disconnectorRules = table.game.rules.playerRules.filter( (playerRule) => {
-				if(playerRule.author == disconnectingID) {
-					return true
-				}
-			}).map( (playerRule) => { return playerRule.rule } )
+
+			const disconnectorsRules = table.rules.playerRules.filter(
+				playerRule => playerRule.author == disconnectorID
+			).map( playerRule => playerRule.rule )
 			if(disconnectorRules.length > 0) {
-				sendEvent(table.game.round.seating, 'rulesRevealed', {
-					author: disconnectingID, rules: disconnectorRules
+				table.sendEvent(table.playerIDs, 'rulesRevealed', {
+					author: disconnectorID, rules: disconnectorRules
 				})
 			}
 		}

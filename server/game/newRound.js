@@ -17,6 +17,14 @@ function startNewRound(table) {
 	round.winningPlayer = undefined
 
 	table.mode = 'round'
+
+	const discard = round.piles[0].cards
+	table.playerIDs.forEach( playerID => {
+		const hand = round.hands[playerID]
+		sendEvent([playerID], 'roundStarted', {
+			you: {hand, seat}, discard
+		})
+	})
 }
 
 

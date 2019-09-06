@@ -3,27 +3,32 @@
 //issue at the moment.
 //TODO: Add logic for if target is accuser. (only once other accusation actions have been made)
 //TODO: Add accusation timeout logic.
-function accuse(table, accuserID, accusedID=undefined) {
-	if(!(accusedID in table.playerIDs)) { return }
+function accuse_(table, accuserID) {
+	function accuse(accusedID=undefined) {
+		if(table.mode != 'round') return
+		if(!table.playerIDs.includes(accusedID)) return
 
-	if(
-		table.round.mode != 'play'
-		&& !(table.round.mode == 'lastChance' && table.round.winningPlayer == accusedID)
-	) return
+		if(
+			table.round.mode != 'play'
+			&& !(table.round.mode == 'lastChance' && table.round.winningPlayer == accusedID)
+		) return
 
-	const previousMode = table.round.mode
-	table.round.mode = 'accusation'
-	table.accusation = {
-		accuser: accuserID,
-		accused: accusedID,
-		previousMode
+		const previousMode = table.round.mode
+		table.round.mode = 'accusation'
+		table.accusation = {
+			accuser: accuserID,
+			accused: accusedID,
+			previousMode
+		}
+		table.sendEvent(table.playerIDs, 'playerAccused', {
+			accuser: table.accusation.accuser,
+			accused: table.accusation.accused
+		})
 	}
-	table.sendEvent(table.playerIDs, 'playerAccused', {
-		accuser: table.accusation.accuser,
-		accused: table.accusation.accused
-	})
+
+	return accuse
 }
 
 
 
-module.exports = accuse
+module.exports = accuse_

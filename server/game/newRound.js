@@ -21,31 +21,10 @@ function startNewRound(table) {
 	const discard = round.piles[0].cards
 	table.playerIDs.forEach( playerID => {
 		const hand = round.hands[playerID]
-		sendEvent([playerID], 'roundStarted', {
-			you: {hand, seat}, discard
+		table.sendEvent([playerID], 'roundStarted', {
+			yourHand: hand, discard
 		})
 	})
-}
-
-
-
-function getNewRound1(playerIDs) {
-	const seating = playerIDs.slice() //copies array
-	const hands = []
-	for(let seat = 0; seat < seating.length; seat++) {
-		const hand = []
-		for(let cardNum = 0; cardNum < 7; cardNum++) {
-			const cardValue = Math.floor(Math.random() * 52)
-			hand.push(getPlayingCard(cardValue))
-		}
-		hands.push(hand)
-	}
-	const topCard = getPlayingCard(Math.floor(Math.random() * 52))
-	const piles = [{owner: undefined, cards: [topCard]}]
-	return { 
-		hands, piles, seating,
-		mode: 'play', accusation: undefined, winningSeat: undefined
-	}
 }
 
 

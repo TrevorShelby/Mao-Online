@@ -5,19 +5,19 @@ This protocol requires messages to be formatted as JSON objects serialized into 
 #The Game
 
 ##Turn Order
-Although not strictly a part of the protocol, it is still important that there be a standard for figuring out who goes first and who goes after who. And it is up to the client application to communicate this turn order to its user. So, the player who has joined before all other players is the one who goes first. Clockwise from each player is the player who joined soonest after them, unless they were last to join, in which case a full rotation has been made.
+Although not strictly a part of the protocol, it is still important that there is a standard for figuring out who goes first and who goes after who. And it is up to the client application to communicate this turn order to its user. So, the player who has joined the table before all other players is the one who goes first. Clockwise from each player is the player who joined soonest after them, unless they were last to join, in which case a full rotation has been made.
 
 
 ##Card Groups
-Cards can be in one of two card groups: hands or piles. Cards can also be retrieved or put into the deck, however, the deck itself is not card group, rather it is something that randomly generates cards (this is to prevent card-counting clients). A player can view cards that are in their own hand (each player gets one), as well as how many cards are in everyone else's hands. Players may move cards to and from their own hand, but not anyone else's. The other type of card group, piles, have their cards visible to all players. The first pile is always the discard pile, a pile which no player owns.
+Cards can be in one of two card groups: hands or piles. Cards can also be retrieved or put into the deck, however, the deck itself is not card group, rather it is something that randomly generates cards (this is to prevent card-counting clients). A player can view cards that are in their own hand (each player gets one), as well as how many cards are in everyone else's hands. The other type of card group, piles, have their cards visible to all players. The first pile is always the discard pile, a pile which no player owns. Players may move cards from and to their own hand, a pile, and the deck.
 
 
 ##Accusation
-During play, one player may accuse another (or even themselves) of breaking a rule. Play cannot continue until the accusation has been settled (players can still talk to each other though). In order for an accusation to be settled, one of two things must happen. Either the accused player accepts the accusation, or the accusing playing cancels the accusation.
+During play, one player may accuse another (or even themselves) of breaking a rule. Play cannot continue until the accusation has been settled (players can still talk to each other though). In order for an accusation to be settled, one of two things must happen: either the accused player accepts the accusation, or the accusing playing cancels the accusation.
 
 
 ##Winning
-For a player to win a round of Mao, they need to play the last card from their hand. Once they do these, a timer of ten seconds begins. During this time, which is known as "last chance", players can only talk and accuse the winning player of breaking a rule. Once the timer hits zero seconds, that player wins the round. However, if a player accuses the winning player, that timer pauses. And if the winning player then accepts the accusation, they'll forfeit their potential victory (they can still win later in the round). Alternatively, if the accusing player decides to cancel the accusation, the timer resumes. Once a player has won, the victorious player creates a new rule in secret, and a new round begins.
+For a player to win a round of Mao, they need to first play the last card from their hand. Once they do this, a timer of ten seconds begins. During this time, which is known as "last chance", players can only talk and accuse the winning player of breaking a rule. Once the timer hits zero seconds, that player wins the round. However, if a player accuses the winning player, that timer pauses. And if the winning player then accepts the accusation, they will forfeit that potential victory (they can still win later in the round). Alternatively, if the accusing player decides to cancel the accusation, the timer resumes. Once a player has won, the victorious player creates a new rule in secret, and a new round begins.
 
 
 
@@ -44,7 +44,7 @@ A card object for the four of hearts would look like this:
 
 
 #Actions
-A client in the game of Mao sends messages in order to perform actions. For the client to perform an action, they would have to send a message to the server that looks like this:
+A client in the game of Mao sends messages to the server in order to perform actions. For the client to perform an action, they would have to send a message that looks like this:
 ```JSON
 {
 	"type": "action",
@@ -54,7 +54,7 @@ A client in the game of Mao sends messages in order to perform actions. For the 
 	}
 }
 ```
-`name` describes which action the client is taking. Certain actions also require an `args` property, which the client provides with any extra information about the action. Below is a section for each action, with their `name` as the title.
+`type` is always "action" for an action. `name` describes which action the client is taking. Certain actions also require an `args` property, which the client provides with any extra information about the action. Below is a section for each action, with their `name` in the title.
 
 ##The `talk` Action
 The `talk` action lets the client send a chat message. `args` describes what the client is saying as a string.
@@ -127,7 +127,7 @@ The `writeRule` action lets a client, who has just won a round, write a rule. It
 
 
 #Event Notifications
-Whenever clients need to be notified through a state change, they will receive an event notification from the server, which looks likes this:
+Whenever clients need to be notified through a state change, they will receive an event notification from the server. Event notifications look like this:
 ```JSON
 {
 	"type": "event",
@@ -138,19 +138,7 @@ Whenever clients need to be notified through a state change, they will receive a
 	}
 }
 ```
-`name` holds the name of the event that has taken place. `order` enumerates this event among any others that the server has sent the client, where the first event has an `order` of 0, the second event has an `order` of 1, and so on. This lets the client make sure they are tracking state changes in the correct order. Finally, there is `data`, which further describes the event. The name for each event, as well as information about how their `data` property is structured (if they have one) is listed below.
-
-##The `playerTalked` Event
-The `playerTalked` event is caused by a player adding to the chat log.
-```JSON
-"data": {
-	"quote": "whatever was said",
-	"by": "85670230-e0cb-4538-b50c-874759e98fd1",
-	"timestamp": 1566229882915
-}
-```
-`quote` describes that player has said. `by` describes the player who is talking. This will likely be changed to a different form of identification later. `timestamp` describes the time when the quote was added to the server's chat log and forwarded.
-
+`type` is always "event" for an event notification. `name` describes the name of the event that has taken place. `order` enumerates this event among any others that the server has sent the client, where the first event has an `order` of 0, the second event has an `order` of 1, and so on. This lets the client make sure they are tracking state changes in the correct order. Finally, there is `data`, which further describes the event. Below is a section for each action, with their `name` in the title.
 
 ##The `joinedTable` Event
 The `joinedTable` event is caused by the client joining the table.
@@ -173,6 +161,18 @@ The `playerJoined` event is caused by another player joining the table. `data` d
 The `playerLeft` event is caused by another player leaving the table. `data` describes the player who is leaving.
 
 
+##The `playerTalked` Event
+The `playerTalked` event is caused by a player adding to the chat log.
+```JSON
+"data": {
+	"quote": "whatever was said",
+	"by": "85670230-e0cb-4538-b50c-874759e98fd1",
+	"timestamp": 1566229882915
+}
+```
+`quote` describes that player has said. `by` describes the player who is talking. `timestamp` describes the time it was when the quote was added to the server's chat log and forwarded.
+
+
 ##The `roundStarted` Event
 The `roundStarted` event is caused by the start of a new round.
 ```JSON
@@ -185,7 +185,7 @@ The `roundStarted` event is caused by the start of a new round.
 	]
 }
 ```
-`yourHand` describes the hand you've been initially dealt. It should always be seven cards long, and you can assume the same for all other players' initial hands. `discard` describes the cards in the discard pile. Although the discard pile will always start with one card, `discard` is sent as an array, as a reinforcement that client applications should keep track of all of the discard pile, instead of just the top card.
+`yourHand` describes the hand that the client is initially dealt. It should always be seven cards long, and you can assume the same for all other players' initial hands. `discard` describes the cards in the discard pile. Although the discard pile will always start with one card, `discard` is sent as an array, as a reinforcement that client applications should keep track of all of the discard pile, instead of just the top card.
 
 
 ##The `roundOver` Event
@@ -261,7 +261,7 @@ The `lastChanceStarted` event is caused by a player getting rid of the last card
 	"timeStarted": 1566229882915
 }
 ```
-`winningPlayer` describes the winning player. `timeStarted` describe the time it was when the countdown began.
+`winningPlayer` describes the winning player. `timeStarted` describes the time it was when the countdown began.
 
 
 ##The `winningPlayerLeft` Event
@@ -269,7 +269,7 @@ The `winningPlayerLeft` event is caused when the round is in last chance and the
 
 
 ##The `ruleWritten` Event
-The `ruleWritten` event is caused by the client writing a rule. `data` describes the rule that the client wrote as a string. Your client will not receive this event when it's another player that is writing the rule, so it should listen for the `roundStarted` event when waiting for the time between rounds to end. 
+The `ruleWritten` event is caused by the client writing a rule. `data` describes the rule that the client wrote as a string. Your client will not receive this event when it is another player that is writing the rule, so it should listen for the `roundStarted` event when waiting for the time between rounds to end. 
 
 
 ##The `rulesRevealed` Event

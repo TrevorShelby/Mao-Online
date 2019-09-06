@@ -1,14 +1,21 @@
-const getNewRound = require('../newRound.js')
+const startNewRound = require('../newRound.js')
 const sendRoundStartedEvent = require('../sendRoundStartedEvent.js')
 
 
 
 function disconnect_(table, eventHistories, disconnectingID) {
 	function disconnect() {
-		table.playerConnections.delete(disconnectingID)
-		eventHistories.delete(disconnectingID)
+		const connectionIndex = table.playerIDs.indexOf(disconnectingID)
+		delete table.connections[connectionIndex]
+		delete table.playerIDs[connectionIndex]
+		delete eventHistories[disconnectingID]
 
-		sendEvent(Array.from(table.playerConnections.keys()), 'playerLeft', disconnectingID)
+		sendEvent(table.playerIDs, 'playerLeft', disconnectingID)
+
+		if(table.mode == 'round' || table.mode == 'inBetweenRounds') {
+			//gets rid of empty elements
+			const numPlayers = table.playerIDs.filter(Boolean).length
+		}
 
 		if(table.mode == 'game') {
 			delete table.game.playerIDs[table.game.playerIDs.indexOf(disconnectingID)]
@@ -66,8 +73,6 @@ function disconnect_(table, eventHistories, disconnectingID) {
 				})
 			}
 		}
-		//TODO: replace later
-		//if(table.playerConnections.size == 0) { throw new Error('No more players.') }
 	}
 	return disconnect
 }

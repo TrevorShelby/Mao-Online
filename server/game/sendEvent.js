@@ -1,8 +1,8 @@
 function sendEvent_(connections, eventHistories) {
 	function sendEvent(playerIDs, name, data=undefined) {
 		playerIDs.forEach( recipientID => {
-			const conn = connections.find( ([playerID]) => recipientID == playerID )
-			const eventHistory = eventHistories.find( ([playerID]) => recipientID == playerID )
+			const conn = connections.find( ([playerID]) => recipientID == playerID )[1]
+			const eventHistory = eventHistories[playerID]
 			const lastMessage = eventHistory[eventHistory.length - 1]
 			const order = lastMessage != undefined ? lastMessage.order + 1 : 0
 

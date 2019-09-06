@@ -1,7 +1,6 @@
 const talk_ = require('./actions/talk.js')
 const disconnect_ = require('./actions/disconnect.js')
 const writeRule_ = require('./actions/writeRule.js')
-const roundAction_ = require('./actions/roundAction.js')
 const moveCard = require('./actions/moveCard.js')
 const accuse = require('./actions/accuse.js')
 const acceptAccusation = require('./actions/acceptAccusation.js')
@@ -14,7 +13,6 @@ const sendRoundStartedEvent = require('./sendRoundStartedEvent.js')
 
 
 
-
 function createNewTable(options) {
 	const table = {}
 	table.connections = []
@@ -23,7 +21,7 @@ function createNewTable(options) {
 	table.chatLog = []
 	table.options = Object.assign({}, options)
 
-	const eventHistories = []
+	const eventHistories = {}
 	table.sendEvent = sendEvent_(table.connections, eventHistories)
 	table.addPlayer = (function addPlayer(joiningPlayerID, joiningConn) {
 		if(this.mode == 'lobby') return false
@@ -37,7 +35,7 @@ function createNewTable(options) {
 		const others = this.connections.map( ([playerID]) => playerID )
 		this.connections.push([joiningPlayerID, joiningConn])
 		this.playerIDs.push(joiningPlayerID)
-		eventHistories.push([joiningPlayerID, []])
+		eventHistories[joiningPlayerID] = []
 		const onActionMessage = onActionMessage_({
 			talk:             talk_(this, joiningPlayerID),
 

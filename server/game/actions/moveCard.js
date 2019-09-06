@@ -62,7 +62,7 @@ function moveCard_(table, cardMoverID) {
 			) return
 			const card = getCard()
 			pile.cards.splice(to.cardIndex, 0, card)
-			table.sendEvent([cardMoverID], 'cardMoved', {card, from. to, by: cardMoverID})
+			table.sendEvent([cardMoverID], 'cardMoved', {card, from, to, by: cardMoverID})
 			table.sendEvent(
 				getOthers(), 'cardMoved', {card, from: othersFrom, to, by: cardMoverID}
 			)

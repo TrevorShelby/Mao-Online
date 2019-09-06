@@ -48,7 +48,7 @@ tableHostingServer.on('connection', (conn, req) => {
 	const query = url.parse(req.url, true).query
 	const table = tables[parseInt(query.tableID, 10)]
 	if(table != undefined) {
-		const didJoinTable = table.addPlayer(conn, uuidv4())
+		const didJoinTable = table.addPlayer(uuidv4(), conn)
 		if(!didJoinTable) {
 			conn.close(4001, 'Could not join table.')
 		}

@@ -2,7 +2,26 @@ const getPlayingCard = require('./playingCard.js')
 
 
 
-function getNewRound(playerIDs) {
+const drawRandom = () => getPlayingCard(Math.floor(Math.random() * 52))
+
+function startNewRound(table) {
+	table.round = round = {}
+	round.hands = {}
+	table.connections.forEach( ([playerID]) => {
+		const cards = []
+		for(let cardNum = 0; cardNum < 7; cardNum++) { cards.push(drawRandom()) }
+		round.hands[playerID] = cards
+	})
+	round.piles = [ {owner: undefined, cards: [drawRandom()]} ]
+	round.mode = 'play'
+	round.winningPlayer = undefined
+
+	table.mode = 'round'
+}
+
+
+
+function getNewRound1(playerIDs) {
 	const seating = playerIDs.slice() //copies array
 	const hands = []
 	for(let seat = 0; seat < seating.length; seat++) {
@@ -23,4 +42,4 @@ function getNewRound(playerIDs) {
 
 
 
-module.exports = getNewRound
+module.exports = startNewRound

@@ -1,7 +1,7 @@
-function sendRoundStartedEvent(round, sendEvent) {
-	const discard = round.piles[0].cards
-	round.seating.forEach( (playerID, seat) => {
-		const hand = round.hands[seat]
+function sendRoundStartedEvent(table) {
+	const discard = table.round.piles[0].cards
+	table.playerIDs.forEach( playerID => {
+		const hand = table.round.hands.find( ([handOwnerID]) => playerID == handOwnerID)
 		sendEvent([playerID], 'roundStarted', {
 			you: {hand, seat}, discard
 		})

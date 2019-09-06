@@ -3,7 +3,7 @@ const sendRoundStartedEvent = require('../sendRoundStartedEvent.js')
 
 
 
-function disconnect_(table, eventHistories, sendEvent, disconnectingID) {
+function disconnect_(table, eventHistories, disconnectingID) {
 	function disconnect() {
 		table.playerConnections.delete(disconnectingID)
 		eventHistories.delete(disconnectingID)

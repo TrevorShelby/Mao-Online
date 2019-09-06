@@ -1,21 +1,21 @@
-function cancelAccusation(round, sendEvent, cancellingSeat) {
-	if(round.mode != 'accusation') { return }
-	if(round.accusation.accuser != cancellingSeat) { return }
+function cancelAccusation(table, cancelerID) {
+	if(table.round.mode != 'accusation') return
+	if(table.accusation.accuser != cancelerID) return
 
-	const previousMode = round.accusation.previousMode
+	const previousMode = table.accusation.previousMode
 
 	if(previousMode == 'play') {
-		round.mode = 'play'
-		round.accusation = undefined
+		table.round.mode = 'play'
+		delete table.accusation
 	}
 	//second condition should always be true if the round.mode is lastChance. (don't remove though)
-	else if(previousMode == 'lastChance' && round.accusation.accused == round.winningSeat) {
-		round.mode = 'lastChance'
-		round.accusation = undefined
+	else if(previousMode == 'lastChance' && table.accusation.accused == table.round.winningPlayer) {
+		table.round.mode = 'lastChance'
+		delete table.accusation
 	}
-	else { return }
+	else return
 
-	sendEvent(round.seating, 'accusationCancelled', previousMode)
+	sendEvent(table.playerIDs, 'accusationCancelled', previousMode)
 }
 
 

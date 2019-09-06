@@ -21,7 +21,7 @@ function acceptAccusation_(table, acceptorID) {
 		else return
 
 
-		table.sendEvent(table.playerIDs, 'accusationAccepted', 'play')
+		table.sendEvent(table.playerIDs, 'accusationAccepted')
 	}
 
 	return acceptAccusation

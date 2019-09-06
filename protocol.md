@@ -4,12 +4,29 @@ This protocol requires messages to be formatted as JSON objects serialized into 
 
 #The Game
 
-##Card Objects
-Cards are described by three index properties: `value`, `rank`, and `suit`. The `rank` property indexes from this list:
+##Turn Order
+Although not strictly a part of the protocol, it is still important that there be a standard for figuring out who goes first and who goes after who. And it is up to the client application to communicate this turn order to its user. So, the player who has joined before all other players is the one who goes first. Clockwise from each player is the player who joined soonest after them, unless they were last to join, in which case a full rotation has been made.
+
+
+##Card Groups
+Cards can be in one of two card groups: hands or piles. Cards can also be retrieved or put into the deck, however, the deck itself is not card group, rather it is something that randomly generates cards (this is to prevent card-counting clients). A player can view cards that are in their own hand (each player gets one), as well as how many cards are in everyone else's hands. Players may move cards to and from their own hand, but not anyone else's. The other type of card group, piles, have their cards visible to all players. The first pile is always the discard pile, a pile which no player owns.
+
+
+##Accusation
+During play, one player may accuse another (or even themselves) of breaking a rule. Play cannot continue until the accusation has been settled (players can still talk to each other though). In order for an accusation to be settled, one of two things must happen. Either the accused player accepts the accusation, or the accusing playing cancels the accusation.
+
+
+##Winning
+For a player to win a round of Mao, they need to play the last card from their hand. Once they do these, a timer of ten seconds begins. During this time, which is known as "last chance", players can only talk and accuse the winning player of breaking a rule. Once the timer hits zero seconds, that player wins the round. However, if a player accuses the winning player, that timer pauses. And if the winning player then accepts the accusation, they'll forfeit their potential victory (they can still win later in the round). Alternatively, if the accusing player decides to cancel the accusation, the timer resumes. Once a player has won, the victorious player creates a new rule in secret, and a new round begins.
+
+
+
+#Card Objects
+Cards are described by three index properties: `value`, `rank`, and `suit`. `rank` indexes from this list:
 
 `[ace, two, three, four, five, six, seven, eight, nine, ten, jack, queen, king]`,
 
-and the `suit` property indexes from this list:
+and `suit` indexes from this list:
 
 `[clubs, diamonds, hearts, spades]`.
 
@@ -25,17 +42,6 @@ A card object for the four of hearts would look like this:
 ```
 
 
-##Card Groups
-Cards can be in one of two card groups: hands or piles. Cards can also be retrieved or put into the deck, however, the deck itself is not card group, rather it is something that randomly generates cards (this is to prevent card-counting clients). A client can view cards that are in their own hand (each client gets one), as well as how many cards are in everyone else's hands. Clients may move cards to and from their own hand, but not anyone else's. The other type of card group, piles, have their cards visible to all clients. The first pile is always the discard pile, a pile which no player owns.
-
-
-##Accusation
-During play, one player may accuse another (or even themselves) of breaking a rule. Play cannot continue until the accusation has been settled (players can still talk to each other though). In order for an accusation to be settled, one of two things must happen. Either the accused player accepts the accusation, or the accusing playing cancels the accusation.
-
-
-##Winning
-For a player to win a round of Mao, they need to play the last card from their hand. Once they do these, a timer of ten seconds begins. During this time, players can only talk and accuse the winning player of breaking a rule. Once the timer hits zero seconds, that player wins the round. However, if a player accuses the winning player, that timer pauses. And if the winning player then accepts the accusation, they'll forfeit their potential victory (they can still win later in the round). Alternatively, if the accusing player decides to cancel the accusation, the timer resumes. Once a player has won, the victorious player creates a new rule in secret, and a new round begins.
-
 
 #Actions
 A client in the game of Mao sends messages in order to perform actions. For the client to perform an action, they would have to send a message to the server that looks like this:
@@ -48,16 +54,16 @@ A client in the game of Mao sends messages in order to perform actions. For the 
 	}
 }
 ```
-`name` describes wich action the client is taking. Certain actions also require an `args` property, which the client provides with any extra information about the action. Below is a section for each action, with their `name` as the title.
+`name` describes which action the client is taking. Certain actions also require an `args` property, which the client provides with any extra information about the action. Below is a section for each action, with their `name` as the title.
 
 ##The `talk` Action
-The `talk` action lets the client send a chat message. `args` is a string of what the client is saying.
+The `talk` action lets the client send a chat message. `args` describes what the client is saying as a string.
 
 
 ##The `moveCard` Action
-The `moveCard` action lets the client to move a card from one place to another. It is only available during play. `args` is an object that looks like this:
+The `moveCard` action lets the client to move a card from one place to another. It is only available during play.
 ```JSON
-{
+"args": {
 	"from": {
 		...
 	},
@@ -104,7 +110,7 @@ Since the deck is infinite, a deck-`to` object will get rid of the card being mo
 
 
 ##The `accuse` Action
-The `accuse` action lets the client accuse a player of breaking a rule. It is only available during play and when a player is about to win after playing their last card. `args` is a number describing the seat of the player being accused.
+The `accuse` action lets the client accuse a player of breaking a rule. It is only available during play and when a player is about to win after playing their last card. `args` describes the player being accused.
 
 
 ##The `acceptAccusation` Action
@@ -116,7 +122,7 @@ The `cancelAccusation` action lets an accusing client cancel their accusation. T
 
 
 ##The `writeRule` Action
-The `writeRule` action lets a client, who has just won a round, write a rule. It is only available between rounds. `args` is a string of the rule that the client has written.
+The `writeRule` action lets a client, who has just won a round, write a rule. It is only available between rounds. `args` describes a string of the rule that the client has written.
 
 
 
@@ -134,28 +140,69 @@ Whenever clients need to be notified through a state change, they will receive a
 ```
 `name` holds the name of the event that has taken place. `order` enumerates this event among any others that the server has sent the client, where the first event has an `order` of 0, the second event has an `order` of 1, and so on. This lets the client make sure they are tracking state changes in the correct order. Finally, there is `data`, which further describes the event. The name for each event, as well as information about how their `data` property is structured (if they have one) is listed below.
 
-##The `talk` Event
-The `talk` event is caused by a player adding to the chat log.
+##The `playerTalked` Event
+The `playerTalked` event is caused by a player adding to the chat log.
 ```JSON
-{
+"data": {
 	"quote": "whatever was said",
 	"by": "85670230-e0cb-4538-b50c-874759e98fd1",
 	"timestamp": 1566229882915
 }
 ```
-`quote` describes that player has said. `by` is a version 4 uuid that describes the client who is talking. This will likely be changed to a different form of identification later. `timestamp` describes the time when the quote was added to the server's chat log and forwarded.
+`quote` describes that player has said. `by` describes the player who is talking. This will likely be changed to a different form of identification later. `timestamp` describes the time when the quote was added to the server's chat log and forwarded.
+
+
+##The `joinedTable` Event
+The `joinedTable` event is caused by the client joining the table.
+```JSON
+"data": {
+	"you": "85670230-e0cb-4538-b50c-874759e98fd1",
+	"others": [
+		"a8aa2178-0259-42b3-9f51-b97d2b499397"
+	]
+}
+```
+`you` describes the client's player uuid. `others` describes the player uuids of everyone else at the table, in the order that they joined.
+
+
+##The `playerJoined` Event
+The `playerJoined` event is caused by another player joining the table. `data` describes the player who is joining.
+
+
+##The `playerLeft` Event
+The `playerLeft` event is caused by another player leaving the table. `data` describes the player who is leaving.
+
+
+##The `roundStarted` Event
+The `roundStarted` event is caused by the start of a new round.
+```JSON
+"data": {
+	"yourHand": [
+		{"value": 0, "rank": 0, "suit": 0}, ...
+	],
+	"discard": [
+		{"value": 0, "rank": 0, "suit": 0}
+	]
+}
+```
+`yourHand` describes the hand you've been initially dealt. It should always be seven cards long, and you can assume the same for all other players' initial hands. `discard` describes the cards in the discard pile. Although the discard pile will always start with one card, `discard` is sent as an array, as a reinforcement that client applications should keep track of all of the discard pile, instead of just the top card.
+
+
+##The `roundOver` Event
+The `roundOver` event is caused when the round was in last chance and the winning player won. `data` describes the player who won.
+
 
 ##The `cardMoved` Event
 The `cardMoved` event is caused by a player moving a card from one place to another (which is done through the `moveCard` action).
 ```JSON
-{
+"data": {
 	"card": { "value": 0, "rank": 0, "suit": 0},
 	"from": { ... },
 	"to": { ... },
-	"by": 0
+	"by": "85670230-e0cb-4538-b50c-874759e98fd1"
 }
 ```
-The contents of `from` and `to` are dependent of where the card is going from and to. `by` describes the seat of the player who is moving the card. `card` only appears if the card was moved from a pile.
+The contents of `from` and `to` are dependent of where the card is going from and to. `by` describes the player who is moving the card. `card` only appears if the card was moved from or to a pile or if the message is to the client who moved the card.
 
 ###Hand-`from` and -`to` Objects
 ```JSON
@@ -190,29 +237,49 @@ Similar to pile-`from` and -`to` objects of the `moveCard` action.
 ##The `playerAccused` Event
 The `playerAccused` event is caused by one player accusing another player or themselves.
 ```JSON
-{
-	"accuser": 0,
-	"accused": 1
+"data": {
+	"accuser": "85670230-e0cb-4538-b50c-874759e98fd1",
+	"accused": "a8aa2178-0259-42b3-9f51-b97d2b499397"
 }
 ```
-`accuser` describes the seat of the player who is accusing. `accused` describes the seat of the player who is being accused.
+`accuser` describes the player who is accusing. `accused` describes the player who is being accused.
 
 
 ##The `accusationAccepted` Event
-The `accusationAccepted` event is caused by the accused player of an accusation accepting that accusation. This event does not need a `data` property.
+The `accusationAccepted` event is caused by the accused player of an accusation accepting that accusation. This event does not have a `data` property.
 
 
 ##The `accusationCancelled` Event
-The `accusationCancelled` event is caused by the accusing player of an accusation cancelling that accusation. This event does not need a `data` property.
+The `accusationCancelled` event is caused by the accusing player of an accusation cancelling that accusation. `data` describes the mode that the round is returning to ("play" if accusation happened during normal play, and "lastChance" if the accusation happened during a last chance).
 
 
-##The `roundOver` Event
-The `roundOver` event happens when a player moves the last card from their hand and wins the round. `data` is the seat of the player who won the round.
+##The `lastChanceStarted` Event
+The `lastChanceStarted` event is caused by a player getting rid of the last card in their hand. It signals that there is only ten seconds left in the round unless someone accuses that player (known as the winning player).
+```JSON
+"data": {
+	"winningPlayer": "85670230-e0cb-4538-b50c-874759e98fd1",
+	"timeStarted": 1566229882915
+}
+```
+`winningPlayer` describes the winning player. `timeStarted` describe the time it was when the countdown began.
 
 
-##The `roundStarted` Event
-The `roundStarted` event is caused by the start of a new round. This event does not need a `data` property.
+##The `winningPlayerLeft` Event
+The `winningPlayerLeft` event is caused when the round is in last chance and the winning player leaves the table. This event does not have a `data` property.
 
 
 ##The `ruleWritten` Event
-The `ruleWritten` event is caused by the client writing a rule. `data` is the rule that the client wrote.
+The `ruleWritten` event is caused by the client writing a rule. `data` describes the rule that the client wrote as a string. Your client will not receive this event when it's another player that is writing the rule, so it should listen for the `roundStarted` event when waiting for the time between rounds to end. 
+
+
+##The `rulesRevealed` Event
+The `rulesRevealed` event is caused by a player leaving the table after they have already written at least one rule.
+```JSON
+"data": {
+	"author": "a8aa2178-0259-42b3-9f51-b97d2b499397",
+	"rules": [
+		"yada yada yada yada"
+	]
+}
+```
+`author` describes the player whose rules are being revealed. `rules` are all of the rules that the player wrote.

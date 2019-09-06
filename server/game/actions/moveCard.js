@@ -55,7 +55,7 @@ function moveCard_(table, cardMoverID) {
 		else if(to.source == 'pile') {
 			if(!(to.pileIndex in round.piles)) return
 			const pile = round.piles[to.pileIndex]
-			//similar to "to.cardIndex in pile", but checks to see if to.cardIndex is appending.
+			//similar to "to.cardIndex in pile", but also considers appending.
 			if(
 				typeof to.cardIndex != 'number'
 				|| (to.cardIndex < 0 || to.cardIndex > pile.length)
@@ -71,7 +71,7 @@ function moveCard_(table, cardMoverID) {
 			const card = getCard()
 			table.sendEvent([cardMoverID], 'cardMoved', {card, from, to, by: cardMoverID})
 			const othersEvent = { from: othersFrom, to, by: cardMovingID }
-			if(from.source != 'hand') othersEvent.card = card
+			if(from.source == 'pile') othersEvent.card = card
 			table.sendEvent(getOthers(), 'cardMoved', othersEvent)
 		}
 		else return

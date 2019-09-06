@@ -10,7 +10,7 @@ function writeRule_(table, authorID) {
 		if(typeof rule != 'string' && rule.length < 200) return
 
 		table.rules.playerMade.push({ rule, author: authorID })
-		table.sendEvent([authorID], 'ruleWrote', rule)
+		table.sendEvent([authorID], 'ruleWritten', rule)
 
 		startNewRound(table)
 	}

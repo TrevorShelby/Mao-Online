@@ -15,7 +15,6 @@ function startNewGame(table) {
 		playerMade: []
 	}
 
-	table.sendEvent(table.playerIDs, 'gameStarted')
 	startNewRound(table)
 }
 

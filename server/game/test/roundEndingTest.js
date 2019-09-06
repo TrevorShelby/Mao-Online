@@ -7,9 +7,7 @@ const createNewTable = require('../newTable.js')
 
 const connections = []
 const wsServer = new WebSocket.Server({port: 1258})
-wsServer.on('connection', (conn) => {
-	connections.push(conn)
-})
+wsServer.on('connection', conn => connections.push(conn) )
 
 
 const table = createNewTable({playersToStart: 4, roundLimit: 1})
@@ -25,27 +23,25 @@ client4.on('message', (messageStr) => {
 	console.log(message)
 })
 
-connections.forEach( (conn) => {
-	table.addPlayer(conn, uuidv4())
-})
+connections.forEach( conn => table.addPlayer(uuidv4(), conn) )
 await waitFor('roundStarted')
 
-const futureWinnerID = table.game.round.seating[0]
-table.game.round.hands[0] = [ {value: 0, rank: 0, suit: 0} ]
+const futureWinnerID = table.playerIDs[0]
+table.round.hands[futureWinnerID] = [ {value: 0, rank: 0, suit: 0} ]
 doAction(client1, 'moveCard', {
 	from: {source: 'hand', cardIndex: 0},
 	to: {source: 'pile', pileIndex: 0, cardIndex: 1}
 })
 await waitFor('lastChanceStarted')
-if(table.game.round.mode != 'lastChance') {throw new Error('mode not lastChance')}
-if(table.game.round.winningSeat != 0) {throw new Error('winningSeat incorrect')}
+if(table.round.mode != 'lastChance') throw new Error('mode not lastChance')
+if(table.round.winningPlayer != futureWinnerID) throw new Error('winningPlayer incorrect')
 
 console.log('10 second pause here')
 await waitFor('roundOver')
-if(!table.game.inBetweenRounds) {throw new Error('round still in progress')}
-if(table.game.lastWinner != futureWinnerID) {throw new Error('winner incorrect')}
-await new Promise( (resolve) => {setTimeout(resolve, 100)})
-if(table.mode != 'lobby') {throw new Error('mode not lobby')}
+if(!table.mode == 'inBetweenRounds') throw new Error('round still in progress')
+if(table.lastWinner != futureWinnerID) throw new Error('winner incorrect')
+await new Promise( (resolve) => setTimeout(resolve, 100))
+if(table.mode != 'lobby') throw new Error('mode not lobby')
 console.log('done')
 console.log(table)
 

@@ -7,9 +7,7 @@ const createNewTable = require('../newTable.js')
 
 const connections = []
 const wsServer = new WebSocket.Server({port: 1258})
-wsServer.on('connection', (conn) => {
-	connections.push(conn)
-})
+wsServer.on('connection', conn => connections.push(conn) )
 
 
 const table = createNewTable({playersToStart: 4, roundLimit: 10})
@@ -24,21 +22,17 @@ client4.on('message', (messageStr) => {
 	const message = safeJsonParse(messageStr)
 	console.log(message)
 })
-client4.on('close', () => {
-	console.log('closed!')
-})
+client4.on('close', () => console.log('closed!') )
 
-connections.forEach( (conn) => {
-	table.addPlayer(conn, uuidv4())
-})
+connections.forEach( conn => table.addPlayer(uuidv4(), conn) )
 await waitFor('roundStarted')
 client2.close()
 
-await waitFor('seatEmptied')
+await waitFor('playerLeft')
 //nothing should happen!!!
-doAction(client1, 'accuse', 1)
+doAction(client1, 'accuse', undefined)
 
-table.game.round.hands[0] = [ {value: 0, rank: 0, suit: 0} ]
+table.round.hands[table.playerIDs[0]] = [ {value: 0, rank: 0, suit: 0} ]
 doAction(client1, 'moveCard', {
 	from: {source: 'hand', cardIndex: 0},
 	to: {source: 'pile', pileIndex: 0, cardIndex: 1}
@@ -46,9 +40,9 @@ doAction(client1, 'moveCard', {
 
 await waitFor('lastChanceStarted')
 client1.close()
-await waitFor('winningSeatEmptied')
-if(table.game.round.mode != 'play') {throw new Error('mode not play')}
-if(table.game.round.winningPlayer != undefined) {throw new Error('winningSeat exists.')}
+await waitFor('winningPlayerLeft')
+if(table.round.mode != 'play') {throw new Error('mode not play')}
+if(table.round.winningPlayer != undefined) {throw new Error('winning player exists.')}
 
 client3.close()
 await waitFor('gameEnded')
@@ -58,15 +52,13 @@ if(table.mode != 'lobby') {throw new Error('mode not lobby')}
 console.log('New players joining!')
 
 for(let i = 0; i < 3; i++) { new WebSocket(address) }
-new WebSocket(address).on('message', (messageStr) => {
-	console.log(safeJsonParse(messageStr))
-})
-await new Promise( (resolve) => {setTimeout(resolve, 100)})
+new WebSocket(address).on('message', (messageStr) => console.log(safeJsonParse(messageStr)) )
+await new Promise( resolve => setTimeout(resolve, 100) )
 connections.forEach( (conn, i) => {
-	if(i > 3) {table.addPlayer(conn, uuidv4())}
+	if(i > 3) table.addPlayer(uuidv4(), conn)
 })
-await new Promise( (resolve) => {setTimeout(resolve, 100)})
-if(table.mode != 'game') {throw new Error('mode not game')}
+await new Promise( resolve => setTimeout(resolve, 100) )
+if(table.mode != 'round') {throw new Error('mode not round')}
 console.log('done')
 
 })

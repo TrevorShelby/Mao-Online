@@ -4,7 +4,8 @@ const { createSocket } = require('./config.js')
 
 function hookStoreToTable(dispatch) {
 	const tableID = parseInt(getParameterByName('tableID'), 10)
-	const tableConn = createSocket(tableID)
+	const name = getParameterByName('name')
+	const tableConn = createSocket(tableID, name)
 
 	const thunk = new Audio('resources/thunk.wav')
 	tableConn.onmessage = (messageEvent) => {

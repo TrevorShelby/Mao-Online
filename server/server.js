@@ -32,7 +32,9 @@ const httpServer = http.createServer((req, res) => {
 	else if(pathname.startsWith('/scripts/') || pathname.startsWith('/resources/')) {
 		const fsPath = __dirname + '/app' + pathname
 		if(!fs.existsSync(fsPath)) { res.statusCode = 404; res.end(); return }
-		if(pathname.startsWith('/scripts/')) { res.writeHead(200,  {'Content-Type': 'text/javascript'}) }
+		if(pathname.startsWith('/scripts/')) {
+			res.writeHead(200,  {'Content-Type': 'text/javascript'})
+		}
 		fs.createReadStream(fsPath).pipe(res)
 	}
 	else {
@@ -47,14 +49,19 @@ const tableHostingServer = new WebSocket.Server({server: httpServer})
 tableHostingServer.on('connection', (conn, req) => {
 	const query = url.parse(req.url, true).query
 	const table = tables[parseInt(query.tableID, 10)]
-	if(table != undefined) {
-		const didJoinTable = table.addPlayer(uuidv4(), conn)
+	if(table != undefined && isValidName(query.name)) {
+		const didJoinTable = table.addPlayer(query.name, conn)
 		if(!didJoinTable) {
 			conn.close(4001, 'Could not join table.')
 		}
 	}
 })
 
+const validCharRegex = /^(([a-z0-9_]+) ?)+[a-z0-9_]$/i
+function isValidName(name) {
+	if(validCharRegex.exec(name) == null) return false
+	return name.length > 0 && name.length <= 20 
+}
 
 
 function getLobbyInfo() {

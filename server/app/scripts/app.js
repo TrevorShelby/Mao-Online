@@ -6,6 +6,8 @@ const {
 
 const Hand = require('./hand.js');
 
+const Deck = require('./deck.js');
+
 const Discard = require('./discard.js');
 
 const OtherPlayers = require('./otherPlayers.js');
@@ -25,7 +27,7 @@ const App = ({
   id: "table"
 }, playerID != undefined && React.createElement("span", {
   className: "nameplate"
-}, playerID), tableHasRound && React.createElement(React.Fragment, null, React.createElement(OtherPlayers, null), React.createElement(Discard, null), React.createElement(Hand, null), React.createElement("div", {
+}, playerID), tableHasRound && React.createElement(React.Fragment, null, React.createElement(OtherPlayers, null), React.createElement(Deck, null), React.createElement(Discard, null), React.createElement(Hand, null), React.createElement("div", {
   className: "overlay",
   style: {
     backgroundColor: tint

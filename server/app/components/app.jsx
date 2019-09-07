@@ -2,6 +2,7 @@ const React = require('react')
 const { connect } = require('react-redux')
 
 const Hand = require('./hand.js')
+const Deck = require('./deck.js')
 const Discard = require('./discard.js')
 const OtherPlayers = require('./otherPlayers.js')
 const { CancelAccusationButton, AcceptAccusationButton } = require('./accusationButtons.js')
@@ -15,6 +16,7 @@ const App = ({tableHasRound, playerHasToWriteRule, accusationState, playerID, ti
 		}
 		{tableHasRound && (<React.Fragment>
 			<OtherPlayers />
+			<Deck />
 			<Discard />
 			<Hand />
 			<div className='overlay' style={{backgroundColor: tint}}></div>

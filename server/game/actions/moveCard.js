@@ -16,7 +16,10 @@ function moveCard_(table, cardMoverID) {
 		) return
 		if(from.source == 'deck' && to.source == 'deck') return
 
+
 		const round = table.round
+		if(to.source == 'hand' && round.hands[cardMoverID].length >= 24) return
+
 		let takeCard, othersFrom
 		if(from.source == 'hand') {
 			const hand = round.hands[cardMoverID]
@@ -39,7 +42,7 @@ function moveCard_(table, cardMoverID) {
 
 		const getOthers = () => table.playerIDs.filter( playerID => playerID != cardMoverID )
 		if(to.source == 'hand') {
-			const hand = round.hands[cardMovingID]
+			const hand = round.hands[cardMoverID]
 			const card = getCard()
 			hand.push(card)
 
@@ -70,7 +73,7 @@ function moveCard_(table, cardMoverID) {
 		else if(to.source == 'deck') {
 			const card = getCard()
 			table.sendEvent([cardMoverID], 'cardMoved', {card, from, to, by: cardMoverID})
-			const othersEvent = { from: othersFrom, to, by: cardMovingID }
+			const othersEvent = { from: othersFrom, to, by: cardMoverID }
 			if(from.source == 'pile') othersEvent.card = card
 			table.sendEvent(getOthers(), 'cardMoved', othersEvent)
 		}

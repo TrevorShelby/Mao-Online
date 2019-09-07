@@ -121,7 +121,7 @@ function moveCard(round, me, {card, from, to, by}) {
 	if(!movedByMe && from.source == 'hand') handLengths[by] = from.length
 	else if(!movedByMe && to.source == 'hand') handLengths[by] = to.length
 
-	if(from.source == 'pile') piles[from.pileIndex].cards.splice(to.cardIndex, 1)
+	if(from.source == 'pile') piles[from.pileIndex].cards.splice(from.cardIndex, 1)
 	if(to.source == 'pile') piles[to.pileIndex].cards.splice(to.cardIndex, 0, card)
 
 	return {...round,

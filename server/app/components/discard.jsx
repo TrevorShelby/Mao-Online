@@ -6,19 +6,39 @@ const Card = require('./card.js')
 
 
 
-const Discard = ({topCard}) => (
+const Discard = ({topCard, takeTopCard}) => (
 	<div className='discard'>
-		<Card rank={topCard.rank} suit={topCard.suit} key={uuidv4()} />
+		{topCard != undefined && 
+			<Card
+				rank={topCard.rank} suit={topCard.suit} key={uuidv4()}
+				onClick={takeTopCard}
+			/>
+		}
+		{ topCard == undefined && <div className='card' /> }
 	</div>
 )
 
 
 
-const getLast = (arr) => arr[arr.length - 1]
-
-const mapStateToProps = state => ({
-	topCard: getLast(state.table.round.piles[0].cards)
-})
+const mapStateToProps = state => {
+	const discard = state.table.round.piles[0].cards
+	const topCardIndex = discard.length - 1
+	return {
+		topCard: discard[topCardIndex],
+		takeTopCard: () => {
+			if(topCardIndex == -1) return
+			if(state.table.round.mode != 'play') return
+			state.tableConn.send(JSON.stringify({
+				type: 'action',
+				name: 'moveCard',
+				args: {
+					from: {source: 'pile', pileIndex: 0, cardIndex: topCardIndex},
+					to: {source: 'hand'}
+				}
+			}))
+		}
+	}
+}
 
 
 

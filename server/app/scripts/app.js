@@ -17,6 +17,10 @@ const {
   AcceptAccusationButton
 } = require('./accusationButtons.js');
 
+const RuleInput = require('./ruleInput.js');
+
+const RulesList = require('./rules.js');
+
 const App = ({
   tableHasRound,
   playerHasToWriteRule,
@@ -26,13 +30,13 @@ const App = ({
 }) => React.createElement("div", {
   id: "table"
 }, playerID != undefined && React.createElement("span", {
-  className: "nameplate"
-}, playerID), tableHasRound && React.createElement(React.Fragment, null, React.createElement(OtherPlayers, null), React.createElement(Deck, null), React.createElement(Discard, null), React.createElement(Hand, null), React.createElement("div", {
-  className: "overlay",
+  id: "nameplate"
+}, playerID), tableHasRound && React.createElement(React.Fragment, null, React.createElement(OtherPlayers, null), React.createElement(Deck, null), React.createElement(Discard, null), React.createElement(Hand, null), React.createElement(RulesList, null), React.createElement("div", {
+  id: "overlay",
   style: {
     backgroundColor: tint
   }
-})), accusationState == 1 && React.createElement(CancelAccusationButton, null), accusationState == 2 && React.createElement(AcceptAccusationButton, null));
+}), accusationState == 1 && React.createElement(CancelAccusationButton, null), accusationState == 2 && React.createElement(AcceptAccusationButton, null)), playerHasToWriteRule && React.createElement(RuleInput, null));
 
 const mapStateToProps = state => {
   const tableExists = state != undefined && 'table' in state;

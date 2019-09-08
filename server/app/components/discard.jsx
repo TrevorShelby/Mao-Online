@@ -7,7 +7,7 @@ const Card = require('./card.js')
 
 
 const Discard = ({topCard, takeTopCard}) => (
-	<div className='discard'>
+	<div id='discard'>
 		{topCard != undefined && 
 			<Card
 				rank={topCard.rank} suit={topCard.suit} key={uuidv4()}

@@ -8,7 +8,7 @@ const AccusationButton = ({
   endAccusation,
   text
 }) => React.createElement("button", {
-  className: "accusationEnder",
+  id: "accusationEnder",
   onClick: endAccusation
 }, text);
 

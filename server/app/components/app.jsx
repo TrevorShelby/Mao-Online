@@ -6,27 +6,31 @@ const Deck = require('./deck.js')
 const Discard = require('./discard.js')
 const OtherPlayers = require('./otherPlayers.js')
 const { CancelAccusationButton, AcceptAccusationButton } = require('./accusationButtons.js')
+const RuleInput = require('./ruleInput.js')
+const RulesList = require('./rules.js')
 
 
 
 const App = ({tableHasRound, playerHasToWriteRule, accusationState, playerID, tint}) => (
 	<div id='table'>
 		{playerID != undefined &&
-			<span className='nameplate'>{playerID}</span>
+			<span id='nameplate'>{playerID}</span>
 		}
 		{tableHasRound && (<React.Fragment>
 			<OtherPlayers />
 			<Deck />
 			<Discard />
 			<Hand />
-			<div className='overlay' style={{backgroundColor: tint}}></div>
+			<RulesList />
+			<div id='overlay' style={{backgroundColor: tint}}></div>
+			{accusationState == 1 &&
+				<CancelAccusationButton />
+			}
+			{accusationState == 2 &&
+				<AcceptAccusationButton />
+			}
 		</React.Fragment>)}
-		{accusationState == 1 &&
-			<CancelAccusationButton />
-		}
-		{accusationState == 2 &&
-			<AcceptAccusationButton />
-		}
+		{playerHasToWriteRule && <RuleInput />}
 	</div>
 )
 

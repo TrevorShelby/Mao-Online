@@ -4,7 +4,7 @@ const { connect } = require('react-redux')
 
 
 const AccusationButton = ({endAccusation, text}) => (
-	<button className='accusationEnder' onClick={endAccusation}>{text}</button>
+	<button id='accusationEnder' onClick={endAccusation}>{text}</button>
 )
 
 

@@ -11,7 +11,6 @@ function hookStoreToTable(dispatch) {
 	tableConn.onmessage = (messageEvent) => {
 		const message = JSON.parse(messageEvent.data)
 		if(message.type == 'event') {
-			console.log(message)
 			//attribution: https://freesound.org/s/406493/
 			if(message.name == 'playerAccused') { thunk.play() }
 			dispatch({

@@ -4,7 +4,8 @@ const tableReducers = {
 			me: you,
 			playerIDs: others.concat(you),
 			mode: 'lobby',
-			chatLog: []
+			chatLog: [],
+			rules: []
 		}
 	),
 	playerJoined: (table, playerID) => (
@@ -64,6 +65,11 @@ const tableReducers = {
 			round: {...table.round,
 				mode
 			}
+		}
+	),
+	ruleWritten: (table, rule) => (
+		{...table,
+			rules: table.rules.concat(rule)
 		}
 	)
 }

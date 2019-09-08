@@ -11,13 +11,13 @@ const HandLength = ({
 }) => React.createElement("div", {
   className: "handLength",
   onClick: onClick
-}, React.createElement("div", null, playerID), React.createElement("div", null, numCards));
+}, React.createElement("div", null, playerID), numCards != undefined && React.createElement("div", null, numCards));
 
 const OtherPlayers = ({
   numCardsByPlayerID,
   accusePlayer_
 }) => React.createElement("div", {
-  className: "handLengths"
+  id: "handLengths"
 }, Object.keys(numCardsByPlayerID).map(playerID => React.createElement(HandLength, {
   playerID: playerID,
   numCards: numCardsByPlayerID[playerID],

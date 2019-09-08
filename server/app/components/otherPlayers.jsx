@@ -6,13 +6,13 @@ const { connect } = require('react-redux')
 const HandLength = ({playerID, numCards, onClick}) => (
 	<div className='handLength' onClick={onClick}>
 		<div>{playerID}</div>
-		<div>{numCards}</div>
+		{ numCards != undefined && <div>{numCards}</div> }
 	</div>
 )
 
 
 const OtherPlayers = ({numCardsByPlayerID, accusePlayer_}) => (
-	<div className='handLengths'>
+	<div id='handLengths'>
 		{Object.keys(numCardsByPlayerID).map( playerID => (
 			<HandLength
 				playerID={playerID} numCards={numCardsByPlayerID[playerID]}

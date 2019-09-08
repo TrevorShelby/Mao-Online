@@ -12,7 +12,7 @@ const Discard = ({
   topCard,
   takeTopCard
 }) => React.createElement("div", {
-  className: "discard"
+  id: "discard"
 }, topCard != undefined && React.createElement(Card, {
   rank: topCard.rank,
   suit: topCard.suit,

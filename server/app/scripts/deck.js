@@ -11,7 +11,8 @@ const Card = require('./card.js');
 const Deck = ({
   drawCard
 }) => React.createElement("div", {
-  className: "deck card",
+  id: "deck",
+  className: "card",
   onClick: drawCard
 });
 

@@ -59,8 +59,8 @@ tableHostingServer.on('connection', (conn, req) => {
 
 const validCharRegex = /^(([a-z0-9_]+) ?)+[a-z0-9_]$/i
 function isValidName(name) {
-	if(validCharRegex.exec(name) == null) return false
-	return name.length > 0 && name.length <= 20 
+	if(name.length == 0 || name.length > 20) return false
+	return validCharRegex.exec(name) != null
 }
 
 

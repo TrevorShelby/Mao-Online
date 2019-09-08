@@ -6,7 +6,7 @@ const Card = require('./card.js')
 
 
 
-const Deck = ({drawCard}) => ( <div className='deck card' onClick={drawCard} /> )
+const Deck = ({drawCard}) => ( <div id='deck' className='card' onClick={drawCard} /> )
 
 
 const mapStateToProps = state => ({

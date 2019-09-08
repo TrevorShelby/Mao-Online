@@ -27,7 +27,7 @@ function Hand({
     });
   });
   return React.createElement("div", {
-    className: "myHand",
+    id: "myHand",
     style: {
       width: cardObjs.length * 33 + 'px'
     }

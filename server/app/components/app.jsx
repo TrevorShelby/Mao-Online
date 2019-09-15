@@ -1,10 +1,11 @@
 const React = require('react')
 const { connect } = require('react-redux')
 
+const Nameplate = require('./nameplate.js')
+const OtherPlayers = require('./otherPlayers.js')
 const Hand = require('./hand.js')
 const Deck = require('./deck.js')
 const Discard = require('./discard.js')
-const OtherPlayers = require('./otherPlayers.js')
 const { CancelAccusationButton, AcceptAccusationButton } = require('./accusationButtons.js')
 const RuleInput = require('./ruleInput.js')
 const RulesList = require('./rules.js')
@@ -14,7 +15,7 @@ const RulesList = require('./rules.js')
 const App = ({tableHasRound, playerHasToWriteRule, accusationState, playerID, tint}) => (
 	<div id='table'>
 		{playerID != undefined && (<React.Fragment>
-			<span id='nameplate'>{playerID}</span>
+			<Nameplate />
 			<OtherPlayers />
 		</React.Fragment>)}
 		{tableHasRound && (<React.Fragment>

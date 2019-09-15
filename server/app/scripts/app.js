@@ -4,13 +4,15 @@ const {
   connect
 } = require('react-redux');
 
+const Nameplate = require('./nameplate.js');
+
+const OtherPlayers = require('./otherPlayers.js');
+
 const Hand = require('./hand.js');
 
 const Deck = require('./deck.js');
 
 const Discard = require('./discard.js');
-
-const OtherPlayers = require('./otherPlayers.js');
 
 const {
   CancelAccusationButton,
@@ -29,9 +31,7 @@ const App = ({
   tint
 }) => React.createElement("div", {
   id: "table"
-}, playerID != undefined && React.createElement(React.Fragment, null, React.createElement("span", {
-  id: "nameplate"
-}, playerID), React.createElement(OtherPlayers, null)), tableHasRound && React.createElement(React.Fragment, null, React.createElement(Deck, null), React.createElement(Discard, null), React.createElement(Hand, null), React.createElement(RulesList, null), React.createElement("div", {
+}, playerID != undefined && React.createElement(React.Fragment, null, React.createElement(Nameplate, null), React.createElement(OtherPlayers, null)), tableHasRound && React.createElement(React.Fragment, null, React.createElement(Deck, null), React.createElement(Discard, null), React.createElement(Hand, null), React.createElement(RulesList, null), React.createElement("div", {
   id: "overlay",
   style: {
     backgroundColor: tint

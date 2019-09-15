@@ -1,3 +1,6 @@
+const { seatColors } = require('./config.js')
+
+
 const tableReducers = {
 	joinedTable: (table, {you, others}) => ({...table,
 		me: you,
@@ -81,6 +84,15 @@ function rootReducer(state={}, action) {
 		if(action.data.from.source == 'deck') flk.play()
 	}
 
+	if(action.type == 'roundStarted' && state.table.mode == 'lobby') {
+		return({...state,
+			table: tableReducers[action.type](state.table, action.data),
+			playerColors: state.table.playerIDs.reduce( (playerColors, playerID, index) => {
+				playerColors[playerID] = seatColors[index]
+				return playerColors
+			}, {})
+		})
+	}
 	if(action.type in tableReducers) {
 		return ({...state,
 			table: tableReducers[action.type](state.table, action.data)

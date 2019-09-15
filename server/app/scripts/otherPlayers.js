@@ -7,26 +7,54 @@ const {
 const HandLength = ({
   playerID,
   numCards,
+  color,
   onClick
 }) => React.createElement("div", {
   className: "handLength",
   onClick: onClick
-}, React.createElement("span", null, playerID), React.createElement("br", null), numCards != undefined && React.createElement("span", null, numCards));
+}, React.createElement("span", {
+  style: {
+    color
+  }
+}, playerID), React.createElement("br", null), numCards != undefined && React.createElement("span", null, numCards));
 
 const OtherPlayers = ({
-  numCardsByPlayerID,
-  accusePlayer_
+  players
 }) => React.createElement("div", {
   id: "handLengths"
-}, Object.keys(numCardsByPlayerID).map(playerID => React.createElement(HandLength, {
+}, Object.keys(players).map(playerID => React.createElement(HandLength, {
   playerID: playerID,
-  numCards: numCardsByPlayerID[playerID],
-  onClick: accusePlayer_(playerID),
+  numCards: players[playerID].numCards,
+  onClick: players[playerID].accuse,
+  color: players[playerID].color,
   key: playerID
 })));
 
 const mapStateToProps = state => {
   const stateProps = {};
+  stateProps.players = state.table.playerIDs.reduce((players, playerID) => {
+    if (playerID == state.table.me) return players;
+    const player = {};
+
+    if (state.table.mode == 'round') {
+      player.numCards = state.table.round.handLengths[playerID];
+
+      player.accuse = () => {
+        if (state.table.round.mode != 'accusation') {
+          state.tableConn.send(JSON.stringify({
+            type: 'action',
+            name: 'accuse',
+            args: playerID
+          }));
+        }
+      };
+    }
+
+    if (state.table.mode != 'lobby') player.color = state.playerColors[playerID];
+    return { ...players,
+      [playerID]: player
+    };
+  }, {});
 
   if (state.table.mode == 'inBetweenRounds' || state.table.mode == 'lobby') {
     stateProps.numCardsByPlayerID = state.table.playerIDs.reduce((numCardsByPlayerID, playerID) => {
@@ -36,7 +64,9 @@ const mapStateToProps = state => {
       };
     }, {});
 
-    stateProps.accusePlayer_ = () => {};
+    stateProps.accusePlayer_ = () => {
+      () => {};
+    };
   } else {
     stateProps.numCardsByPlayerID = state.table.playerIDs.reduce((numCardsByPlayerID, playerID) => {
       if (playerID == state.table.me || playerID == undefined) return numCardsByPlayerID;

@@ -22,7 +22,7 @@ function Hand({
       rank: rank,
       suit: suit,
       key: uuidv4(),
-      isSelected: isSelected,
+      highlight: isSelected ? 'orange' : undefined,
       onClick: onCardClicked_(cardIndex)
     });
   });

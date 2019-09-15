@@ -10,25 +10,31 @@ const Card = require('./card.js');
 
 const Discard = ({
   topCard,
-  takeTopCard
+  onClick
 }) => React.createElement("div", {
   id: "discard"
 }, topCard != undefined && React.createElement(Card, {
   rank: topCard.rank,
   suit: topCard.suit,
   key: uuidv4(),
-  onClick: takeTopCard
+  highlight: topCard.playedBy,
+  onClick: onClick
 }), topCard == undefined && React.createElement("div", {
   className: "card"
 }));
 
 const mapStateToProps = state => {
   const discard = state.table.round.piles[0].cards;
-  const topCardIndex = discard.length - 1;
+  const topCard = discard[discard.length - 1];
+  const coloredTopCard = topCard != undefined ? {
+    rank: topCard.rank,
+    suit: topCard.suit,
+    playedBy: state.playerColors[topCard.playedBy]
+  } : undefined;
   return {
-    topCard: discard[topCardIndex],
-    takeTopCard: () => {
-      if (topCardIndex == -1) return;
+    topCard: coloredTopCard,
+    onClick: function takeTopCard() {
+      if (topCard == undefined) return;
       if (state.table.round.mode != 'play') return;
       state.tableConn.send(JSON.stringify({
         type: 'action',
@@ -37,7 +43,7 @@ const mapStateToProps = state => {
           from: {
             source: 'pile',
             pileIndex: 0,
-            cardIndex: topCardIndex
+            cardIndex: discard.length - 1
           },
           to: {
             source: 'hand'

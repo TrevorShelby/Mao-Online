@@ -14,6 +14,8 @@ const Deck = require('./deck.js');
 
 const Discard = require('./discard.js');
 
+const AccusationInfo = require('./accusationInfo.js');
+
 const {
   CancelAccusationButton,
   AcceptAccusationButton
@@ -27,16 +29,15 @@ const App = ({
   tableHasRound,
   playerHasToWriteRule,
   accusationState,
-  playerID,
-  tint
+  playerID
 }) => React.createElement("div", {
   id: "table"
-}, playerID != undefined && React.createElement(React.Fragment, null, React.createElement(Nameplate, null), React.createElement(OtherPlayers, null)), tableHasRound && React.createElement(React.Fragment, null, React.createElement(Deck, null), React.createElement(Discard, null), React.createElement(Hand, null), React.createElement(RulesList, null), React.createElement("div", {
+}, playerID != undefined && React.createElement(React.Fragment, null, React.createElement(Nameplate, null), React.createElement(OtherPlayers, null)), tableHasRound && React.createElement(React.Fragment, null, React.createElement(Deck, null), React.createElement(Discard, null), React.createElement(Hand, null), React.createElement(RulesList, null), accusationState > -1 && React.createElement(React.Fragment, null, React.createElement("div", {
   id: "overlay",
   style: {
-    backgroundColor: tint
+    backgroundColor: '#00000088'
   }
-}), accusationState == 1 && React.createElement(CancelAccusationButton, null), accusationState == 2 && React.createElement(AcceptAccusationButton, null)), playerHasToWriteRule && React.createElement(RuleInput, null));
+}), React.createElement(AccusationInfo, null)), accusationState == 1 && React.createElement(CancelAccusationButton, null), accusationState == 2 && React.createElement(AcceptAccusationButton, null)), playerHasToWriteRule && React.createElement(RuleInput, null));
 
 const mapStateToProps = state => {
   const tableExists = state != undefined && 'table' in state;
@@ -57,13 +58,11 @@ const mapStateToProps = state => {
     return 0;
   })();
 
-  const tint = roundIsInAccusation ? '#00000088' : '#00000000';
   return {
     tableHasRound,
     playerHasToWriteRule,
     accusationState,
-    playerID: tableExists ? state.table.me : undefined,
-    tint
+    playerID: tableExists ? state.table.me : undefined
   };
 };
 

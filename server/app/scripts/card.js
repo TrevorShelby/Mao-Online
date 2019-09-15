@@ -7,15 +7,18 @@ function Card({
   rank,
   suit,
   onClick,
-  isSelected = false
+  highlight
 }) {
   const spokenRank = spokenRanks[rank];
   const spokenSuit = spokenSuits[suit];
   const color = suit == 0 || suit == 3 ? 'black' : 'red';
-  const className = !isSelected ? 'card ' + color : 'card ' + color + ' selected';
+  const style = highlight != undefined ? {
+    outline: '2px solid ' + highlight
+  } : {};
   return React.createElement("div", {
-    className: className,
-    onClick: onClick
+    className: 'card ' + color,
+    onClick: onClick,
+    style: style
   }, spokenSuit + '\n' + spokenRank);
 }
 

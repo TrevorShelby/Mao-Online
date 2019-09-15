@@ -6,13 +6,14 @@ const OtherPlayers = require('./otherPlayers.js')
 const Hand = require('./hand.js')
 const Deck = require('./deck.js')
 const Discard = require('./discard.js')
+const AccusationInfo = require('./accusationInfo.js')
 const { CancelAccusationButton, AcceptAccusationButton } = require('./accusationButtons.js')
 const RuleInput = require('./ruleInput.js')
 const RulesList = require('./rules.js')
 
 
 
-const App = ({tableHasRound, playerHasToWriteRule, accusationState, playerID, tint}) => (
+const App = ({tableHasRound, playerHasToWriteRule, accusationState, playerID}) => (
 	<div id='table'>
 		{playerID != undefined && (<React.Fragment>
 			<Nameplate />
@@ -23,7 +24,10 @@ const App = ({tableHasRound, playerHasToWriteRule, accusationState, playerID, ti
 			<Discard />
 			<Hand />
 			<RulesList />
-			<div id='overlay' style={{backgroundColor: tint}}></div>
+			{accusationState > -1 && (<React.Fragment>
+				<div id='overlay' style={{backgroundColor: '#00000088'}}></div>
+				<AccusationInfo />
+			</React.Fragment>)}
 			{accusationState == 1 &&
 				<CancelAccusationButton />
 			}
@@ -52,13 +56,11 @@ const mapStateToProps = state => {
 		if(accusation.accused == me) return 2
 		return 0
 	})()
-	const tint = roundIsInAccusation ? '#00000088' : '#00000000'
 	return {
 		tableHasRound,
 		playerHasToWriteRule,
 		accusationState,
-		playerID: tableExists ? state.table.me : undefined,
-		tint
+		playerID: tableExists ? state.table.me : undefined
 	}
 }
 

@@ -11,7 +11,7 @@ function Hand({cardObjs, selectedCardIndex, onCardClicked_}) {
 		const isSelected = selectedCardIndex == cardIndex
 		return <Card
 			rank={rank} suit={suit} key={uuidv4()}
-			isSelected={isSelected} onClick={onCardClicked_(cardIndex)}
+			highlight={isSelected ? 'orange' : undefined} onClick={onCardClicked_(cardIndex)}
 		/>
 	})
 	return(

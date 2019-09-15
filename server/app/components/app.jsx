@@ -13,11 +13,11 @@ const RulesList = require('./rules.js')
 
 const App = ({tableHasRound, playerHasToWriteRule, accusationState, playerID, tint}) => (
 	<div id='table'>
-		{playerID != undefined &&
+		{playerID != undefined && (<React.Fragment>
 			<span id='nameplate'>{playerID}</span>
-		}
-		{tableHasRound && (<React.Fragment>
 			<OtherPlayers />
+		</React.Fragment>)}
+		{tableHasRound && (<React.Fragment>
 			<Deck />
 			<Discard />
 			<Hand />

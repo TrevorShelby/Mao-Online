@@ -15,7 +15,7 @@ function Hand({cardObjs, selectedCardIndex, onCardClicked_}) {
 		/>
 	})
 	return(
-		<div id='myHand' style={{width: (cardObjs.length * 33) + 'px'}}>
+		<div id='myHand' style={{width: (cardObjs.length * 36) + 'px'}}>
 			{cardElements}
 		</div>
 	)

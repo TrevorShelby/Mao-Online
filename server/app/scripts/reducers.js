@@ -1,91 +1,86 @@
 const tableReducers = {
-	joinedTable: (table, {you, others}) => (
-		{...table,
-			me: you,
-			playerIDs: others.concat(you),
-			mode: 'lobby',
-			chatLog: [],
-			rules: []
+	joinedTable: (table, {you, others}) => ({...table,
+		me: you,
+		playerIDs: others.concat(you),
+		mode: 'lobby',
+		chatLog: [],
+		rules: []
+	}),
+	playerJoined: (table, playerID) => ({...table,
+		playerIDs: table.playerIDs.concat(playerID)
+	}),
+	playerLeft: (table, disconnectorID) => ({...table,
+		playerIDs: table.playerIDs.filter( playerID => playerID != disconnectorID )
+	}),
+	playerTalked: (table, chat) => ({...table,
+		chatLog: table.chatLog.concat(chat)
+	}),
+	roundStarted: (table, {discard, yourHand: myHand}) => ({...table,
+		mode: 'round',
+		round: {
+			mode: 'play',
+			piles: [{owner: undefined, cards: discard}],
+			handLengths: createHandLengths(table.playerIDs),
+			myHand
 		}
-	),
-	playerJoined: (table, playerID) => (
-		{...table,
-			playerIDs: table.playerIDs.concat(playerID)
-		}
-	),
-	playerLeft: (table, disconnectorID) => (
-		{...table,
-			playerIDs: table.playerIDs.filter( playerID => playerID != disconnectorID )
-		}
-	),
-	playerTalked: (table, chat) => (
-		{...table,
-			chatLog: table.chatLog.concat(chat)
-		}
-	),
-	roundStarted: (table, {discard, yourHand: myHand}) => (
-		{...table,
-			mode: 'round',
-			round: {
+	}),
+	roundOver: (table, winningPlayer) => ({...without(table, 'round'),
+		mode: 'inBetweenRounds',
+		lastWinner: winningPlayer
+	}),
+	cardMoved: (table, {card, from, to, by}) => ({...table,
+		round: moveCard(table.round, table.me, {card, from, to, by})
+	}),
+	playerAccused: (table, {accuser, accused}) => ({...table,
+		round: {...table.round,
+			mode: 'accusation'
+		},
+		accusation: {accuser, accused}
+	}),
+	accusationAccepted: (table, data) => {
+		if(table.accusation.accused == table.me) return penalize(table, data)
+		
+		else return {...without(table, 'accusation'),
+			round: {...table.round,
 				mode: 'play',
-				piles: [{owner: undefined, cards: discard}],
-				handLengths: createHandLengths(table.playerIDs),
-				myHand
+				handLengths: {...table.round.handLengths, [table.accusation.accused]: data}
 			}
 		}
-	),
-	roundOver: (table, winningPlayer) => (
-		{...without(table, 'round'),
-			mode: 'inBetweenRounds',
-			lastWinner: winningPlayer
+	},
+	accusationCancelled: (table, mode) => ({...without(table, 'accusation'),
+		round: {...table.round,
+			mode
 		}
-	),
-	cardMoved: (table, {card, from, to, by}) => (
-		{...table,
-			round: moveCard(table.round, table.me, {card, from, to, by})
-		}
-	),
-	playerAccused: (table, {accuser, accused}) => (
-		{...table,
-			round: {...table.round,
-				mode: 'accusation'
-			},
-			accusation: {accuser, accused}
-		}
-	),
-	accusationAccepted: (table) => (
-		{...without(table, 'accusation'),
-			round: {...table.round,
-				mode: 'play'
-			}
-		}
-	),
-	accusationCancelled: (table, mode) => (
-		{...without(table, 'accusation'),
-			round: {...table.round,
-				mode
-			}
-		}
-	),
-	ruleWritten: (table, rule) => (
-		{...table,
-			rules: table.rules.concat(rule)
-		}
-	)
+	}),
+	ruleWritten: (table, rule) => ({...table,
+		rules: table.rules.concat(rule)
+	})
 }
 
 
 
-const createHandLengths = playerIDs => (
-	playerIDs.reduce(
-		( (handLengths, playerID) => ({...handLengths, [playerID]: 7}) ),
-		{}
-	)
-)
-
-
-
+//Thank you for the thunk, Freesound user Anthousai!
+//source: https://freesound.org/s/406493/
+const thunk = new Audio('resources/thunk.wav')
+thunk.load()
+//'1cards.wav' by Freesound user bigmac4029 (https://freesound.org/people/bigmac4029/)
+//attribution: https://freesound.org/s/120508/
+//license: CC BY 3.0 https://creativecommons.org/licenses/by/3.0/legalcode
+const cld = new Audio('resources/cld.wav')
+cld.load()
+//'Dealing Card' by Freesound user f4ngy (https://freesound.org/people/f4ngy)
+//attribution: https://freesound.org/s/240777/
+//license: CC BY 3.0 https://creativecommons.org/licenses/by/3.0/legalcode
+//I cut out some silence at the beginning and end of the original sound.
+const flk = new Audio('resources/flk.wav')
+flk.load()
 function rootReducer(state={}, action) {
+	if(action.type == 'playerAccused') thunk.play()
+	if(action.type == 'cardMoved') {
+		if(action.data.from.source == 'hand') cld.play()
+		if(action.data.from.source == 'deck') flk.play()
+	}
+
 	if(action.type in tableReducers) {
 		return ({...state,
 			table: tableReducers[action.type](state.table, action.data)
@@ -104,6 +99,24 @@ function rootReducer(state={}, action) {
 	return state
 }
 
+
+
+const penalize = (table, penaltyCard) => (
+	{...without(table, 'accusation'),
+		round: {...table.round,
+			mode: 'play',
+			myHand: table.round.myHand.concat(penaltyCard)
+		}
+	}
+)
+
+
+const createHandLengths = playerIDs => (
+	playerIDs.reduce(
+		( (handLengths, playerID) => ({...handLengths, [playerID]: 7}) ),
+		{}
+	)
+)
 
 
 function without(obj, prop) {

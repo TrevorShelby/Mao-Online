@@ -5,8 +5,9 @@ const { connect } = require('react-redux')
 
 const HandLength = ({playerID, numCards, onClick}) => (
 	<div className='handLength' onClick={onClick}>
-		<div>{playerID}</div>
-		{ numCards != undefined && <div>{numCards}</div> }
+		<span>{playerID}</span>
+		<br />
+		{ numCards != undefined && <span>{numCards}</span> }
 	</div>
 )
 
@@ -23,21 +24,36 @@ const OtherPlayers = ({numCardsByPlayerID, accusePlayer_}) => (
 )
 
 
-const mapStateToProps = state => ({
-	numCardsByPlayerID: state.table.playerIDs.reduce( (numCardsByPlayerID, playerID) => {
-		if(playerID == state.table.me || playerID == undefined) return numCardsByPlayerID
-		return {...numCardsByPlayerID, [playerID]: state.table.round.handLengths[playerID]}
-	}, {}),
-	accusePlayer_: playerID => () => {
-		if(state.table.round.mode != 'accusation') {
-			state.tableConn.send(JSON.stringify({
-				type: 'action',
-				name: 'accuse',
-				args: playerID
-			}))
+const mapStateToProps = state => {
+	const stateProps = {}
+	if(state.table.mode == 'inBetweenRounds' || state.table.mode == 'lobby') {
+		stateProps.numCardsByPlayerID = state.table.playerIDs.reduce(
+			(numCardsByPlayerID, playerID) => {
+				if(playerID == state.table.me || playerID == undefined) return numCardsByPlayerID
+				return {...numCardsByPlayerID, [playerID]: undefined}
+			}, {}
+		)
+		stateProps.accusePlayer_ = ()=>{}
+	}
+	else {
+		stateProps.numCardsByPlayerID = state.table.playerIDs.reduce(
+			(numCardsByPlayerID, playerID) => {
+				if(playerID == state.table.me || playerID == undefined) return numCardsByPlayerID
+				return {...numCardsByPlayerID, [playerID]: state.table.round.handLengths[playerID]}
+			}, {}
+		)
+		stateProps.accusePlayer_ = playerID => () => {
+			if(state.table.round.mode != 'accusation') {
+				state.tableConn.send(JSON.stringify({
+					type: 'action',
+					name: 'accuse',
+					args: playerID
+				}))
+			}
 		}
 	}
-})
+	return stateProps
+}
 
 
 module.exports = connect(mapStateToProps)(OtherPlayers)

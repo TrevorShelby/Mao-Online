@@ -11,7 +11,7 @@ const HandLength = ({
 }) => React.createElement("div", {
   className: "handLength",
   onClick: onClick
-}, React.createElement("div", null, playerID), numCards != undefined && React.createElement("div", null, numCards));
+}, React.createElement("span", null, playerID), React.createElement("br", null), numCards != undefined && React.createElement("span", null, numCards));
 
 const OtherPlayers = ({
   numCardsByPlayerID,
@@ -25,22 +25,38 @@ const OtherPlayers = ({
   key: playerID
 })));
 
-const mapStateToProps = state => ({
-  numCardsByPlayerID: state.table.playerIDs.reduce((numCardsByPlayerID, playerID) => {
-    if (playerID == state.table.me || playerID == undefined) return numCardsByPlayerID;
-    return { ...numCardsByPlayerID,
-      [playerID]: state.table.round.handLengths[playerID]
+const mapStateToProps = state => {
+  const stateProps = {};
+
+  if (state.table.mode == 'inBetweenRounds' || state.table.mode == 'lobby') {
+    stateProps.numCardsByPlayerID = state.table.playerIDs.reduce((numCardsByPlayerID, playerID) => {
+      if (playerID == state.table.me || playerID == undefined) return numCardsByPlayerID;
+      return { ...numCardsByPlayerID,
+        [playerID]: undefined
+      };
+    }, {});
+
+    stateProps.accusePlayer_ = () => {};
+  } else {
+    stateProps.numCardsByPlayerID = state.table.playerIDs.reduce((numCardsByPlayerID, playerID) => {
+      if (playerID == state.table.me || playerID == undefined) return numCardsByPlayerID;
+      return { ...numCardsByPlayerID,
+        [playerID]: state.table.round.handLengths[playerID]
+      };
+    }, {});
+
+    stateProps.accusePlayer_ = playerID => () => {
+      if (state.table.round.mode != 'accusation') {
+        state.tableConn.send(JSON.stringify({
+          type: 'action',
+          name: 'accuse',
+          args: playerID
+        }));
+      }
     };
-  }, {}),
-  accusePlayer_: playerID => () => {
-    if (state.table.round.mode != 'accusation') {
-      state.tableConn.send(JSON.stringify({
-        type: 'action',
-        name: 'accuse',
-        args: playerID
-      }));
-    }
   }
-});
+
+  return stateProps;
+};
 
 module.exports = connect(mapStateToProps)(OtherPlayers);

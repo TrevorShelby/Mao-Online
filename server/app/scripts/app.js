@@ -29,9 +29,9 @@ const App = ({
   tint
 }) => React.createElement("div", {
   id: "table"
-}, playerID != undefined && React.createElement("span", {
+}, playerID != undefined && React.createElement(React.Fragment, null, React.createElement("span", {
   id: "nameplate"
-}, playerID), tableHasRound && React.createElement(React.Fragment, null, React.createElement(OtherPlayers, null), React.createElement(Deck, null), React.createElement(Discard, null), React.createElement(Hand, null), React.createElement(RulesList, null), React.createElement("div", {
+}, playerID), React.createElement(OtherPlayers, null)), tableHasRound && React.createElement(React.Fragment, null, React.createElement(Deck, null), React.createElement(Discard, null), React.createElement(Hand, null), React.createElement(RulesList, null), React.createElement("div", {
   id: "overlay",
   style: {
     backgroundColor: tint

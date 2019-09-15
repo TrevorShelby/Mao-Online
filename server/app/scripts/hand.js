@@ -29,7 +29,7 @@ function Hand({
   return React.createElement("div", {
     id: "myHand",
     style: {
-      width: cardObjs.length * 33 + 'px'
+      width: cardObjs.length * 36 + 'px'
     }
   }, cardElements);
 }

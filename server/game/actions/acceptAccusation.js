@@ -1,10 +1,15 @@
+const getPlayingCard = require('../playingCard.js')
+const drawCard = () => getPlayingCard(Math.floor(Math.random() * 52))
+
+
+
 function acceptAccusation_(table, acceptorID) {
 	function acceptAccusation() {
 		if(table.mode != 'round') return
 		if(table.round.mode != 'accusation') return
 		if(table.accusation.accused != acceptorID) return
 
-		const previousMode = table.accusation.previousMode 
+		const previousMode = table.accusation.previousMode
 
 		if(previousMode == 'play') {
 			table.round.mode = 'play'
@@ -20,8 +25,12 @@ function acceptAccusation_(table, acceptorID) {
 		}
 		else return
 
-
-		table.sendEvent(table.playerIDs, 'accusationAccepted')
+		const penaltyCard = drawCard()
+		const hand = table.round.hands[acceptorID]
+		hand.push(penaltyCard)
+		const others = table.playerIDs.filter( playerID => playerID != acceptorID )
+		table.sendEvent(others, 'accusationAccepted', hand.length)
+		table.sendEvent([acceptorID], 'accusationAccepted', penaltyCard)
 	}
 
 	return acceptAccusation

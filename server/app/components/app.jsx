@@ -6,14 +6,13 @@ const OtherPlayers = require('./otherPlayers.js')
 const Hand = require('./hand.js')
 const Deck = require('./deck.js')
 const Discard = require('./discard.js')
-const AccusationInfo = require('./accusationInfo.js')
-const { CancelAccusationButton, AcceptAccusationButton } = require('./accusationButtons.js')
+const Accusation = require('./accusation.js')
 const RuleInput = require('./ruleInput.js')
 const RulesList = require('./rules.js')
 
 
 
-const App = ({tableHasRound, playerHasToWriteRule, accusationState, playerID}) => (
+const App = ({tableHasRound, playerHasToWriteRule, playerID}) => (
 	<div id='table'>
 		{playerID != undefined && (<React.Fragment>
 			<Nameplate />
@@ -23,17 +22,7 @@ const App = ({tableHasRound, playerHasToWriteRule, accusationState, playerID}) =
 			<Deck />
 			<Discard />
 			<Hand />
-			<RulesList />
-			{accusationState > -1 && (<React.Fragment>
-				<div id='overlay' style={{backgroundColor: '#00000088'}}></div>
-				<AccusationInfo />
-			</React.Fragment>)}
-			{accusationState == 1 &&
-				<CancelAccusationButton />
-			}
-			{accusationState == 2 &&
-				<AcceptAccusationButton />
-			}
+			<Accusation />
 		</React.Fragment>)}
 		{playerHasToWriteRule && <RuleInput />}
 	</div>
@@ -47,19 +36,9 @@ const mapStateToProps = state => {
 		tableExists && state.table.mode == 'inBetweenRounds'
 		&& state.table.lastWinner == state.table.me
 	)
-	const roundIsInAccusation = tableHasRound && state.table.round.mode == 'accusation'
-	//-1 when not in accusation, 0 if not involved in accusation, 1 if accuser, 2 if accused
-	const accusationState = (() => {
-		if(!roundIsInAccusation) return -1
-		const { table: {accusation, me } } = state
-		if(accusation.accuser == me) return 1
-		if(accusation.accused == me) return 2
-		return 0
-	})()
 	return {
 		tableHasRound,
 		playerHasToWriteRule,
-		accusationState,
 		playerID: tableExists ? state.table.me : undefined
 	}
 }

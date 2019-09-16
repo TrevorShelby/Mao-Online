@@ -44,7 +44,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   selectCard: cardIndex => dispatch({
-    type: 'selectCard',
+    type: 'cardSelected',
     selectedCardIndex: cardIndex
   })
 });

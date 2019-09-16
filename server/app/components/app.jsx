@@ -3,6 +3,7 @@ const { connect } = require('react-redux')
 
 const Nameplate = require('./nameplate.js')
 const OtherPlayers = require('./otherPlayers.js')
+const GameMessages = require('./gameMessages.js')
 const Hand = require('./hand.js')
 const Deck = require('./deck.js')
 const Discard = require('./discard.js')
@@ -21,6 +22,7 @@ const App = ({tableHasRound, playerHasToWriteRule, playerID}) => (
 		{tableHasRound && (<React.Fragment>
 			<Deck />
 			<Discard />
+			<GameMessages />
 			<Hand />
 			<Accusation />
 		</React.Fragment>)}
@@ -42,8 +44,6 @@ const mapStateToProps = state => {
 		playerID: tableExists ? state.table.me : undefined
 	}
 }
-
-
 
 
 

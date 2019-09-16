@@ -8,6 +8,8 @@ const Nameplate = require('./nameplate.js');
 
 const OtherPlayers = require('./otherPlayers.js');
 
+const GameMessages = require('./gameMessages.js');
+
 const Hand = require('./hand.js');
 
 const Deck = require('./deck.js');
@@ -26,7 +28,7 @@ const App = ({
   playerID
 }) => React.createElement("div", {
   id: "table"
-}, playerID != undefined && React.createElement(React.Fragment, null, React.createElement(Nameplate, null), React.createElement(OtherPlayers, null)), tableHasRound && React.createElement(React.Fragment, null, React.createElement(Deck, null), React.createElement(Discard, null), React.createElement(Hand, null), React.createElement(Accusation, null)), playerHasToWriteRule && React.createElement(RuleInput, null));
+}, playerID != undefined && React.createElement(React.Fragment, null, React.createElement(Nameplate, null), React.createElement(OtherPlayers, null)), tableHasRound && React.createElement(React.Fragment, null, React.createElement(Deck, null), React.createElement(Discard, null), React.createElement(GameMessages, null), React.createElement(Hand, null), React.createElement(Accusation, null)), playerHasToWriteRule && React.createElement(RuleInput, null));
 
 const mapStateToProps = state => {
   const tableExists = state != undefined && 'table' in state;

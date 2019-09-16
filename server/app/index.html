@@ -103,24 +103,31 @@
 				padding-left: 10px;
 			}
 
-
+			#gameMessages {
+				position: absolute;
+				bottom: 15%; left: 50%;
+				transform: translateX(-50%);
+				height: 15%;
+			}
 			.gameMessage {
 				position: absolute;
 				left: 50%;
 				transform: translateX(-50%);
+				font-size: small;
 				opacity: 0;
 				animation: floatUp 5s;
+				white-space: pre;
 			}
 			@keyframes floatUp {
 				0% {
-					bottom: 15%;
+					bottom: 0%;
 					opacity: 1;
 				}
 				60% {
 					opacity: 1;
 				}
 				100% {
-					bottom: 30%;
+					bottom: 100%;
 					opacity: 0;
 				}
 			}

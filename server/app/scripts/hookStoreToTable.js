@@ -6,7 +6,8 @@ function hookStoreToTable(dispatch) {
 	const tableID = parseInt(getParameterByName('tableID'), 10)
 	const name = getParameterByName('name')
 	const tableConn = createSocket(tableID, name)
-	tableConn.onmessage = (messageEvent) => {
+	tableConn.on('open', () => dispatch({type: 'connectionMade', tableConn}))
+	tableConn.on('message', messageEvent => {
 		const message = JSON.parse(messageEvent.data)
 		if(message.type == 'event') {
 			dispatch({
@@ -14,7 +15,7 @@ function hookStoreToTable(dispatch) {
 				data: message.data
 			})
 		}
-	}
+	})
 
 	return tableConn
 }

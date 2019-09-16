@@ -32,7 +32,7 @@ const mapStateToProps = state => ({
 
 
 const mapDispatchToProps = dispatch => ({
-	selectCard: cardIndex => dispatch({type: 'selectCard', selectedCardIndex: cardIndex})
+	selectCard: cardIndex => dispatch({type: 'cardSelected', selectedCardIndex: cardIndex})
 })
 
 

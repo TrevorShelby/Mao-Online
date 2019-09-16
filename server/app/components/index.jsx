@@ -26,7 +26,6 @@ document.body.append(appContainer)
 //Adds websocket connection to state.
 const store = createStore(rootReducer, {})
 const tableConn = hookStoreToTable(store.dispatch.bind(store))
-store.dispatch({type: 'connectionMade', tableConn})
 render(
 	<Provider store={store}>
 		<App />

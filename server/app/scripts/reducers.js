@@ -98,7 +98,7 @@ function rootReducer(state={}, action) {
 			table: tableReducers[action.type](state.table, action.data)
 		})
 	}
-	else if(action.type == 'selectCard') {
+	else if(action.type == 'cardSelected') {
 		return ({...state,
 			selectedCardIndex: action.selectedCardIndex
 		})

@@ -20,7 +20,7 @@ const Accusation = require('./accusation.js');
 
 const RuleInput = require('./ruleInput.js');
 
-const RulesList = require('./rules.js');
+window.onbeforeunload = () => 'You won\'t be able to rejoin this table once you leave.';
 
 const App = ({
   tableHasRound,

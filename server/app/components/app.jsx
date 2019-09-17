@@ -9,10 +9,10 @@ const Deck = require('./deck.js')
 const Discard = require('./discard.js')
 const Accusation = require('./accusation.js')
 const RuleInput = require('./ruleInput.js')
-const RulesList = require('./rules.js')
 
 
 
+window.onbeforeunload = () => 'You won\'t be able to rejoin this table once you leave.'
 const App = ({tableHasRound, playerHasToWriteRule, playerID}) => (
 	<div id='table'>
 		{playerID != undefined && (<React.Fragment>

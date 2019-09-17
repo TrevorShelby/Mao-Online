@@ -11,15 +11,17 @@
 			}
 			#overlay {
 				position: fixed;
-				z-index: 1; pointer-events: none;
+				z-index: 1;
 				width: 100%; height: 100%;
+				pointer-events: none;
 			}
 			.card {
-				width: 28px; height: 45px;
+				display: inline-block;
+				width: 1.5em; height: 2.25em;
+				/*width: 28px; height: 45px;*/
 				padding: 0 1px;
 				outline: 1px solid black;
 				margin: 0 2px;
-				display: inline-block;
 				background-color: white;
 				white-space: pre-line;
 			}
@@ -32,7 +34,8 @@
 				transform: translateX(-50%);
 				-ms-transform: translateX(-50%);
 				-webkit-transform: translateX(-50%);
-				height: 45px;
+				height: 2.25em;
+				/*height: 45px;*/
 			}
 			#deck {
 				position: absolute;
@@ -47,7 +50,8 @@
 				transform: translate(50%, -50%);
 				-ms-transform: translate(50%, -50%);
 				-webkit-transform: translate(50%, -50%);
-				width: 28px; height: 45px;
+				width: calc(1.5em + 2px); height: 2.25em;
+				/*width: 30px; height: 45px;*/
 			}
 			#handLengths {
 				position: absolute;
@@ -71,19 +75,19 @@
 			#accusationInfo {
 				position: absolute;
 				bottom: 35%; left: 50%;
+				z-index: 2;
 				transform: translate(-50%, 50%);
 				-ms-transform: translate(-50%, 50%);
 				-webkit-transform: translate(-50%, 50%);
-				z-index: 2;
 				background-color: white;
 			}
 			#accusationEnder {
 				position: absolute;
 				bottom: 25%; left: 50%;
+				z-index: 2;
 				transform: translate(-50%, 50%);
 				-ms-transform: translate(-50%, 50%);
 				-webkit-transform: translate(-50%, 50%);
-				z-index: 2;
 			}
 			#ruleInputContainer {
 				position: absolute;
@@ -91,31 +95,35 @@
 				transform: translate(-50%, -50%);
 				-ms-transform: translate(-50%, -50%);
 				-webkit-transform: translate(-50%, -50%);
-				width: 50em; height: 2.4em;
 				display: grid;
+				width: 50em; height: 2.4em;
 			}
 			#ruleInput { height: 1.4em; }
 			#rulesList {
 				position: absolute;
 				top: 2em; left: 0;
 				width: 20em;
-				outline: 1px;
 				padding-left: 10px;
+				outline: 1px;
 			}
 
 			#gameMessages {
 				position: absolute;
 				bottom: 15%; left: 50%;
 				transform: translateX(-50%);
+				-ms-transform: translateX(-50%);
+				-webkit-transform: translateX(-50%);
 				height: 15%;
 			}
 			.gameMessage {
 				position: absolute;
 				left: 50%;
 				transform: translateX(-50%);
-				font-size: small;
+				-ms-transform: translateX(-50%);
+				-webkit-transform: translateX(-50%);
 				opacity: 0;
 				animation: floatUp 5s;
+				font-size: small;
 				white-space: pre;
 			}
 			@keyframes floatUp {

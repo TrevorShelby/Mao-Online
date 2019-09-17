@@ -5,6 +5,7 @@ const { createSocket } = require('./config.js')
 function hookStoreToTable(dispatch) {
 	const tableID = parseInt(getParameterByName('tableID'), 10)
 	const name = getParameterByName('name')
+	if(name == null) throw Error('name is null.')
 	const tableConn = createSocket(tableID, name)
 	tableConn.on('open', () => dispatch({type: 'connectionMade', tableConn}))
 	tableConn.on('message', messageEvent => {

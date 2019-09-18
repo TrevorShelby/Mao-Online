@@ -19,7 +19,6 @@ const Discard = ({topCard, onClick}) => (
 )
 
 
-
 const mapStateToProps = state => {
 	const discard = state.table.round.piles[0].cards
 	const topCard = discard[discard.length - 1]

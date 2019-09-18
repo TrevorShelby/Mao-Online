@@ -16,9 +16,9 @@ function Hand({cardObjs, selectedCardIndex, selectedCardColor, onCardClicked_}) 
 		/>
 	})
 	const cumCardWidths = (cardObjs.length * 1.5) + 'em'
-	const width = 'calc(' + cumCardWidths + '+' + (cardObjs.length * 5) + 'px)'
+	const width = 'calc(' + cumCardWidths + '+' + (cardObjs.length * 6) + 'px)'
 	return(
-		<div id='myHand' style={{width/*width: (cardObjs.length * 36) + 'px'*/}}>
+		<div id='myHand' style={{width}}>
 			{cardElements}
 		</div>
 	)

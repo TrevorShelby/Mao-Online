@@ -28,13 +28,11 @@ function Hand({
     });
   });
   const cumCardWidths = cardObjs.length * 1.5 + 'em';
-  const width = 'calc(' + cumCardWidths + '+' + cardObjs.length * 5 + 'px)';
+  const width = 'calc(' + cumCardWidths + '+' + cardObjs.length * 6 + 'px)';
   return React.createElement("div", {
     id: "myHand",
     style: {
       width
-      /*width: (cardObjs.length * 36) + 'px'*/
-
     }
   }, cardElements);
 }

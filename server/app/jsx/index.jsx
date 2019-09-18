@@ -12,7 +12,7 @@ const { render } = require('react-dom')
 const { createStore } = require('redux')
 const { Provider } = require('react-redux')
 
-const App = require('./app.js')
+const App = require('./components/app.js')
 const rootReducer = require('./reducers.js')
 const hookStoreToTable = require('./hookStoreToTable.js')
 const { createSocket } = require('./config.js')

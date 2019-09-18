@@ -21,7 +21,7 @@ const {
   Provider
 } = require('react-redux');
 
-const App = require('./app.js');
+const App = require('./components/app.js');
 
 const rootReducer = require('./reducers.js');
 

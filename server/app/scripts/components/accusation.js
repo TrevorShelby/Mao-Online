@@ -4,12 +4,44 @@ const {
   connect
 } = require('react-redux');
 
-const AccusationInfo = require('./accusationInfo.js');
-
 const {
   CancelAccusationButton,
   AcceptAccusationButton
-} = require('./accusationButtons.js');
+} = (() => {
+  const AccusationButton = ({
+    endAccusation,
+    text
+  }) => React.createElement("button", {
+    id: "accusationEnder",
+    onClick: endAccusation
+  }, text);
+
+  const mapStateToProps_ = actionName => state => ({
+    endAccusation: () => {
+      state.tableConn.send(JSON.stringify({
+        type: 'action',
+        name: actionName
+      }));
+    },
+    text: actionName == 'cancelAccusation' ? 'Cancel Penalty' : 'Accept Penalty'
+  });
+
+  return {
+    CancelAccusationButton: connect(mapStateToProps_('cancelAccusation'))(AccusationButton),
+    AcceptAccusationButton: connect(mapStateToProps_('acceptAccusation'))(AccusationButton)
+  };
+})();
+
+const AccusationInfo = (() => {
+  const AccusationInfo = ({
+    accuser,
+    accused
+  }) => React.createElement("span", {
+    id: "accusationInfo"
+  }, React.createElement("b", null, accuser), " has accused ", React.createElement("b", null, accused));
+
+  return connect(state => state.table.accusation)(AccusationInfo);
+})();
 
 const Accusation = ({
   accusationState

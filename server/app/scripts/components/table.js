@@ -22,7 +22,7 @@ const RuleInput = require('./ruleInput.js');
 
 window.onbeforeunload = () => 'You won\'t be able to rejoin this table once you leave.';
 
-const App = ({
+const Table = ({
   tableHasRound,
   playerHasToWriteRule,
   playerID
@@ -41,4 +41,4 @@ const mapStateToProps = state => {
   };
 };
 
-module.exports = connect(mapStateToProps)(App);
+module.exports = connect(mapStateToProps)(Table);

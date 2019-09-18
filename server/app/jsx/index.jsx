@@ -12,23 +12,23 @@ const { render } = require('react-dom')
 const { createStore } = require('redux')
 const { Provider } = require('react-redux')
 
-const App = require('./components/app.js')
+const Table = require('./components/table.js')
 const rootReducer = require('./reducers.js')
 const hookStoreToTable = require('./hookStoreToTable.js')
 const { createSocket } = require('./config.js')
 
 
 
-const appContainer = document.createElement('div')
-appContainer.style = '{width: 100%; height: 100%;}'
-document.body.append(appContainer)
+const tableContainer = document.createElement('div')
+tableContainer.style = '{width: 100%; height: 100%;}'
+document.body.append(tableContainer)
 
 //Adds websocket connection to state.
 const store = createStore(rootReducer, {})
 const tableConn = hookStoreToTable(store.dispatch.bind(store))
 render(
 	<Provider store={store}>
-		<App />
+		<Table />
 	</Provider>,
-	appContainer
+	tableContainer
 )

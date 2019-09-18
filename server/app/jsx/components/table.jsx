@@ -13,7 +13,7 @@ const RuleInput = require('./ruleInput.js')
 
 
 window.onbeforeunload = () => 'You won\'t be able to rejoin this table once you leave.'
-const App = ({tableHasRound, playerHasToWriteRule, playerID}) => (
+const Table = ({tableHasRound, playerHasToWriteRule, playerID}) => (
 	<div id='table'>
 		{playerID != undefined && (<React.Fragment>
 			<Nameplate />
@@ -47,4 +47,4 @@ const mapStateToProps = state => {
 
 
 
-module.exports = connect(mapStateToProps)(App)
+module.exports = connect(mapStateToProps)(Table)

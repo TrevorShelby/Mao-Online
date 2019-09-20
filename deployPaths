@@ -1,0 +1,8 @@
+node_modules/
+package.json
+package-lock.json
+
+server/
+!server/app/jsx/
+!server/app/resources/card/
+!server/game/test/

@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "A server that can run games of Mao.",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"no test\""
-  },
   "author": "Trevor",
   "license": "ISC",
   "dependencies": {

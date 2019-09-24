@@ -20,7 +20,7 @@ const { createSocket } = require('./config.js')
 
 
 const tableContainer = document.createElement('div')
-tableContainer.style = '{width: 100%; height: 100%;}'
+tableContainer.className = 'table_container'
 document.body.append(tableContainer)
 
 //Adds websocket connection to state.

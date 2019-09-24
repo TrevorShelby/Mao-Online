@@ -84,31 +84,36 @@ function rootReducer(state={}, action) {
 		if(action.data.from.source == 'deck') flk.play()
 	}
 
-	if(action.type == 'roundStarted' && state.table.mode == 'lobby') {
-		return({...state,
-			table: tableReducers[action.type](state.table, action.data),
-			playerColors: state.table.playerIDs.reduce( (playerColors, playerID, index) => {
+	const table = (()=> {
+		if(action.type in tableReducers) return tableReducers[action.type](state.table, action.data)
+		else return state.table
+	})()
+	const gameMessages = (() => {
+		if(action.type == 'joinedTable')
+			return []
+		else if(action.type == 'playerTalked')
+			return state.gameMessages.concat({type: 'chat', ...action.data})
+		else
+			return state.gameMessages
+	})()
+	const playerColors = (() => {
+		if(action.type == 'roundStarted' && state.table.mode == 'lobby')
+			return state.table.playerIDs.reduce( (playerColors, playerID, index) => {
 				playerColors[playerID] = seatColors[index]
 				return playerColors
 			}, {})
-		})
-	}
-	if(action.type in tableReducers) {
-		return ({...state,
-			table: tableReducers[action.type](state.table, action.data)
-		})
-	}
-	else if(action.type == 'cardSelected') {
-		return ({...state,
-			selectedCardIndex: action.selectedCardIndex
-		})
-	}
-	else if(action.type == 'connectionMade') {
-		return ({...state,
-			tableConn: action.tableConn
-		})
-	}
-	return state
+		else
+			return state.playerColors
+	})()
+	const selectedCardIndex = (() => {
+		if(action.type == 'cardSelected') return action.selectedCardIndex
+		else return state.selectedCardIndex
+	})()
+	const tableConn = (() => {
+		if(action.type == 'connectionMade') return action.tableConn
+		else return state.tableConn
+	})()
+	return { table, gameMessages, playerColors, selectedCardIndex, tableConn }
 }
 
 

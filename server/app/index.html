@@ -3,141 +3,46 @@
 		<title>Mao Online</title>
 		<meta charset='utf-8' />
 		<style>
-			#table {
-				position: absolute;
-				top: 0; left: 0;
-				width: 100vw; height: 100vh;
-				user-select: none;
+			html, body { margin: 0; width: 100%; height: 100%; }
+			.table_container { width: 100%; height: 100%; }
+			.table {
+				display: flex;
+				width: 100%; height: 100%;
 			}
-			#overlay {
+
+			.left_panel {
+				width: 30%;
+				display: flex;
+				flex-direction: column;
+			}
+			.left_panel > * {
+				border-bottom: solid black 1px; border-right: solid black 1px;
+			}
+			.nameplate { height: 1em; padding: .25em .5ch; font-weight: bold; }
+			.game_log { height: calc(100% - 1.5em); margin-left: .5ch; }
+			.log_area {
+				display: flex; flex-direction: column-reverse;
+				overflow-y: scroll;
+				height: calc(100% - 1.5em);
+			}
+			.log_area > * { overflow-wrap: break-word; }
+			.chat_input {
+				width: 95%; height: 1.5em;
+				border: solid black 1px;
+			}
+
+			.right_panel { width: 70%; user-select: none; }
+
+			.accusation_tint {
 				position: fixed;
 				z-index: 1;
 				width: 100%; height: 100%;
 				pointer-events: none;
 			}
-			.card {
-				display: inline-block;
-				width: 1.5em; height: 2.25em;
-				padding: 0 1px;
-				outline: 1px solid black;
-				margin: 0 2px;
-				background-color: white;
-				font-size: large;
-				white-space: pre-line;
-			}
-			.card.red { color: red; }
-			.card.black { color: black; }
-			.card.selected { outline: 2px solid orange; }
-			#myHand {
-				position: absolute;
-				bottom: 10%; left: 50%;
+			.save {
 				transform: translateX(-50%);
 				-ms-transform: translateX(-50%);
 				-webkit-transform: translateX(-50%);
-				height: 2.25em;
-				max-width: 33%;
-			}
-			#deck {
-				position: absolute;
-				top: 50%; left: 46%;
-				transform: translate(-50%, -50%);
-				-ms-transform: translate(-50%, -50%);
-				-webkit-transform: translate(-50%, -50%);
-			}
-			#discard {
-				position: absolute;
-				top: 50%; right: 46%;
-				transform: translate(50%, -50%);
-				-ms-transform: translate(50%, -50%);
-				-webkit-transform: translate(50%, -50%);
-				width: calc(1.5em + 2px); height: 2.25em;
-				font-size: large;
-			}
-			#handLengths {
-				position: absolute;
-				top: 0; right: 0;
-				width: 20ch;
-			}
-			.handLength {
-				height: 2em;
-				padding: 0 10px;
-				outline: 1px solid black;
-				background-color: white;
-			}
-			#nameplate {
-				position: absolute;
-				top: 0; left: 0;
-				height: 1.5em;
-				padding-top: .5em; padding-left: 10px;
-				background-color: white;
-				user-select: none;
-			}
-			#accusationInfo {
-				position: absolute;
-				bottom: 35%; left: 50%;
-				z-index: 2;
-				transform: translate(-50%, 50%);
-				-ms-transform: translate(-50%, 50%);
-				-webkit-transform: translate(-50%, 50%);
-				background-color: white;
-			}
-			#accusationEnder {
-				position: absolute;
-				bottom: 25%; left: 50%;
-				z-index: 2;
-				transform: translate(-50%, 50%);
-				-ms-transform: translate(-50%, 50%);
-				-webkit-transform: translate(-50%, 50%);
-			}
-			#ruleInputContainer {
-				position: absolute;
-				top: 50%; left: 50%;
-				transform: translate(-50%, -50%);
-				-ms-transform: translate(-50%, -50%);
-				-webkit-transform: translate(-50%, -50%);
-				display: grid;
-				width: 50em; height: 2.4em;
-			}
-			#ruleInput { height: 1.4em; }
-			#rulesList {
-				position: absolute;
-				top: 2em; left: 0;
-				width: 20em;
-				padding-left: 10px;
-				outline: 1px;
-			}
-
-			#gameMessages {
-				position: absolute;
-				bottom: 15%; left: 50%;
-				transform: translateX(-50%);
-				-ms-transform: translateX(-50%);
-				-webkit-transform: translateX(-50%);
-				height: 15%;
-			}
-			.gameMessage {
-				position: absolute;
-				left: 50%;
-				transform: translateX(-50%);
-				-ms-transform: translateX(-50%);
-				-webkit-transform: translateX(-50%);
-				opacity: 0;
-				animation: floatUp 5s;
-				font-size: small;
-				white-space: pre;
-			}
-			@keyframes floatUp {
-				0% {
-					bottom: 0%;
-					opacity: 1;
-				}
-				60% {
-					opacity: 1;
-				}
-				100% {
-					bottom: 100%;
-					opacity: 0;
-				}
 			}
 		</style>
 	</head>

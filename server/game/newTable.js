@@ -47,7 +47,6 @@ function createNewTable(options) {
 		})
 		joiningConn.on('message', onActionMessage)
 
-
 		const disconnect = disconnect_(this, eventHistories, joiningPlayerID)
 		joiningConn.on('close', disconnect)
 		this.sendEvent([joiningPlayerID], 'joinedTable', {you: joiningPlayerID, others})

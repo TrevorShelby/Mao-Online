@@ -4,41 +4,36 @@ const {
   connect
 } = require('react-redux');
 
-const Nameplate = require('./nameplate.js');
+const PlayerName = require('./playerName.js');
 
-const OtherPlayers = require('./otherPlayers.js');
+const GameLog = require('./gameLog.js');
 
-const GameMessages = require('./gameMessages.js');
+const Nameplate = (() => {
+  const Nameplate = ({
+    myName
+  }) => React.createElement("span", {
+    className: "nameplate"
+  }, React.createElement(PlayerName, {
+    playerID: myName
+  }));
 
-const Hand = require('./hand.js');
+  const mapStateToProps = state => ({
+    myName: state.table.me
+  });
 
-const Deck = require('./deck.js');
-
-const Discard = require('./discard.js');
-
-const Accusation = require('./accusation.js');
-
-const RuleInput = require('./ruleInput.js');
-
-window.onbeforeunload = () => 'You won\'t be able to rejoin this table once you leave.';
+  return connect(mapStateToProps)(Nameplate);
+})();
 
 const Table = ({
-  tableHasRound,
-  playerHasToWriteRule,
-  playerID
+  tableExists
 }) => React.createElement("div", {
-  id: "table"
-}, playerID != undefined && React.createElement(React.Fragment, null, React.createElement(Nameplate, null), React.createElement(OtherPlayers, null)), tableHasRound && React.createElement(React.Fragment, null, React.createElement(Deck, null), React.createElement(Discard, null), React.createElement(GameMessages, null), React.createElement(Hand, null), React.createElement(Accusation, null)), playerHasToWriteRule && React.createElement(RuleInput, null));
+  className: "table"
+}, tableExists && React.createElement("div", {
+  className: "left_panel"
+}, React.createElement(Nameplate, null), React.createElement(GameLog, null)));
 
-const mapStateToProps = state => {
-  const tableExists = state != undefined && 'table' in state;
-  const tableHasRound = tableExists && 'round' in state.table;
-  const playerHasToWriteRule = tableExists && state.table.mode == 'inBetweenRounds' && state.table.lastWinner == state.table.me;
-  return {
-    tableHasRound,
-    playerHasToWriteRule,
-    playerID: tableExists ? state.table.me : undefined
-  };
-};
+const mapStateToProps = state => ({
+  tableExists: state.table != undefined
+});
 
 module.exports = connect(mapStateToProps)(Table);

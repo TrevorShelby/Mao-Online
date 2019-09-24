@@ -14,9 +14,10 @@ const PlayerName = ({
 }, playerID);
 
 const mapStateToProps = state => {
-  if ('playerColors' in state) return {
+  if (state.playerColors != undefined) return {
     playerColors: state.playerColors
   };
+  return {};
 };
 
 const mergeProps = (stateProps, _, ownProps) => {
@@ -27,4 +28,4 @@ const mergeProps = (stateProps, _, ownProps) => {
   return props;
 };
 
-module.exports = connect(mapStateToProps, undefined, mergeProps)(Nameplate);
+module.exports = connect(mapStateToProps, undefined, mergeProps)(PlayerName);

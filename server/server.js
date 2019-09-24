@@ -69,7 +69,7 @@ function getLobbyInfo() {
 	tables.forEach( (table, tableID) => {
 		if(table.mode == 'lobby') { 
 			lobbyInfo[tableID] = {
-				numPlayers: table.playerConnections.size,
+				numPlayers: table.playerIDs.length,
 				maxPlayers: table.options.playersToStart
 			}
 		}

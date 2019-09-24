@@ -92,7 +92,9 @@ function rootReducer(state={}, action) {
 		if(action.type == 'joinedTable')
 			return []
 		else if(action.type == 'playerTalked')
-			return state.gameMessages.concat({type: 'chat', ...action.data})
+			return state.gameMessages.concat({type: 'chat', chatData: action.data})
+		else if(action.type == 'playerJoined')
+			return state.gameMessages.concat({type: 'playerJoined', joinerID: action.data})
 		else
 			return state.gameMessages
 	})()

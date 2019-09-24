@@ -3,6 +3,7 @@ const { connect } = require('react-redux')
 
 const PlayerName = require('./playerName.js')
 const GameLog = require('./gameLog.js')
+const Gameplay = require('./gameplay.js')
 
 
 const Nameplate = (()=>{
@@ -13,12 +14,13 @@ const Nameplate = (()=>{
 
 const Table = ({tableExists}) => (
 	<div className='table'>
-		{tableExists &&
-		<div className='left_panel'>
-			<Nameplate />
-			<GameLog />
-		</div>
-		}
+		{tableExists && <React.Fragment>
+			<div className='left_panel'>
+				<Nameplate />
+				<GameLog />
+			</div>
+			<Gameplay />
+		</React.Fragment>}
 	</div>
 )
 

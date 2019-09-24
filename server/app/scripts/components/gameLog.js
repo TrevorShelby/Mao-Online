@@ -6,18 +6,26 @@ const {
 
 const PlayerName = require('./playerName.js');
 
-const ChatMessage = (() => {
-  const ChatMessage = ({
-    author,
-    quote
-  }) => React.createElement("span", {
-    className: "chat_message"
-  }, React.createElement(PlayerName, {
-    playerID: author
-  }), ": ", quote);
+const ChatMessage = ({
+  chatData: {
+    by,
+    quote,
+    timestamp
+  }
+}) => React.createElement("span", {
+  className: "chat_message",
+  title: new Date(timestamp).toLocaleTimeString()
+}, React.createElement(PlayerName, {
+  playerID: by
+}), ": ", quote);
 
-  return ChatMessage;
-})();
+const JoinedMessage = ({
+  joinerID
+}) => React.createElement("span", {
+  className: "player_joined_message"
+}, React.createElement(PlayerName, {
+  playerID: joinerID
+}), " joined the table!");
 
 const ChatInput = (() => {
   const ChatInput = ({
@@ -51,8 +59,11 @@ const GameLog = ({
   className: "log_area"
 }, gameMessages.slice().reverse().map((gameMessage, index) => {
   if (gameMessage.type == 'chat') return React.createElement(ChatMessage, {
-    author: gameMessage.by,
-    quote: gameMessage.quote,
+    chatData: gameMessage.chatData,
+    key: index
+  });
+  if (gameMessage.type == 'playerJoined') return React.createElement(JoinedMessage, {
+    joinerID: gameMessage.joinerID,
     key: index
   });
 })), React.createElement(ChatInput, null));

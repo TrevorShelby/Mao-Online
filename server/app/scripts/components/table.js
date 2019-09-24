@@ -8,6 +8,8 @@ const PlayerName = require('./playerName.js');
 
 const GameLog = require('./gameLog.js');
 
+const Gameplay = require('./gameplay.js');
+
 const Nameplate = (() => {
   const Nameplate = ({
     myName
@@ -28,9 +30,9 @@ const Table = ({
   tableExists
 }) => React.createElement("div", {
   className: "table"
-}, tableExists && React.createElement("div", {
+}, tableExists && React.createElement(React.Fragment, null, React.createElement("div", {
   className: "left_panel"
-}, React.createElement(Nameplate, null), React.createElement(GameLog, null)));
+}, React.createElement(Nameplate, null), React.createElement(GameLog, null)), React.createElement(Gameplay, null)));
 
 const mapStateToProps = state => ({
   tableExists: state.table != undefined

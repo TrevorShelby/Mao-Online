@@ -5,12 +5,16 @@ const PlayerName = require('./playerName.js')
 
 
 
-const ChatMessage = (() => {
-	const ChatMessage = ({author, quote}) => (
-		<span className='chat_message'><PlayerName playerID={author} />: {quote}</span>
-	)
-	return (ChatMessage)
-})()
+const ChatMessage = ({chatData: {by, quote, timestamp}}) => (
+	<span className='chat_message' title={new Date(timestamp).toLocaleTimeString()}>
+		<PlayerName playerID={by} />: {quote}
+	</span>
+)
+
+const JoinedMessage = ({joinerID}) => (
+	<span className='player_joined_message'><PlayerName playerID={joinerID} /> joined the table!</span>
+)
+
 
 const ChatInput = (() => {
 	const ChatInput = ({onKeyPress}) => <input className='chat_input' onKeyPress={onKeyPress} />
@@ -25,12 +29,16 @@ const ChatInput = (() => {
 	return connect(mapStateToProps)(ChatInput)
 })()
 
+
+
 const GameLog = ({gameMessages}) => (
 	<div className='game_log'>
 		<div className='log_area'>
 			{gameMessages.slice().reverse().map( (gameMessage, index) => {
 				if(gameMessage.type == 'chat')
-					return <ChatMessage author={gameMessage.by} quote={gameMessage.quote} key={index} />
+					return <ChatMessage chatData={gameMessage.chatData} key={index} />
+				if(gameMessage.type == 'playerJoined')
+					return <JoinedMessage joinerID={gameMessage.joinerID} key={index} />
 			})}
 		</div>
 		<ChatInput />

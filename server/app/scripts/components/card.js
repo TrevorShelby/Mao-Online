@@ -5,10 +5,15 @@ const suitSymbols = ['♣', '♦', '♥', '♠'];
 const suitColors = ['black', 'red', 'red', 'black'];
 
 const Card = ({
-  rank,
-  suit
+  card: {
+    rank,
+    suit
+  } = {
+    rank: undefined,
+    suit: undefined
+  }
 }) => React.createElement("div", {
-  className: 'card ' + suitColors[suit]
-}, suitSymbols[suit] + '\n' + rankSymbols[rank]);
+  className: 'card ' + (suitColors[suit] || '')
+}, (suitSymbols[suit] || '') + '\n' + (rankSymbols[rank] || ''));
 
 module.exports = Card;

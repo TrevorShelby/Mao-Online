@@ -4,7 +4,6 @@
 		<meta charset='utf-8' />
 		<style>
 			html, body { margin: 0; width: 100%; height: 100%; }
-			b { text-align: center; }
 			.table_container { width: 100%; height: 100%; }
 			.table {
 				display: flex;
@@ -17,14 +16,15 @@
 				flex-direction: column;
 			}
 			.left_panel > * {
-				border-bottom: solid black 1px; border-right: solid black 1px; overflow: hidden;
+				border-bottom: solid black 1px; border-right: solid black 1px;
+				overflow: hidden;
 			}
 			.nameplate { height: 1em; padding: .25em .5ch; font-weight: bold; }
 			.game_log { height: calc(100% - 1.5em); margin-left: .5ch; }
 			.log_area {
 				display: flex; flex-direction: column-reverse;
-				overflow-y: scroll;
 				height: calc(100% - 1.5em);
+				overflow-y: scroll;
 				overflow-wrap: break-word;
 			}
 			.chat_input {
@@ -32,7 +32,12 @@
 				border: solid black 1px;
 			}
 
-			.right_panel { position: relative; width: 70%; user-select: none; overflow: hidden; }
+			.right_panel {
+				position: relative;
+				width: 70%;
+				overflow: hidden;
+				user-select: none;
+			}
 
 			.card {
 				display: inline-block;
@@ -46,7 +51,6 @@
 			}
 			.card.red { color: red; }
 			.card.black { color: black; }
-			.card.selected { outline: 2px solid orange; }
 			.card.hand_length_card {
 				display: block;
 				text-align: center;
@@ -71,16 +75,29 @@
 				-webkit-transform: translate(50%, 50%);
 			}
 
+			.discard {
+				position: absolute;
+				bottom: 50%; right: 40%;
+				transform: translate(50%, 50%);
+				-ms-transform: translate(50%, 50%);
+				-webkit-transform: translate(50%, 50%);
+			}
+
+			.deck {
+				position: absolute;
+				bottom: 50%; right: 60%;
+				transform: translate(50%, 50%);
+				-ms-transform: translate(50%, 50%);
+				-webkit-transform: translate(50%, 50%);	
+			}
+
 			.accusation_tint {
 				position: fixed;
 				z-index: 1;
 				width: 100%; height: 100%;
+				background-color: #818181;
+				opacity: .4;
 				pointer-events: none;
-			}
-			.save {
-				transform: translateX(-50%);
-				-ms-transform: translateX(-50%);
-				-webkit-transform: translateX(-50%);
 			}
 		</style>
 	</head>

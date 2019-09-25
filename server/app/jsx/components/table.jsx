@@ -6,11 +6,12 @@ const GameLog = require('./gameLog.js')
 const Gameplay = require('./gameplay.js')
 
 
-const Nameplate = (()=>{
+const Nameplate = (() => {
 	const Nameplate = ({myName}) => <span className='nameplate'><PlayerName playerID={myName} /></span>
 	const mapStateToProps = state => ({myName: state.table.me})
 	return connect(mapStateToProps)(Nameplate)
 })()
+
 
 const Table = ({tableExists}) => (
 	<div className='table'>
@@ -25,7 +26,5 @@ const Table = ({tableExists}) => (
 )
 
 const mapStateToProps = state => ({ tableExists: state.table != undefined })
-
-
 
 module.exports = connect(mapStateToProps)(Table)

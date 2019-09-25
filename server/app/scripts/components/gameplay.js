@@ -4,33 +4,55 @@ const {
   connect
 } = require('react-redux');
 
-const uuidv4 = require('uuid/v4');
-
 const Card = require('./card.js');
 
 const PlayerSeat = require('./playerSeat.js');
 
-const getWidth = numCards => 'calc((1.5em + 2px + 4px) * ' + numCards + ')';
+const MyHand = require('./myHand.js');
 
-const MyHand = (() => {
-  const VisibleHand = ({
+const Discard = (() => {
+  const Discard = ({
     cards
-  }) => React.createElement("div", {
-    className: "my_hand",
-    style: {
-      fontSize: 'large',
-      width: getWidth(cards.length)
-    }
-  }, cards.map(card => React.createElement(Card, {
-    card: card,
-    key: uuidv4()
-  })));
-
-  const mapStateToProps = state => ({
-    cards: state.table.round.myHand
+  }) => React.createElement(Card, {
+    card: cards[cards.length - 1],
+    className: "discard"
   });
 
-  return connect(mapStateToProps)(VisibleHand);
+  const mapStateToProps = state => ({
+    cards: state.table.mode == 'round' ? state.table.round.piles[0].cards : []
+  });
+
+  return connect(mapStateToProps)(Discard);
+})();
+
+const canDraw = table => table.mode == 'round' && table.round.mode == 'play';
+
+const Deck = (() => {
+  const Deck = ({
+    drawCard
+  }) => React.createElement(Card, {
+    onClick: drawCard,
+    className: "deck"
+  });
+
+  const mapStateToProps = state => ({
+    drawCard: canDraw(state.table) ? () => {
+      state.tableConn.send(JSON.stringify({
+        type: 'action',
+        name: 'moveCard',
+        args: {
+          from: {
+            source: 'deck'
+          },
+          to: {
+            source: 'hand'
+          }
+        }
+      }));
+    } : () => {}
+  });
+
+  return connect(mapStateToProps)(Deck);
 })();
 
 const getOtherPlayers = table => table.playerIDs.filter(playerID => playerID != table.me);
@@ -42,7 +64,9 @@ const Gameplay = ({
 }, getOtherPlayers(table).map(playerID => React.createElement(PlayerSeat, {
   playerID: playerID,
   key: playerID
-})), table.mode == 'round' && React.createElement(MyHand, null));
+})), React.createElement(Discard, null), React.createElement(Deck, null), table.mode == 'round' && React.createElement(React.Fragment, null, React.createElement(MyHand, null), console.log(table.round), table.round.mode == 'accusation' && React.createElement("div", {
+  className: "accusation_tint"
+})));
 
 const mapStateToProps = state => ({
   table: state.table

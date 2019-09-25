@@ -3,8 +3,8 @@ const { connect } = require('react-redux')
 
 
 
-const PlayerName = ({playerID, nameColor='unset'}) => (
-	<b style={{color: nameColor}}>{playerID}</b>
+const PlayerName = ({playerID, nameColor='unset', style, ...otherProps}) => (
+	<b style={{color: nameColor, ...style}} {...otherProps}>{playerID}</b>
 )
 
 const mapStateToProps = state => {
@@ -12,7 +12,7 @@ const mapStateToProps = state => {
 	return {}
 }
 const mergeProps = (stateProps, _, ownProps) => {
-	const props = { playerID: ownProps.playerID }
+	const props = { ...ownProps }
 	if('playerColors' in stateProps) props.nameColor = stateProps.playerColors[ownProps.playerID]
 	return props
 }

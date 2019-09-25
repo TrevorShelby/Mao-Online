@@ -13,22 +13,30 @@ const {
 const PlayerSeat = ({
   playerID,
   numCards,
-  position
+  position,
+  accusePlayer
 }) => React.createElement("div", {
   className: "hand_length",
   style: position
 }, React.createElement("div", {
-  className: "card hand_length_card"
+  className: "card hand_length_card",
+  onClick: accusePlayer
 }, numCards), React.createElement(PlayerName, {
-  playerID: playerID
+  playerID: playerID,
+  onClick: accusePlayer,
+  style: {
+    textAlign: 'center'
+  }
 }));
 
 const mapStateToProps = state => ({
-  handLengths: state.table.mode == 'round' ? state.table.round.handLengths : state.table.playerIDs.reduce((preRoundHandLengths, playerID) => Object.assign({
+  handLengths: state.table.mode == 'round' ? state.table.round.handLengths : state.table.playerIDs.reduce((emptyHandLengths, playerID) => Object.assign({
     [playerID]: 0
-  }, preRoundHandLengths), {}),
+  }, emptyHandLengths), {}),
   playerIDs: state.table.playerIDs,
-  me: state.table.me
+  me: state.table.me,
+  canAccuse: state.table.mode == 'round' && (state.table.round.mode == 'play' || state.table.round.mode == 'accusation'),
+  tableConn: state.tableConn
 });
 
 const mergeProps = (stateProps, _, ownProps) => ({
@@ -43,7 +51,14 @@ const mergeProps = (stateProps, _, ownProps) => ({
     })();
 
     return seatPositionsByNumOtherPlayersAndOrder[playerIDs.length - 1][orderFromMe];
-  })(stateProps.playerIDs, ownProps.playerID, stateProps.me)
+  })(stateProps.playerIDs, ownProps.playerID, stateProps.me),
+  accusePlayer: stateProps.canAccuse ? () => {
+    stateProps.tableConn.send(JSON.stringify({
+      type: 'action',
+      name: 'accuse',
+      args: ownProps.playerID
+    }));
+  } : () => {}
 });
 
 module.exports = connect(mapStateToProps, undefined, mergeProps)(PlayerSeat);

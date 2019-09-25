@@ -22,7 +22,7 @@ const mapStateToProps = state => ({
 	me: state.table.me,
 	canAccuse: (
 		state.table.mode == 'round'
-		&& (state.table.round.mode == 'play' || state.table.round.mode == 'accusation')
+		&& (state.table.round.mode == 'play' || state.table.round.mode == 'lastChance')
 	),
 	tableConn: state.tableConn
 })

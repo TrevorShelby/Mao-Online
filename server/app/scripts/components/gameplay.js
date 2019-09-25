@@ -10,6 +10,8 @@ const PlayerSeat = require('./playerSeat.js');
 
 const MyHand = require('./myHand.js');
 
+const Accusation = require('./accusation.js');
+
 const Discard = (() => {
   const Discard = ({
     cards
@@ -64,9 +66,7 @@ const Gameplay = ({
 }, getOtherPlayers(table).map(playerID => React.createElement(PlayerSeat, {
   playerID: playerID,
   key: playerID
-})), React.createElement(Discard, null), React.createElement(Deck, null), table.mode == 'round' && React.createElement(React.Fragment, null, React.createElement(MyHand, null), console.log(table.round), table.round.mode == 'accusation' && React.createElement("div", {
-  className: "accusation_tint"
-})));
+})), React.createElement(Discard, null), React.createElement(Deck, null), table.mode == 'round' && React.createElement(React.Fragment, null, React.createElement(MyHand, null), table.round.mode == 'accusation' && React.createElement(Accusation, null)));
 
 const mapStateToProps = state => ({
   table: state.table

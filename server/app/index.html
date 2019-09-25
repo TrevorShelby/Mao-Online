@@ -27,6 +27,7 @@
 				overflow-y: scroll;
 				overflow-wrap: break-word;
 			}
+			.log_area > * { margin-bottom: .25em; }
 			.chat_input {
 				width: 95%; height: 1.5em;
 				border: solid black 1px;
@@ -37,6 +38,12 @@
 				width: 70%;
 				overflow: hidden;
 				user-select: none;
+			}
+			.right_panel > * {
+				position: absolute;
+				transform: translate(50%, 50%);
+				-ms-transform: translate(50%, 50%);
+				-webkit-transform: translate(50%, 50%);
 			}
 
 			.card {
@@ -59,45 +66,39 @@
 			}
 
 			.hand_length {
-				position: absolute;
 				display: flex; flex-direction: column; align-items: center;
 				font-size: small;
-				transform: translate(50%, 50%);
-				-ms-transform: translate(50%, 50%);
-				-webkit-transform: translate(50%, 50%);
 			}
 
 			.my_hand {
-				position: absolute;
 				bottom: 5%; right: 50%;
-				transform: translate(50%, 50%);
-				-ms-transform: translate(50%, 50%);
-				-webkit-transform: translate(50%, 50%);
 			}
 
 			.discard {
-				position: absolute;
 				bottom: 50%; right: 40%;
-				transform: translate(50%, 50%);
-				-ms-transform: translate(50%, 50%);
-				-webkit-transform: translate(50%, 50%);
 			}
 
 			.deck {
-				position: absolute;
 				bottom: 50%; right: 60%;
-				transform: translate(50%, 50%);
-				-ms-transform: translate(50%, 50%);
-				-webkit-transform: translate(50%, 50%);	
 			}
 
 			.accusation_tint {
 				position: fixed;
-				z-index: 1;
+				transform: none;
+				-ms-transform: none;
+				-webkit-transform: none;
+				z-index: 2;
 				width: 100%; height: 100%;
-				background-color: #818181;
-				opacity: .4;
-				pointer-events: none;
+				background-color: #00000088;
+			}
+			.accusation_info {
+				bottom: 30%; right: 50%;
+				z-index: 3;
+				background-color: white; color: black;
+			}
+			.accusation_ender {
+				bottom: 25%; right: 50%;
+				z-index: 3;
 			}
 		</style>
 	</head>

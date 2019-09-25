@@ -4,6 +4,7 @@ const { connect } = require('react-redux')
 const Card = require('./card.js')
 const PlayerSeat = require('./playerSeat.js')
 const MyHand = require('./myHand.js')
+const Accusation = require('./accusation.js')
 
 
 const Discard = (() => {
@@ -42,8 +43,7 @@ const Gameplay = ({table}) => (
 		<Deck />
 		{table.mode == 'round' && <React.Fragment>
 			<MyHand />
-			{console.log(table.round)}
-			{table.round.mode == 'accusation' && <div className='accusation_tint'></div>}
+			{table.round.mode == 'accusation' && <Accusation />}
 		</React.Fragment>}
 	</div>
 )

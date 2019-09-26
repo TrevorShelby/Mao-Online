@@ -12,19 +12,39 @@ const MyHand = require('./myHand.js');
 
 const Accusation = require('./accusation.js');
 
+const RuleInput = require('./ruleInput.js');
+
 const Discard = (() => {
   const Discard = ({
-    cards
+    cards,
+    visibleCardIndex,
+    viewNextCard,
+    viewPreviousCard
   }) => React.createElement(Card, {
-    card: cards[cards.length - 1],
-    className: "discard"
+    card: cards[visibleCardIndex],
+    className: "discard",
+    onWheel: e => {
+      if (e.deltaY < 0) viewNextCard();
+      if (e.deltaY > 0) viewPreviousCard();
+    }
   });
 
   const mapStateToProps = state => ({
-    cards: state.table.mode == 'round' ? state.table.round.piles[0].cards : []
+    cards: state.table.mode == 'round' ? state.table.round.piles[0].cards : [],
+    visibleCardIndex: state.visibleDiscardCardIndex
   });
 
-  return connect(mapStateToProps)(Discard);
+  const mapDispatchToProps = dispatch => ({
+    viewNextCard: () => dispatch({
+      type: 'nextDiscardCard'
+    }),
+    viewPreviousCard: () => dispatch({
+      type: 'previousDiscardCard'
+    })
+  });
+
+  const mergeProps = Object.assign;
+  return connect(mapStateToProps, mapDispatchToProps, mergeProps)(Discard);
 })();
 
 const canDraw = table => table.mode == 'round' && table.round.mode == 'play';
@@ -66,7 +86,7 @@ const Gameplay = ({
 }, getOtherPlayers(table).map(playerID => React.createElement(PlayerSeat, {
   playerID: playerID,
   key: playerID
-})), React.createElement(Discard, null), React.createElement(Deck, null), table.mode == 'round' && React.createElement(React.Fragment, null, React.createElement(MyHand, null), table.round.mode == 'accusation' && React.createElement(Accusation, null)));
+})), React.createElement(Discard, null), React.createElement(Deck, null), table.mode == 'round' && React.createElement(React.Fragment, null, React.createElement(MyHand, null), table.round.mode == 'accusation' && React.createElement(Accusation, null)), table.mode == 'inBetweenRounds' && React.createElement(RuleInput, null));
 
 const mapStateToProps = state => ({
   table: state.table

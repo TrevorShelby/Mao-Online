@@ -5,14 +5,30 @@ const Card = require('./card.js')
 const PlayerSeat = require('./playerSeat.js')
 const MyHand = require('./myHand.js')
 const Accusation = require('./accusation.js')
+const RuleInput = require('./ruleInput.js')
 
 
 const Discard = (() => {
-	const Discard = ({cards}) => <Card card={cards[cards.length - 1]} className='discard' />
+	const Discard = ({cards, visibleCardIndex, viewNextCard, viewPreviousCard}) => (
+		<Card
+			card={cards[visibleCardIndex]} className='discard'
+			onWheel={e => {
+				if(e.deltaY < 0) viewNextCard()
+				if(e.deltaY > 0) viewPreviousCard()
+			}}
+		/>
+	)
+
 	const mapStateToProps = state => ({
-		cards: state.table.mode == 'round' ? state.table.round.piles[0].cards : []
+		cards: state.table.mode == 'round' ? state.table.round.piles[0].cards : [],
+		visibleCardIndex: state.visibleDiscardCardIndex
 	})
-	return connect(mapStateToProps)(Discard)
+	const mapDispatchToProps = dispatch => ({
+		viewNextCard: () => dispatch({type: 'nextDiscardCard'}),
+		viewPreviousCard: () => dispatch({type: 'previousDiscardCard'})
+	})
+	const mergeProps = Object.assign
+	return connect(mapStateToProps, mapDispatchToProps, mergeProps)(Discard)
 })()
 
 
@@ -45,6 +61,7 @@ const Gameplay = ({table}) => (
 			<MyHand />
 			{table.round.mode == 'accusation' && <Accusation />}
 		</React.Fragment>}
+		{table.mode == 'inBetweenRounds' && <RuleInput />}
 	</div>
 )
 const mapStateToProps = state => ({ table: state.table })

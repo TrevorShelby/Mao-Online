@@ -111,14 +111,33 @@ function rootReducer(state={}, action) {
 		if(action.type == 'cardSelected') return action.selectedCardIndex
 		else return state.selectedCardIndex
 	})()
+	const visibleDiscardCardIndex = (() => {
+		if(action.type == 'roundStarted')
+			return 0
+		//TODO: Make pretty
+		if(isPlayingOnDiscard(action) && ((action.data.to.cardIndex == state.table.round.piles[0].cards.length && state.visibleDiscardCardIndex == state.table.round.piles[0].cards.length - 1) || action.data.to.cardIndex < state.visibleDiscardCardIndex))
+			return state.visibleDiscardCardIndex + 1
+		if(action.type == 'nextDiscardCard')
+			return state.visibleDiscardCardIndex < state.table.round.piles[0].cards.length - 1 ? 
+				state.visibleDiscardCardIndex + 1 : state.visibleDiscardCardIndex
+		if(action.type == 'previousDiscardCard')
+			return state.visibleDiscardCardIndex > 0 ? state.visibleDiscardCardIndex - 1 : state.visibleDiscardCardIndex
+		else
+			return state.visibleDiscardCardIndex
+	})()
 	const tableConn = (() => {
 		if(action.type == 'connectionMade') return action.tableConn
 		else return state.tableConn
 	})()
-	return { table, gameMessages, playerColors, selectedCardIndex, tableConn }
+	return { table, gameMessages, playerColors, selectedCardIndex, visibleDiscardCardIndex, tableConn }
 }
 
 
+
+
+const isPlayingOnDiscard = action => (
+	action.type == 'cardMoved' && action.data.to.source == 'pile' && action.data.to.pileIndex == 0
+)
 
 const penalize = (table, penaltyCard) => (
 	{...without(table, 'accusation'),

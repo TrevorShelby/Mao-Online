@@ -12,7 +12,6 @@ const Nameplate = (() => {
 	return connect(mapStateToProps)(Nameplate)
 })()
 
-
 const Table = ({tableExists}) => (
 	<div className='table'>
 		{tableExists && <React.Fragment>

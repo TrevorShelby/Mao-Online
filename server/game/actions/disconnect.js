@@ -31,9 +31,9 @@ function disconnect_(table, eventHistories, disconnectorID) {
 				delete table.round.hands[disconnectorID]
 
 				//TODO: When pile adding and deleting are introduced, add event that corresponds.
-				table.round.piles.forEach( (pile, pileIndex) => {
-					if(pile.owner == disconnectorID) table.round.piles.splice(pileIndex, 1)
-				})
+				// table.round.piles.forEach( (pile, pileIndex) => {
+				// 	if(pile.owner == disconnectorID) table.round.piles.splice(pileIndex, 1)
+				// })
 
 				if(
 					table.round.mode == 'lastChance'

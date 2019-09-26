@@ -12,17 +12,16 @@ function startNewRound(table) {
 		for(let cardNum = 0; cardNum < 7; cardNum++) { cards.push(drawRandom()) }
 		round.hands[playerID] = cards
 	})
-	round.piles = [ {owner: undefined, cards: [drawRandom()]} ]
+	round.discard = [drawRandom()]
 	round.mode = 'play'
 	round.winningPlayer = undefined
 
 	table.mode = 'round'
 
-	const discard = round.piles[0].cards
 	table.playerIDs.forEach( playerID => {
 		const hand = round.hands[playerID]
 		table.sendEvent([playerID], 'roundStarted', {
-			yourHand: hand, discard
+			yourHand: hand, discard: round.discard
 		})
 	})
 }

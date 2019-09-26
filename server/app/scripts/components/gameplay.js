@@ -30,7 +30,7 @@ const Discard = (() => {
   });
 
   const mapStateToProps = state => ({
-    cards: state.table.mode == 'round' ? state.table.round.piles[0].cards : [],
+    cards: state.table.mode == 'round' ? state.table.round.discard : [],
     visibleCardIndex: state.visibleDiscardCardIndex
   });
 

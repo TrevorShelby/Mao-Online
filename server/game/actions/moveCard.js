@@ -10,16 +10,18 @@ function moveCard_(table, cardMoverID) {
 
 		if(typeof from != 'object' || typeof to != 'object') return
 		if(from.source == 'hand' && to.source == 'hand') return
-		if(
-			from.source == 'pile' && to.source == 'pile'
-			&& from.pileIndex == to.pileIndex && from.cardIndex == to.cardIndex
-		) return
+		// if(
+		// 	from.source == 'pile' && to.source == 'pile'
+		// 	&& from.pileIndex == to.pileIndex && from.cardIndex == to.cardIndex
+		// ) return
+		if(from.source == 'discard' && to.source == 'discard') return
 		if(from.source == 'deck' && to.source == 'deck') return
 
 
 		const round = table.round
 		if(to.source == 'hand' && round.hands[cardMoverID].length >= 24) return
 
+		//TODO: Check to see if moveCard can return values outside of expected parameter list back to other players.
 		let takeCard, othersFrom
 		if(from.source == 'hand') {
 			const hand = round.hands[cardMoverID]
@@ -27,11 +29,9 @@ function moveCard_(table, cardMoverID) {
 			getCard = () => hand.splice(from.cardIndex, 1)[0]
 			othersFrom = {source: 'hand', length: hand.length - 1}
 		}
-		else if(from.source == 'pile') {
-			if(!(from.pileIndex in round.piles)) return
-			const pile = round.piles[from.pileIndex]
-			if(!(from.cardIndex in pile.cards)) return
-			getCard = () => pile.cards.splice(from.cardIndex, 1)[0]
+		else if(from.source == 'discard') {
+			if(!(from.cardIndex in round.discard)) return
+			getCard = () => round.discard.splice(from.cardIndex, 1)[0]
 			othersFrom = from
 		}
 		else if(from.source == 'deck') {
@@ -47,7 +47,7 @@ function moveCard_(table, cardMoverID) {
 			hand.push(card)
 
 			const event = { from, to: {source: 'hand', length: hand.length}, by: cardMoverID }
-			if(from.source == 'pile') {
+			if(from.source == 'discard') {
 				table.sendEvent(table.playerIDs, 'cardMoved', Object.assign({card}, event))
 			}
 			else {
@@ -55,16 +55,14 @@ function moveCard_(table, cardMoverID) {
 				table.sendEvent(getOthers(), 'cardMoved', event)
 			}
 		}
-		else if(to.source == 'pile') {
-			if(!(to.pileIndex in round.piles)) return
-			const pile = round.piles[to.pileIndex]
-			//similar to "to.cardIndex in pile", but also considers appending.
+		else if(to.source == 'discard') {
+			//similar to "to.cardIndex in round.discard", but also considers appending.
 			if(
 				typeof to.cardIndex != 'number'
-				|| (to.cardIndex < 0 || to.cardIndex > pile.length)
+				|| (to.cardIndex < 0 || to.cardIndex > round.discard.length)
 			) return
 			const card = getCard()
-			pile.cards.splice(to.cardIndex, 0, card)
+			round.discard.splice(to.cardIndex, 0, card)
 			table.sendEvent([cardMoverID], 'cardMoved', {card, from, to, by: cardMoverID})
 			table.sendEvent(
 				getOthers(), 'cardMoved', {card, from: othersFrom, to, by: cardMoverID}
@@ -74,7 +72,7 @@ function moveCard_(table, cardMoverID) {
 			const card = getCard()
 			table.sendEvent([cardMoverID], 'cardMoved', {card, from, to, by: cardMoverID})
 			const othersEvent = { from: othersFrom, to, by: cardMoverID }
-			if(from.source == 'pile') othersEvent.card = card
+			if(from.source == 'discard') othersEvent.card = card
 			table.sendEvent(getOthers(), 'cardMoved', othersEvent)
 		}
 		else return

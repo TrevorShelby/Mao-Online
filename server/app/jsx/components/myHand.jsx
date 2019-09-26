@@ -29,7 +29,7 @@ const mapStateToProps = state => ({
 	cards: state.table.round.myHand,
 	playerColor: state.playerColors[state.table.me],
 	selectedCardIndex: state.selectedCardIndex,
-	discardTopCardIndex: state.table.round.piles[0].cards.length,
+	discardTopCardIndex: state.table.round.discard.length,
 	tableConn: state.tableConn
 })
 const mapDispatchToProps = dispatch => ({
@@ -46,7 +46,7 @@ const mergeProps = (stateProps, dispatchProps) => ({
 			name: 'moveCard',
 			args: {
 				from: {source: 'hand', cardIndex: cardIndex},
-				to: {source: 'pile', pileIndex: 0, cardIndex: stateProps.discardTopCardIndex}
+				to: {source: 'discard', cardIndex: stateProps.discardTopCardIndex}
 			}
 		}))
 		dispatchProps.selectCard(-1)

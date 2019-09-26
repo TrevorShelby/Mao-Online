@@ -43,7 +43,7 @@ console.log('done')
 table.round.hands[table.playerIDs[0]] = [ {value: 0, rank: 0, suit: 0} ]
 doAction(client1, 'moveCard', {
 	from: {source: 'hand', cardIndex: 0},
-	to: {source: 'pile', pileIndex: 0, cardIndex: 1}
+	to: {source: 'discard', cardIndex: 1}
 })
 
 await waitFor('lastChanceStarted')

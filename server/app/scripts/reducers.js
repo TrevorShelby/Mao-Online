@@ -22,7 +22,7 @@ const tableReducers = {
 		mode: 'round',
 		round: {
 			mode: 'play',
-			piles: [{owner: undefined, cards: discard}],
+			discard,
 			handLengths: createHandLengths(table.playerIDs),
 			myHand
 		}
@@ -115,10 +115,10 @@ function rootReducer(state={}, action) {
 		if(action.type == 'roundStarted')
 			return 0
 		//TODO: Make pretty
-		if(isPlayingOnDiscard(action) && ((action.data.to.cardIndex == state.table.round.piles[0].cards.length && state.visibleDiscardCardIndex == state.table.round.piles[0].cards.length - 1) || action.data.to.cardIndex < state.visibleDiscardCardIndex))
+		if(isPlayingOnDiscard(action) && ((action.data.to.cardIndex == state.table.round.discard.length && state.visibleDiscardCardIndex == state.table.round.discard.length - 1) || action.data.to.cardIndex < state.visibleDiscardCardIndex))
 			return state.visibleDiscardCardIndex + 1
 		if(action.type == 'nextDiscardCard')
-			return state.visibleDiscardCardIndex < state.table.round.piles[0].cards.length - 1 ? 
+			return state.visibleDiscardCardIndex < state.table.round.discard.length - 1 ? 
 				state.visibleDiscardCardIndex + 1 : state.visibleDiscardCardIndex
 		if(action.type == 'previousDiscardCard')
 			return state.visibleDiscardCardIndex > 0 ? state.visibleDiscardCardIndex - 1 : state.visibleDiscardCardIndex
@@ -136,7 +136,7 @@ function rootReducer(state={}, action) {
 
 
 const isPlayingOnDiscard = action => (
-	action.type == 'cardMoved' && action.data.to.source == 'pile' && action.data.to.pileIndex == 0
+	action.type == 'cardMoved' && action.data.to.source == 'discard'
 )
 
 const penalize = (table, penaltyCard) => (
@@ -166,10 +166,7 @@ function without(obj, prop) {
 function moveCard(round, me, {card, from, to, by}) {
 	const myHand = round.myHand.slice() //copies array
 	const handLengths = {...round.handLengths}
-	const piles = round.piles.map( (pile) => ({
-		owner: pile.owner,
-		cards: pile.cards.slice()
-	}))
+	const discard = round.discard.slice()
 
 	const movedByMe = me == by
 	if(movedByMe && from.source == 'hand') myHand.splice(from.cardIndex, 1)
@@ -178,14 +175,14 @@ function moveCard(round, me, {card, from, to, by}) {
 	if(!movedByMe && from.source == 'hand') handLengths[by] = from.length
 	else if(!movedByMe && to.source == 'hand') handLengths[by] = to.length
 
-	if(from.source == 'pile') piles[from.pileIndex].cards.splice(from.cardIndex, 1)
-	if(to.source == 'pile') {
+	if(from.source == 'discard') discard.splice(from.cardIndex, 1)
+	if(to.source == 'discard') {
 		const markedCard = {rank: card.rank, suit: card.suit, playedBy: by}
-		piles[to.pileIndex].cards.splice(to.cardIndex, 0, markedCard)
+		discard.splice(to.cardIndex, 0, markedCard)
 	}
 
 	return {...round,
-		myHand, handLengths, piles
+		myHand, handLengths, discard
 	}
 }
 

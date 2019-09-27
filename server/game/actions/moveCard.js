@@ -10,10 +10,6 @@ function moveCard_(table, cardMoverID) {
 
 		if(typeof from != 'object' || typeof to != 'object') return
 		if(from.source == 'hand' && to.source == 'hand') return
-		// if(
-		// 	from.source == 'pile' && to.source == 'pile'
-		// 	&& from.pileIndex == to.pileIndex && from.cardIndex == to.cardIndex
-		// ) return
 		if(from.source == 'discard' && to.source == 'discard') return
 		if(from.source == 'deck' && to.source == 'deck') return
 

@@ -43,7 +43,17 @@ function disconnect_(table, eventHistories, disconnectorID) {
 					table.round.winningPlayer = undefined
 					table.sendEvent(table.playerIDs, 'winningPlayerLeft')
 				}
-				//TODO: Add case for if someone in an accusation leaves.
+
+				//if an accuser or accused leaves during an accusation, drop that accusation.
+				// if(
+				// 	table.round.mode == 'accusation'
+				// 	&& (
+				// 		table.accusation.accuser == disconnectorID
+				// 		|| table.accusation.accused == disconnectorID
+				// 	)
+				// ) {
+					
+				// }
 			}
 
 			const disconnectorsRules = table.rules.playerMade.filter(

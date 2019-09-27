@@ -3,8 +3,7 @@ const disconnect_ = require('./actions/disconnect.js')
 const writeRule_ = require('./actions/writeRule.js')
 const moveCard_ = require('./actions/moveCard.js')
 const accuse_ = require('./actions/accuse.js')
-const acceptAccusation_ = require('./actions/acceptAccusation.js')
-const cancelAccusation_ = require('./actions/cancelAccusation.js')
+const endAccusation_ = require('./actions/endAccusation.js')
 
 const onActionMessage_ = require('./onActionMessage.js')
 const sendEvent_ = require('./sendEvent.js')
@@ -36,14 +35,13 @@ function createNewTable(options) {
 		this.playerIDs.push(joiningPlayerID)
 		eventHistories[joiningPlayerID] = []
 		const onActionMessage = onActionMessage_({
-			talk:             talk_(this, joiningPlayerID),
+			talk:           talk_(this, joiningPlayerID),
 
-			writeRule:        writeRule_(this, joiningPlayerID),
+			writeRule:      writeRule_(this, joiningPlayerID),
 
-			moveCard:         moveCard_(this, joiningPlayerID),
-			accuse:           accuse_(this, joiningPlayerID),
-			acceptAccusation: acceptAccusation_(this, joiningPlayerID),
-			cancelAccusation: cancelAccusation_(this, joiningPlayerID)
+			moveCard:       moveCard_(this, joiningPlayerID),
+			accuse:         accuse_(this, joiningPlayerID),
+			endAccusation:  endAccusation_(this, joiningPlayerID)
 		})
 		joiningConn.on('message', onActionMessage)
 

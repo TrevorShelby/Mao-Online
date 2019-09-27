@@ -31,7 +31,7 @@ while(table.round.hands[table.playerIDs[0]].length > 0) {
 	await new Promise( resolve => setTimeout(resolve, 100) )
 	doAction(client1, 'moveCard', {
 		from: {source: 'hand', cardIndex: 0},
-		to: {source: 'discard', cardIndex: 0}//table.round.piles[0].cards.length - 1}
+		to: {source: 'discard', cardIndex: 0}
 	})
 }
 await waitFor('gameEnded')

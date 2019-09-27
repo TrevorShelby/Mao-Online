@@ -40,16 +40,10 @@ const mapStateToProps = state => {
   })(state.table.accusation, state.table.me);
 
   stateProps.endAccusation = (accusationState => {
-    if (accusationState == 1) return () => {
+    if (accusationState == 1 || accusationState == 2) return () => {
       state.tableConn.send(JSON.stringify({
         type: 'action',
-        name: 'acceptAccusation'
-      }));
-    };
-    if (accusationState == 2) return () => {
-      state.tableConn.send(JSON.stringify({
-        type: 'action',
-        name: 'cancelAccusation'
+        name: 'endAccusation'
       }));
     };else return () => {};
   })(stateProps.accusationState);

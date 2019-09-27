@@ -74,6 +74,43 @@
 
 			.discard { bottom: 50%; right: 40%; }
 
+			/*TODO: Add prefixed versions of transform in keyframes*/
+			.lifting { animation: .5s lift; }
+			.placing { animation: .5s place; }
+			@keyframes lift {
+				to {
+					transform: scale(1.5) translate(33.3%, 33.3%);
+					-ms-transform: scale(1.5) translate(33.3%, 33.3%);;
+					-webkit-transform: scale(1.5) translate(33.3%, 33.3%);;
+					opacity: 0;
+				}
+			}
+			@-webkit-keyframes lift {
+				to {
+					transform: scale(1.5) translate(33.3%, 33.3%);
+					-ms-transform: scale(1.5) translate(33.3%, 33.3%);;
+					-webkit-transform: scale(1.5) translate(33.3%, 33.3%);;
+					opacity: 0;
+				}
+			}
+			@keyframes place {
+				from {
+					transform: scale(1.5) translate(33.3%, 33.3%);
+					-ms-transform: scale(1.5) translate(33.3%, 33.3%);;
+					-webkit-transform: scale(1.5) translate(33.3%, 33.3%);;
+					opacity: 0;
+				}
+			}
+			@-webkit-keyframes place {
+				from {
+					transform: scale(1.5) translate(33.3%, 33.3%);
+					-ms-transform: scale(1.5) translate(33.3%, 33.3%);;
+					-webkit-transform: scale(1.5) translate(33.3%, 33.3%);;
+					opacity: 0;
+				}
+			}
+
+
 			.deck { bottom: 50%; right: 60%; }
 
 			.accusation_tint {

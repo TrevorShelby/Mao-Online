@@ -3,33 +3,11 @@ const { connect } = require('react-redux')
 
 const Card = require('./card.js')
 const PlayerSeat = require('./playerSeat.js')
+const Discard = require('./discard.js')
 const MyHand = require('./myHand.js')
 const Accusation = require('./accusation.js')
 const RuleInput = require('./ruleInput.js')
 
-
-const Discard = (() => {
-	const Discard = ({cards, visibleCardIndex, viewNextCard, viewPreviousCard}) => (
-		<Card
-			card={cards[visibleCardIndex]} className='discard'
-			onWheel={e => {
-				if(e.deltaY < 0) viewNextCard()
-				if(e.deltaY > 0) viewPreviousCard()
-			}}
-		/>
-	)
-
-	const mapStateToProps = state => ({
-		cards: state.table.mode == 'round' ? state.table.round.discard : [],
-		visibleCardIndex: state.visibleDiscardCardIndex
-	})
-	const mapDispatchToProps = dispatch => ({
-		viewNextCard: () => dispatch({type: 'nextDiscardCard'}),
-		viewPreviousCard: () => dispatch({type: 'previousDiscardCard'})
-	})
-	const mergeProps = Object.assign
-	return connect(mapStateToProps, mapDispatchToProps, mergeProps)(Discard)
-})()
 
 
 const canDraw = table => table.mode == 'round' && table.round.mode == 'play'

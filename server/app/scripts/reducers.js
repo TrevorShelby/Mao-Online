@@ -112,18 +112,19 @@ function rootReducer(state={}, action) {
 		else return state.selectedCardIndex
 	})()
 	const visibleDiscardCardIndex = (() => {
+		const data = action.data
+		const discard = state.table && state.table.round && state.table.round.discard
+		const visCardIndex = state.visibleDiscardCardIndex
 		if(action.type == 'roundStarted')
 			return 0
-		//TODO: Make pretty
-		if(isPlayingOnDiscard(action) && ((action.data.to.cardIndex == state.table.round.discard.length && state.visibleDiscardCardIndex == state.table.round.discard.length - 1) || action.data.to.cardIndex < state.visibleDiscardCardIndex))
-			return state.visibleDiscardCardIndex + 1
+		if(isPlayingOnDiscard(action) && shouldVisCardIndexBumpUp(data, discard, visCardIndex))
+			return visCardIndex + 1
 		if(action.type == 'nextDiscardCard')
-			return state.visibleDiscardCardIndex < state.table.round.discard.length - 1 ? 
-				state.visibleDiscardCardIndex + 1 : state.visibleDiscardCardIndex
+			return visCardIndex < discard.length - 1 ? visCardIndex + 1 : visCardIndex
 		if(action.type == 'previousDiscardCard')
-			return state.visibleDiscardCardIndex > 0 ? state.visibleDiscardCardIndex - 1 : state.visibleDiscardCardIndex
+			return visCardIndex > 0 ? visCardIndex - 1 : visCardIndex
 		else
-			return state.visibleDiscardCardIndex
+			return visCardIndex
 	})()
 	const tableConn = (() => {
 		if(action.type == 'connectionMade') return action.tableConn
@@ -134,10 +135,16 @@ function rootReducer(state={}, action) {
 
 
 
+const isPlayingOnDiscard = action => action.type == 'cardMoved' && action.data.to.source == 'discard'
 
-const isPlayingOnDiscard = action => (
-	action.type == 'cardMoved' && action.data.to.source == 'discard'
-)
+const shouldVisCardIndexBumpUp = (data, discard, visCardIndex) => {
+	if(visCardIndex == discard.length - 1)
+		//is visible card representing top card and has top card has changed, thus bumping it up
+		return data.to.cardIndex == visCardIndex + 1
+	else
+		//has a card been inserted below visible card's index, thus bumping it up
+		return data.to.cardIndex < visCardIndex
+}
 
 const penalize = (table, penaltyCard) => (
 	{...without(table, 'accusation'),

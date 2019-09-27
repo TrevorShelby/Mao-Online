@@ -53,8 +53,7 @@ const tableReducers = {
 	accusationCancelled: (table, mode) => ({...without(table, 'accusation'),
 		round: {...table.round,
 			mode
-		},
-		a: console.log(mode)
+		}
 	}),
 	ruleWritten: (table, rule) => ({...table,
 		rules: table.rules.concat(rule)

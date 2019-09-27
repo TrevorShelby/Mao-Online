@@ -45,15 +45,35 @@ function disconnect_(table, eventHistories, disconnectorID) {
 				}
 
 				//if an accuser or accused leaves during an accusation, drop that accusation.
-				// if(
-				// 	table.round.mode == 'accusation'
-				// 	&& (
-				// 		table.accusation.accuser == disconnectorID
-				// 		|| table.accusation.accused == disconnectorID
-				// 	)
-				// ) {
-					
-				// }
+				if(
+					table.round.mode == 'accusation'
+					&& (
+						disconnectorID == table.accusation.accuser
+						|| disconnectorID == table.accusation.accused
+					)
+				) {
+					//copy-pasted from endAccusation.js
+					const previousMode = table.accusation.previousMode
+					if(previousMode == 'play') {
+						table.round.mode = 'play'
+						table.sendEvent(table.playerIDs, 'accusationCancelled', 'play')
+					}
+					else if(
+						previousMode == 'lastChance'
+						&& table.accusation.accused == table.round.winningPlayer
+					) {
+						if(disconnectorID == table.accusation.accused) {
+							table.round.mode = 'play'
+							table.round.winningPlayer = undefined
+							table.sendEvent(table.playerIDs, 'accusationCancelled', 'play')
+						}
+						else if(disconnectorID == table.accusation.accuser) {
+							table.round.mode = 'lastChance'
+							table.sendEvent(table.playerIDs, 'accusationCancelled', 'lastChance')
+						}
+					}
+					delete table.accusation
+				}
 			}
 
 			const disconnectorsRules = table.rules.playerMade.filter(

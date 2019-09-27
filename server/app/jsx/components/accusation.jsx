@@ -8,7 +8,7 @@ const Accusation = ({accusationData: {accused, accuser}, accusationState, endAcc
 	<React.Fragment>
 		<div className='accusation_tint' />
 		<span className='accusation_info'>
-			<PlayerName playerID={accuser} /> has accused <PlayerName playerID={accused} />.
+			<PlayerName playerID={accuser} /> is penalizing <PlayerName playerID={accused} />.
 		</span>
 		{accusationState == 1 &&
 			<button className='accusation_ender' onClick={endAccusation}>Accept Penalty</button>

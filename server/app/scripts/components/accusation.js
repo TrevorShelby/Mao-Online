@@ -19,7 +19,7 @@ const Accusation = ({
   className: "accusation_info"
 }, React.createElement(PlayerName, {
   playerID: accuser
-}), " has accused ", React.createElement(PlayerName, {
+}), " is penalizing ", React.createElement(PlayerName, {
   playerID: accused
 }), "."), accusationState == 1 && React.createElement("button", {
   className: "accusation_ender",

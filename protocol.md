@@ -196,7 +196,7 @@ The `roundOver` event is caused when the round was in last chance and the winnin
 The `cardMoved` event is caused by a player moving a card from one place to another (which is done through the `moveCard` action).
 ```JSON
 "data": {
-	"card": { "value": 0, "rank": 0, "suit": 0},
+	"card": { "value": 0, "rank": 0, "suit": 0 },
 	"from": { ... },
 	"to": { ... },
 	"by": "85670230-e0cb-4538-b50c-874759e98fd1"

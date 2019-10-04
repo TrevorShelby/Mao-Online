@@ -3,83 +3,92 @@ const startLastChance = require('../startLastChance.js')
 
 
 
+//TODO: Write unit test
 function moveCard_(table, cardMoverID) {
 	function moveCard({from, to}={}) {
 		if(table.mode != 'round') return
 		if(table.round.mode != 'play') return
 
-		if(typeof from != 'object' || typeof to != 'object') return
-		if(from.source == 'hand' && to.source == 'hand') return
-		if(from.source == 'discard' && to.source == 'discard') return
-		if(from.source == 'deck' && to.source == 'deck') return
-
-
 		const round = table.round
-		if(to.source == 'hand' && round.hands[cardMoverID].length >= 24) return
 
-		//TODO: Check to see if moveCard can return values outside of expected parameter list back to other players.
-		let takeCard, othersFrom
-		if(from.source == 'hand') {
-			const hand = round.hands[cardMoverID]
-			if(!(from.cardIndex in hand)) return
-			getCard = () => hand.splice(from.cardIndex, 1)[0]
-			othersFrom = {source: 'hand', length: hand.length - 1}
-		}
-		else if(from.source == 'discard') {
-			if(!(from.cardIndex in round.discard)) return
-			getCard = () => round.discard.splice(from.cardIndex, 1)[0]
-			othersFrom = from
-		}
-		else if(from.source == 'deck') {
-			getCard = () => getPlayingCard(Math.floor(Math.random() * 52))
-			othersFrom = from
-		}
-		else return
+		const isDataValid = (() => {
+			if(Date.now() - round.timeOfLastCardMove < 1000) return
 
-		const getOthers = () => table.playerIDs.filter( playerID => playerID != cardMoverID )
-		if(to.source == 'hand') {
-			const hand = round.hands[cardMoverID]
-			const card = getCard()
-			hand.push(card)
+			if(typeof from != 'object' || typeof to != 'object') return
+			if(from.source == 'hand' && to.source == 'hand') return
+			if(from.source == 'discard' && to.source == 'discard') return
+			if(from.source == 'deck' && to.source == 'deck') return
 
-			const event = { from, to: {source: 'hand', length: hand.length}, by: cardMoverID }
-			if(from.source == 'discard') {
-				table.sendEvent(table.playerIDs, 'cardMoved', Object.assign({card}, event))
-			}
-			else {
-				table.sendEvent([cardMoverID], 'cardMoved', Object.assign({card}, event))
-				table.sendEvent(getOthers(), 'cardMoved', event)
-			}
-		}
-		else if(to.source == 'discard') {
-			//similar to "to.cardIndex in round.discard", but also considers appending.
+			if(from.source == 'hand' && !(from.cardIndex in round.hands[cardMoverID])) return false
+			if(to.source == 'hand' && round.hands[cardMoverID].length >= 24) return false
+
+			if(from.source == 'discard' && !(from.cardIndex in round.discard)) return false
+
 			if(
-				typeof to.cardIndex != 'number'
-				|| (to.cardIndex < 0 || to.cardIndex > round.discard.length)
-			) return
-			const card = getCard()
-			round.discard.splice(to.cardIndex, 0, card)
-			table.sendEvent([cardMoverID], 'cardMoved', {card, from, to, by: cardMoverID})
-			table.sendEvent(
-				getOthers(), 'cardMoved', {card, from: othersFrom, to, by: cardMoverID}
-			)
-		}
-		else if(to.source == 'deck') {
-			const card = getCard()
-			table.sendEvent([cardMoverID], 'cardMoved', {card, from, to, by: cardMoverID})
-			const othersEvent = { from: othersFrom, to, by: cardMoverID }
-			if(from.source == 'discard') othersEvent.card = card
-			table.sendEvent(getOthers(), 'cardMoved', othersEvent)
-		}
-		else return
+				to.source == 'discard' && (
+					typeof to.cardIndex != 'number'
+					|| (to.cardIndex < 0 || to.cardIndex > round.discard.length)
+				)
+			) return false
 
-		if(from.source == 'hand' && round.hands[cardMoverID].length == 0) {
+			return true
+		})()
+		if(!isDataValid) return
+
+		const movedCard = (() => {
+			if(from.source == 'hand')
+				return round.hands[cardMoverID].splice(from.cardIndex, 1)[0]
+			else if(from.source == 'discard')
+				return round.discard.splice(from.cardIndex, 1)[0]
+			else if(from.source == 'deck')
+				return getPlayingCard(Math.floor(Math.random() * 52))
+		})()
+
+		round.timeOfLastCardMove = Date.now()
+		if(to.source == 'hand') round.hands[cardMoverID].push(movedCard)
+		else if(to.source == 'discard') round.discard.splice(to.cardIndex, 0, movedCard)
+
+		const dataObjs = (card => {
+			const moverData = { card }
+			const othersData = {}
+
+			moverData.by = othersData.by = cardMoverID
+			moverData.at = othersData.at = round.timeOfLastCardMove
+
+			if(from.source == 'discard' || to.source == 'discard')
+				othersData.card = moverData.card
+
+			if(from.source == 'hand') {
+				moverData.from = { source: 'hand', cardIndex: from.cardIndex }
+				othersData.from = { source: 'hand', length: round.hands[cardMoverID].length }
+			}
+			else if(to.source == 'hand')
+				moverData.to = othersData.to = {
+					source: 'hand', length: round.hands[cardMoverID].length
+				}
+
+			if(from.source == 'discard')
+				moverData.from = othersData.from = { source: 'discard', cardIndex: from.cardIndex }
+			else if(to.source == 'discard')
+				moverData.to = othersData.to = { source: 'discard', cardIndex: to.cardIndex }
+
+			if(from.source == 'deck')
+				moverData.from = othersData.from = { source: 'deck' }
+			else if(to.source == 'deck')
+				moverData.to = othersData.to = { source: 'deck' }
+
+			return { mover: moverData, others: othersData }
+		})(movedCard)
+
+		const others = table.playerIDs.filter( playerID => playerID != cardMoverID )
+		table.sendEvent(others, 'cardMoved', dataObjs.others)
+		table.sendEvent([cardMoverID], 'cardMoved', dataObjs.mover)
+
+		if(from.source == 'hand' && round.hands[cardMoverID].length == 0)
 			startLastChance(table, cardMoverID)
-		}
 	}
 	return moveCard
 }
-
 
 
 module.exports = moveCard_

@@ -23,7 +23,6 @@ const Table = ({tableExists}) => (
 		</React.Fragment>}
 	</div>
 )
-
 const mapStateToProps = state => ({ tableExists: state.table != undefined })
 
 module.exports = connect(mapStateToProps)(Table)

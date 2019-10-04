@@ -24,15 +24,16 @@ const tableReducers = {
 			mode: 'play',
 			discard,
 			handLengths: createHandLengths(table.playerIDs),
-			myHand
+			myHand,
+			timeOfLastCardMove: -1
 		}
 	}),
 	roundOver: (table, winningPlayer) => ({...without(table, 'round'),
 		mode: 'inBetweenRounds',
 		lastWinner: winningPlayer
 	}),
-	cardMoved: (table, {card, from, to, by}) => ({...table,
-		round: moveCard(table.round, table.me, {card, from, to, by})
+	cardMoved: (table, {card, from, to, by, at}) => ({...table,
+		round: moveCard(table.round, table.me, {card, from, to, by, at})
 	}),
 	playerAccused: (table, {accuser, accused}) => ({...table,
 		round: {...table.round,
@@ -170,7 +171,7 @@ function without(obj, prop) {
 }
 
 
-function moveCard(round, me, {card, from, to, by}) {
+function moveCard(round, me, {card, from, to, by, at}) {
 	const myHand = round.myHand.slice() //copies array
 	const handLengths = {...round.handLengths}
 	const discard = round.discard.slice()
@@ -189,7 +190,8 @@ function moveCard(round, me, {card, from, to, by}) {
 	}
 
 	return {...round,
-		myHand, handLengths, discard
+		myHand, handLengths, discard,
+		timeOfLastCardMove: at
 	}
 }
 

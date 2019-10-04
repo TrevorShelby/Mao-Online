@@ -22,7 +22,6 @@ function hookStoreToTable(dispatch) {
 }
 
 
-
 //credit to: https://stackoverflow.com/a/901144
 function getParameterByName(name) {
     let url = window.location.href;

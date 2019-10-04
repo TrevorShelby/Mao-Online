@@ -16,6 +16,10 @@ const Accusation = require('./accusation.js');
 
 const RuleInput = require('./ruleInput.js');
 
+const {
+  seatPositionsByNumOtherPlayersAndOrder
+} = require('../config.js');
+
 const canDraw = table => table.mode == 'round' && table.round.mode == 'play';
 
 const Deck = (() => {
@@ -46,19 +50,117 @@ const Deck = (() => {
   return connect(mapStateToProps)(Deck);
 })();
 
+class AnimatedCard extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      className: this.props.fromClassName,
+      position: this.props.fromPosition
+    };
+  }
+
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({
+        className: this.props.toClassName,
+        position: this.props.toPosition
+      });
+    }, 0);
+  }
+
+  render() {
+    return React.createElement(Card, {
+      style: Object.assign({ ...this.state.position
+      }, {
+        transition: 'bottom .5s, right .5s',
+        zIndex: 1
+      }),
+      className: this.state.className,
+      card: this.props.card
+    });
+  }
+
+}
+
+const getClassName = (direction, by, me) => {
+  if (direction.source == 'hand' && by == me) return 'my_hand';else return direction.source;
+};
+
+const getPosition = (playerIDs, direction, by, me) => {
+  if (direction.source != 'hand' || by == me) return {};
+  const playerIndex = playerIDs.indexOf(by);
+  const myIndex = playerIDs.indexOf(me);
+
+  const orderFromMe = (() => {
+    if (playerIndex < myIndex) return playerIDs.length - myIndex + playerIndex - 1;else return playerIndex - myIndex - 1;
+  })();
+
+  return seatPositionsByNumOtherPlayersAndOrder[playerIDs.length - 1][orderFromMe];
+};
+
 const getOtherPlayers = table => table.playerIDs.filter(playerID => playerID != table.me);
 
-const Gameplay = ({
-  table
-}) => React.createElement("div", {
-  className: "right_panel"
-}, getOtherPlayers(table).map(playerID => React.createElement(PlayerSeat, {
-  playerID: playerID,
-  key: playerID
-})), React.createElement(Discard, null), React.createElement(Deck, null), table.mode == 'round' && React.createElement(React.Fragment, null, React.createElement(MyHand, null), table.round.mode == 'accusation' && React.createElement(Accusation, null)), table.mode == 'inBetweenRounds' && React.createElement(RuleInput, null));
+class Gameplay extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  componentDidMount() {
+    this.playCardMoveAnimation = messageEvent => {
+      const message = JSON.parse(messageEvent.data);
+      if (message.type != 'event' || message.name != 'cardMoved') return;
+      const {
+        from,
+        to,
+        by,
+        card
+      } = message.data;
+      const fromClassName = getClassName(from, by, this.props.table.me);
+      const toClassName = getClassName(to, by, this.props.table.me);
+      const fromPosition = getPosition(this.props.table.playerIDs, from, by, this.props.table.me);
+      const toPosition = getPosition(this.props.table.playerIDs, to, by, this.props.table.me);
+      const animatedCard = React.createElement(AnimatedCard, {
+        fromClassName: fromClassName,
+        toClassName: toClassName,
+        fromPosition: fromPosition,
+        toPosition: toPosition,
+        card: card || {
+          rank: undefined,
+          suit: undefined
+        }
+      });
+      this.setState({
+        animatedCard
+      });
+      setTimeout(() => {
+        this.setState({
+          animatedCard: undefined
+        });
+      }, 500);
+    };
+
+    this.props.tableConn.on('message', this.playCardMoveAnimation);
+  }
+
+  componentWillUnmount() {
+    this.props.tableConn.off('message', this.playCardMoveAnimation);
+  }
+
+  render() {
+    return React.createElement("div", {
+      className: "right_panel"
+    }, getOtherPlayers(this.props.table).map(playerID => React.createElement(PlayerSeat, {
+      playerID: playerID,
+      key: playerID
+    })), React.createElement(Discard, null), React.createElement(Deck, null), this.props.table.mode == 'round' && React.createElement(React.Fragment, null, React.createElement(MyHand, null), this.props.table.round.mode == 'accusation' && React.createElement(Accusation, null)), this.props.table.mode == 'inBetweenRounds' && React.createElement(RuleInput, null), this.state.animatedCard);
+  }
+
+}
 
 const mapStateToProps = state => ({
-  table: state.table
+  table: state.table,
+  tableConn: state.tableConn
 });
 
 module.exports = connect(mapStateToProps)(Gameplay);

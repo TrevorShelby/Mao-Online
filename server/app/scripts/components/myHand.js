@@ -47,7 +47,7 @@ const mapStateToProps = state => ({
   cards: state.table.round.myHand,
   playerColor: state.playerColors[state.table.me],
   selectedCardIndex: state.selectedCardIndex,
-  discardTopCardIndex: state.table.round.discard.length,
+  visibleDiscardCardIndex: state.visibleDiscardCardIndex,
   tableConn: state.tableConn
 });
 
@@ -74,7 +74,7 @@ const mergeProps = (stateProps, dispatchProps) => ({
         },
         to: {
           source: 'discard',
-          cardIndex: stateProps.discardTopCardIndex
+          cardIndex: stateProps.visibleDiscardCardIndex + 1
         }
       }
     }));

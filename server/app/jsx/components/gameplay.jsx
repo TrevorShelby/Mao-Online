@@ -93,26 +93,23 @@ class Gameplay extends React.Component {
 				/>
 			)
 			this.setState({animatedCard})
-			setTimeout( () => {
-				this.setState({animatedCard: undefined})
-			}, 500)
+			setTimeout( () => this.setState({animatedCard: undefined}), 500)
 		}
-		this.props.tableConn.on('message', this.playCardMoveAnimation)
+		//this.props.tableConn.on('message', this.playCardMoveAnimation)
 	}
 
-	componentWillUnmount() { this.props.tableConn.off('message', this.playCardMoveAnimation) }
+	//componentWillUnmount() { this.props.tableConn.off('message', this.playCardMoveAnimation) }
 
-	render() {return (
+	render() {const table = this.props.table; return (
 		<div className='right_panel'>
-			{getOtherPlayers(this.props.table).map( playerID => <PlayerSeat playerID={playerID} key={playerID} /> )}
+			{getOtherPlayers(table).map( playerID => <PlayerSeat playerID={playerID} key={playerID} /> )}
 			<Discard />
 			<Deck />
-			{this.props.table.mode == 'round' && <React.Fragment>
+			{table.mode == 'round' && <React.Fragment>
 				<MyHand />
-				{this.props.table.round.mode == 'accusation' && <Accusation />}
+				{table.round.mode == 'accusation' && <Accusation />}
 			</React.Fragment>}
-			{this.props.table.mode == 'inBetweenRounds' && <RuleInput />}
-			{this.state.animatedCard}
+			{table.mode == 'inBetweenRounds' && table.me == table.lastWinner && <RuleInput />}
 		</div>
 	)}
 }

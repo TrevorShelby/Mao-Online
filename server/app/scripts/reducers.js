@@ -81,7 +81,7 @@ flk.load()
 function rootReducer(state={}, action) {
 	if(action.type == 'playerAccused') thunk.play()
 	if(action.type == 'cardMoved') {
-		if(action.data.from.source == 'hand') cld.play()
+		if(action.data.from.source == 'hand' || action.data.from.source == 'discard') cld.play()
 		if(action.data.from.source == 'deck') flk.play()
 	}
 
@@ -89,6 +89,7 @@ function rootReducer(state={}, action) {
 		if(action.type in tableReducers) return tableReducers[action.type](state.table, action.data)
 		else return state.table
 	})()
+	//TODO: Consider moving this into GameLog component's state
 	const gameMessages = (() => {
 		if(action.type == 'joinedTable')
 			return []
@@ -96,6 +97,27 @@ function rootReducer(state={}, action) {
 			return state.gameMessages.concat({type: 'chat', chatData: action.data})
 		else if(action.type == 'playerJoined')
 			return state.gameMessages.concat({type: 'playerJoined', joinerID: action.data})
+		else if(action.type == 'playerLeft')
+			return state.gameMessages.concat({type: 'playerLeft', disconnectorID: action.data})
+		else if(action.type == 'cardMoved') {
+			const {from, to, card, by} = action.data
+			const cardWasPlayed = from.source == 'hand' && to.source == 'discard'
+			if(cardWasPlayed)
+				return state.gameMessages.concat({
+					type: 'cardMoved', moveType: 'play',
+					cardIsNowTopCard: to.cardIndex == state.table.round.discard.length,
+					card, cardIndex: to.cardIndex, by
+				})
+			if(from.source == 'deck' && to.source == 'hand')
+				return state.gameMessages.concat({type: 'cardMoved', moveType: 'draw', by})
+			if(from.source == 'discard' && to.source == 'hand')
+				return state.gameMessages.concat({
+					type:'cardMoved', moveType: 'take', card, by
+				})
+			//TODO: Remove later.
+			else
+				return state.gameMessages
+		}
 		else
 			return state.gameMessages
 	})()
@@ -118,12 +140,14 @@ function rootReducer(state={}, action) {
 		const visCardIndex = state.visibleDiscardCardIndex
 		if(action.type == 'roundStarted')
 			return 0
-		if(isPlayingOnDiscard(action) && shouldVisCardIndexBumpUp(data, discard, visCardIndex))
+		if(isPlayingOnDiscard(action) && data.to.cardIndex <= visCardIndex + 1)
 			return visCardIndex + 1
 		if(action.type == 'nextDiscardCard')
 			return visCardIndex < discard.length - 1 ? visCardIndex + 1 : visCardIndex
-		if(action.type == 'previousDiscardCard')
+		if(action.type == 'previousDiscardCard' || supportingCardWasTaken(action, visCardIndex))
 			return visCardIndex > 0 ? visCardIndex - 1 : visCardIndex
+		if(action.type == 'setDiscardCardIndex')
+			return action.cardIndex
 		else
 			return visCardIndex
 	})()
@@ -138,14 +162,10 @@ function rootReducer(state={}, action) {
 
 const isPlayingOnDiscard = action => action.type == 'cardMoved' && action.data.to.source == 'discard'
 
-const shouldVisCardIndexBumpUp = (data, discard, visCardIndex) => {
-	if(visCardIndex == discard.length - 1)
-		//is visible card representing top card and has top card has changed, thus bumping it up
-		return data.to.cardIndex == visCardIndex + 1
-	else
-		//has a card been inserted below visible card's index, thus bumping it up
-		return data.to.cardIndex < visCardIndex
-}
+const supportingCardWasTaken = (action, visCardIndex) => (
+	action.type == 'cardMoved' && action.data.from.source == 'discard'
+	&& action.data.from.cardIndex <= visCardIndex
+)
 
 const penalize = (table, penaltyCard) => (
 	{...without(table, 'accusation'),
@@ -185,6 +205,7 @@ function moveCard(round, me, {card, from, to, by, at}) {
 
 	if(from.source == 'discard') discard.splice(from.cardIndex, 1)
 	if(to.source == 'discard') {
+		//TODO: Consider removing playedBy field
 		const markedCard = {rank: card.rank, suit: card.suit, playedBy: by}
 		discard.splice(to.cardIndex, 0, markedCard)
 	}

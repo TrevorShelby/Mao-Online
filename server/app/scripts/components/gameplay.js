@@ -133,27 +133,22 @@ class Gameplay extends React.Component {
       this.setState({
         animatedCard
       });
-      setTimeout(() => {
-        this.setState({
-          animatedCard: undefined
-        });
-      }, 500);
-    };
+      setTimeout(() => this.setState({
+        animatedCard: undefined
+      }), 500);
+    }; //this.props.tableConn.on('message', this.playCardMoveAnimation)
 
-    this.props.tableConn.on('message', this.playCardMoveAnimation);
-  }
+  } //componentWillUnmount() { this.props.tableConn.off('message', this.playCardMoveAnimation) }
 
-  componentWillUnmount() {
-    this.props.tableConn.off('message', this.playCardMoveAnimation);
-  }
 
   render() {
+    const table = this.props.table;
     return React.createElement("div", {
       className: "right_panel"
-    }, getOtherPlayers(this.props.table).map(playerID => React.createElement(PlayerSeat, {
+    }, getOtherPlayers(table).map(playerID => React.createElement(PlayerSeat, {
       playerID: playerID,
       key: playerID
-    })), React.createElement(Discard, null), React.createElement(Deck, null), this.props.table.mode == 'round' && React.createElement(React.Fragment, null, React.createElement(MyHand, null), this.props.table.round.mode == 'accusation' && React.createElement(Accusation, null)), this.props.table.mode == 'inBetweenRounds' && React.createElement(RuleInput, null), this.state.animatedCard);
+    })), React.createElement(Discard, null), React.createElement(Deck, null), table.mode == 'round' && React.createElement(React.Fragment, null, React.createElement(MyHand, null), table.round.mode == 'accusation' && React.createElement(Accusation, null)), table.mode == 'inBetweenRounds' && table.me == table.lastWinner && React.createElement(RuleInput, null));
   }
 
 }

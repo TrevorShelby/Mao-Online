@@ -7,10 +7,12 @@ const drawCard = () => getPlayingCard(Math.floor(Math.random() * 52))
 function startNewRound(table) {
 	const round = table.round = {}
 	round.hands = {}
+	round.piles = {}
 	table.connections.forEach( ([playerID]) => {
 		const cards = []
 		for(let cardNum = 0; cardNum < 7; cardNum++) cards.push(drawCard())
 		round.hands[playerID] = cards
+		round.piles[playerID] = []
 	})
 	round.discard = [drawCard()]
 	round.mode = 'play'

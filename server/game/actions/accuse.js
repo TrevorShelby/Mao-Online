@@ -20,9 +20,11 @@ function accuse_(table, accuserID) {
 			accused: accusedID,
 			previousMode
 		}
+		if(previousMode == 'lastChance') table.accusation.pauseStart = Date.now()
 		table.sendEvent(table.playerIDs, 'playerAccused', {
 			accuser: table.accusation.accuser,
-			accused: table.accusation.accused
+			accused: table.accusation.accused,
+			at: table.accusation.pauseStart || Date.now()
 		})
 	}
 

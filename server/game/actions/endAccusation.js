@@ -14,15 +14,19 @@ function endAccusation_(table, enderID) {
 		const previousMode = table.accusation.previousMode
 		if(previousMode == 'play')
 			table.round.mode = 'play'
-		//second condition should always be true if the round.mode is lastChance, but is added for
-		//redundancy.
-		else if(previousMode == 'lastChance' && table.accusation.accused == table.round.winningPlayer) {
+		//if the previous mode is lastChance, then the accused will always be the winning player.
+		else if(previousMode == 'lastChance') {
 			if(isAccused) {
 				table.round.mode = 'play'
 				table.round.winningPlayer = undefined
 			}
-			else if(isAccuser)
+			else if(isAccuser) {
 				table.round.mode = 'lastChance'
+				table.round.lastChance.pauses.push({
+					start: table.accusation.pauseStart,
+					end: Date.now()
+				})
+			}
 		}
 		else return
 
@@ -35,8 +39,14 @@ function endAccusation_(table, enderID) {
 			table.sendEvent(others, 'accusationAccepted', hand.length)
 			table.sendEvent([enderID], 'accusationAccepted', penaltyCard)
 		}
-		else if(isAccuser)
-			table.sendEvent(table.playerIDs, 'accusationCancelled', previousMode)
+		else if(isAccuser) {
+			const lastChance = table.round.lastChance
+			table.sendEvent(table.playerIDs, 'accusationCancelled', {
+				previousMode,
+				at: previousMode == 'lastChance' ?
+					lastChance.pauses[lastChance.pauses.length - 1].end : Date.now()
+			})
+		}
 	}
 	return endAccusation
 }

@@ -77,4 +77,7 @@ function getLobbyInfo() {
 	return lobbyInfo
 }
 
-httpServer.listen(8080)
+httpServer.listen({
+	host: 'localhost',
+	port: 8080
+})

@@ -195,21 +195,21 @@ The `playerAccused` event is caused by one player accusing another player or the
 `accuser` describes the seat of the player who is accusing. `accused` describes the seat of the player who is being accused.
 
 
-##The `accusationAccepted` Event
+## The `accusationAccepted` Event
 The `accusationAccepted` event is caused by the accused player of an accusation accepting that accusation. This event does not need a `data` property.
 
 
-##The `accusationCancelled` Event
+## The `accusationCancelled` Event
 The `accusationCancelled` event is caused by the accusing player of an accusation cancelling that accusation. This event does not need a `data` property.
 
 
-##The `roundOver` Event
+## The `roundOver` Event
 The `roundOver` event happens when a player moves the last card from their hand and wins the round. `data` is the seat of the player who won the round.
 
 
-##The `roundStarted` Event
+## The `roundStarted` Event
 The `roundStarted` event is caused by the start of a new round. This event does not need a `data` property.
 
 
-##The `ruleWritten` Event
+## The `ruleWritten` Event
 The `ruleWritten` event is caused by the client writing a rule. `data` is the rule that the client wrote.

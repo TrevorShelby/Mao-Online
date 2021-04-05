@@ -2,9 +2,9 @@
 
 This protocol requires messages to be formatted as JSON objects serialized into strings on both the client-side and server-side.
 
-#The Game
+# The Game
 
-##Card Objects
+## Card Objects
 Cards are described by three index properties: `value`, `rank`, and `suit`. The `rank` property indexes from this list:
 
 `[ace, two, three, four, five, six, seven, eight, nine, ten, jack, queen, king]`,
@@ -25,19 +25,19 @@ A card object for the four of hearts would look like this:
 ```
 
 
-##Card Groups
+## Card Groups
 Cards can be in one of two card groups: hands or piles. Cards can also be retrieved or put into the deck, however, the deck itself is not card group, rather it is something that randomly generates cards (this is to prevent card-counting clients). A client can view cards that are in their own hand (each client gets one), as well as how many cards are in everyone else's hands. Clients may move cards to and from their own hand, but not anyone else's. The other type of card group, piles, have their cards visible to all clients. The first pile is always the discard pile, a pile which no player owns.
 
 
-##Accusation
+## Accusation
 During play, one player may accuse another (or even themselves) of breaking a rule. Play cannot continue until the accusation has been settled (players can still talk to each other though). In order for an accusation to be settled, one of two things must happen. Either the accused player accepts the accusation, or the accusing playing cancels the accusation.
 
 
-##Winning
+## Winning
 For a player to win a round of Mao, they need to play the last card from their hand. Once they do these, a timer of ten seconds begins. During this time, players can only talk and accuse the winning player of breaking a rule. Once the timer hits zero seconds, that player wins the round. However, if a player accuses the winning player, that timer pauses. And if the winning player then accepts the accusation, they'll forfeit their potential victory (they can still win later in the round). Alternatively, if the accusing player decides to cancel the accusation, the timer resumes. Once a player has won, the victorious player creates a new rule in secret, and a new round begins.
 
 
-#Actions
+# Actions
 A client in the game of Mao sends messages in order to perform actions. For the client to perform an action, they would have to send a message to the server that looks like this:
 ```JSON
 {
@@ -50,11 +50,11 @@ A client in the game of Mao sends messages in order to perform actions. For the 
 ```
 `name` describes wich action the client is taking. Certain actions also require an `args` property, which the client provides with any extra information about the action. Below is a section for each action, with their `name` as the title.
 
-##The `talk` Action
+## The `talk` Action
 The `talk` action lets the client send a chat message. `args` is a string of what the client is saying.
 
 
-##The `moveCard` Action
+## The `moveCard` Action
 The `moveCard` action lets the client to move a card from one place to another. It is only available during play. `args` is an object that looks like this:
 ```JSON
 {
@@ -68,7 +68,7 @@ The `moveCard` action lets the client to move a card from one place to another. 
 ```
 `from` describes where the card is being moved from, and `to` describes where it is being moved to. Both objects will *always* have a `source` property that describes the type of area that the card is being moved from or to. There is a section for each different variant for both types of objects below.
 
-###Hand-`from` Objects
+### Hand-`from` Objects
 ```JSON
 {
 	"source": "hand",
@@ -77,14 +77,14 @@ The `moveCard` action lets the client to move a card from one place to another. 
 ```
 `cardIndex` describes the exact card in the client's hand that is being moved. If the cardIndex is 0, the first card in the client's hand is moved.
 
-###Hand-`to` Objects
+### Hand-`to` Objects
 ```JSON
 {
 	"source": "hand",
 }
 ```
 
-###Pile-`from` and -`to` Objects
+### Pile-`from` and -`to` Objects
 ```JSON
 {
 	"source": "pile",
@@ -94,7 +94,7 @@ The `moveCard` action lets the client to move a card from one place to another. 
 ```
 `pileIndex` describes the exact pile that the card is going from or to. For `from` objects, `cardIndex` describes which card is being moved from the pile. for `to` object, `cardIndex` describes which index of the pile's cards the card will be moved into. It should be noted that the `cardIndex` for a `to` object can be one index higher than the current last index of the pile's cards, which describes moving the card to the very top of the pile (or, more technically, appending the card to the pile's cards).
 
-###Deck-`from` and -`to` Objects
+### Deck-`from` and -`to` Objects
 ```JSON
 {
 	"source": "deck"
@@ -103,24 +103,24 @@ The `moveCard` action lets the client to move a card from one place to another. 
 Since the deck is infinite, a deck-`to` object will get rid of the card being moved.
 
 
-##The `accuse` Action
+## The `accuse` Action
 The `accuse` action lets the client accuse a player of breaking a rule. It is only available during play and when a player is about to win after playing their last card. `args` is a number describing the seat of the player being accused.
 
 
-##The `acceptAccusation` Action
+## The `acceptAccusation` Action
 The `acceptAccusation` action lets an accused client accept the accusation towards them. This action does not need an `args` property.
 
 
-##The `cancelAccusation` Action
+## The `cancelAccusation` Action
 The `cancelAccusation` action lets an accusing client cancel their accusation. This action does not need an `args` property.
 
 
-##The `writeRule` Action
+## The `writeRule` Action
 The `writeRule` action lets a client, who has just won a round, write a rule. It is only available between rounds. `args` is a string of the rule that the client has written.
 
 
 
-#Event Notifications
+# Event Notifications
 Whenever clients need to be notified through a state change, they will receive an event notification from the server, which looks likes this:
 ```JSON
 {
@@ -134,7 +134,7 @@ Whenever clients need to be notified through a state change, they will receive a
 ```
 `name` holds the name of the event that has taken place. `order` enumerates this event among any others that the server has sent the client, where the first event has an `order` of 0, the second event has an `order` of 1, and so on. This lets the client make sure they are tracking state changes in the correct order. Finally, there is `data`, which further describes the event. The name for each event, as well as information about how their `data` property is structured (if they have one) is listed below.
 
-##The `talk` Event
+## The `talk` Event
 The `talk` event is caused by a player adding to the chat log.
 ```JSON
 {
@@ -145,7 +145,7 @@ The `talk` event is caused by a player adding to the chat log.
 ```
 `quote` describes that player has said. `by` is a version 4 uuid that describes the client who is talking. This will likely be changed to a different form of identification later. `timestamp` describes the time when the quote was added to the server's chat log and forwarded.
 
-##The `cardMoved` Event
+## The `cardMoved` Event
 The `cardMoved` event is caused by a player moving a card from one place to another (which is done through the `moveCard` action).
 ```JSON
 {
@@ -157,7 +157,7 @@ The `cardMoved` event is caused by a player moving a card from one place to anot
 ```
 The contents of `from` and `to` are dependent of where the card is going from and to. `by` describes the seat of the player who is moving the card. `card` only appears if the card was moved from a pile.
 
-###Hand-`from` and -`to` Objects
+### Hand-`from` and -`to` Objects
 ```JSON
 {
 	"source": "hand",
@@ -166,7 +166,7 @@ The contents of `from` and `to` are dependent of where the card is going from an
 ```
 `length` describes the number of cards the player has in their hand after the event.
 
-###Pile-`from` and -`to` Objects
+### Pile-`from` and -`to` Objects
 ```JSON
 {
 	"source": "pile",
@@ -176,7 +176,7 @@ The contents of `from` and `to` are dependent of where the card is going from an
 ```
 Similar to pile-`from` and -`to` objects of the `moveCard` action.
 
-###Deck-`from` and -`to` Objects
+### Deck-`from` and -`to` Objects
 ```JSON
 {
 	"source": "deck"
@@ -184,7 +184,7 @@ Similar to pile-`from` and -`to` objects of the `moveCard` action.
 ```
 
 
-##The `playerAccused` Event
+## The `playerAccused` Event
 The `playerAccused` event is caused by one player accusing another player or themselves.
 ```JSON
 {
